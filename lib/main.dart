@@ -4,6 +4,7 @@ import 'screens/home_screen.dart';
 import 'screens/vitals_screen.dart';
 import 'screens/medicines_screen.dart';
 import 'screens/vital_detail_screen.dart';
+import 'screens/notifications_screen.dart';
 import 'dart:async';
 import 'dart:math' as math;
 import 'package:flutter/services.dart';
@@ -106,6 +107,96 @@ class _MainShellState extends State<MainShell> {
   String _voicePromptText = "सुन रहा हूँ...";
   String _voiceSubText = "कृपया बोलिए (जैसे: 'दवा', 'बीपी', 'मदद', 'होम')";
   String _voiceTranscript = "...";
+
+  // Notification state
+  final List<Map<String, dynamic>> _notifications = [
+    {
+      'id': '1',
+      'icon': Icons.check_circle_rounded,
+      'iconColor': const Color(0xFF12B76A),
+      'title': 'दवा ले ली गई',
+      'body': 'Metformin 500mg सुबह 8:00 बजे ले ली गई है।',
+      'time': 'आज, 8:05 AM',
+      'isRead': false,
+    },
+    {
+      'id': '2',
+      'icon': Icons.access_alarm_rounded,
+      'iconColor': const Color(0xFF7F56D9),
+      'title': 'दवा लेने का समय',
+      'body': 'Telmisartan 40mg दोपहर 1:00 बजे लेनी है। खाने के बाद लें।',
+      'time': 'आज, 12:30 PM',
+      'isRead': false,
+    },
+    {
+      'id': '3',
+      'icon': Icons.favorite_rounded,
+      'iconColor': const Color(0xFFF43F5E),
+      'title': 'BP रीडिंग: 130/85',
+      'body': 'आपका ब्लड प्रेशर सामान्य से थोड़ा ऊपर है। कृपया डॉक्टर से सलाह लें।',
+      'time': 'आज, 10:15 AM',
+      'isRead': false,
+    },
+    {
+      'id': '4',
+      'icon': Icons.calendar_today_rounded,
+      'iconColor': const Color(0xFF2E82FF),
+      'title': 'डॉक्टर अपॉइंटमेंट',
+      'body': 'डॉ. आर. के. गुप्ता से कल सुबह 10:00 बजे अपॉइंटमेंट है।',
+      'time': 'आज, 9:00 AM',
+      'isRead': false,
+    },
+    {
+      'id': '5',
+      'icon': Icons.water_drop_rounded,
+      'iconColor': const Color(0xFFF59E0B),
+      'title': 'Vitamin D3 लेने का समय',
+      'body': 'Vitamin D3 रात 8:00 बजे लेनी है। खाने के बाद लें।',
+      'time': 'कल, 7:30 PM',
+      'isRead': true,
+    },
+    {
+      'id': '6',
+      'icon': Icons.notifications_active_rounded,
+      'iconColor': const Color(0xFFD92D20),
+      'title': 'SOS अलर्ट भेजा गया',
+      'body': 'आपका आपातकालीन अलर्ट अमित शर्मा और डॉ. आर. के. गुप्ता को भेज दिया गया है।',
+      'time': 'कल, 3:20 PM',
+      'isRead': true,
+    },
+  ];
+
+  int get _unreadCount => _notifications.where((n) => n['isRead'] == false).length;
+
+  void _markNotificationRead(String id) {
+    setState(() {
+      final idx = _notifications.indexWhere((n) => n['id'] == id);
+      if (idx != -1) _notifications[idx]['isRead'] = true;
+    });
+  }
+
+  void _markAllNotificationsRead() {
+    setState(() {
+      for (var n in _notifications) {
+        n['isRead'] = true;
+      }
+    });
+  }
+
+  void _openNotifications() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      builder: (_) => NotificationsScreen(
+        notifications: _notifications,
+        onMarkRead: _markNotificationRead,
+        onMarkAllRead: _markAllNotificationsRead,
+      ),
+    );
+  }
 
   void _openVoiceAssistant() {
     setState(() {
@@ -252,6 +343,8 @@ class _MainShellState extends State<MainShell> {
         isNextMedTaken: isNextMedTaken,
         medicineTakenCount: _medicines.where((m) => m['isTaken'] == true).length,
         medicineTotalCount: _medicines.length,
+        notificationCount: _unreadCount,
+        onOpenNotifications: _openNotifications,
         onTakeMedicine: () {
           int idx = _medicines.indexOf(nextMed);
           _toggleMedicineStatus(idx);
@@ -283,6 +376,8 @@ class _MainShellState extends State<MainShell> {
         medicinesList: _medicines,
         onToggleStatus: _toggleMedicineStatus,
         onAddMedicine: _addNewMedicine,
+        notificationCount: _unreadCount,
+        onOpenNotifications: _openNotifications,
       ),
       _buildProfileScreen(),
     ];

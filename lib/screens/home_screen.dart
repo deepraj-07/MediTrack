@@ -13,6 +13,8 @@ class HomeScreen extends StatelessWidget {
   final Function(int) onOpenVitalDetail;
   final int medicineTakenCount;
   final int medicineTotalCount;
+  final int notificationCount;
+  final VoidCallback onOpenNotifications;
 
   const HomeScreen({
     super.key,
@@ -25,6 +27,8 @@ class HomeScreen extends StatelessWidget {
     required this.onOpenVitalDetail,
     required this.medicineTakenCount,
     required this.medicineTotalCount,
+    required this.notificationCount,
+    required this.onOpenNotifications,
   });
 
   @override
@@ -78,45 +82,50 @@ class HomeScreen extends StatelessWidget {
                       ],
                     ),
                     // Notification Bell
-                    Stack(
-                      clipBehavior: Clip.none,
-                      children: [
-                        Container(
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFF8FAFC),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.notifications_none_rounded,
-                            color: Color(0xFF2D2D2D),
-                            size: 22,
-                          ),
-                        ),
-                        Positioned(
-                          right: -2,
-                          top: -2,
-                          child: Container(
-                            width: 14,
-                            height: 14,
-                            decoration: const BoxDecoration(
-                              color: Color(0xFFFF3B30),
+                    InkWell(
+                      onTap: onOpenNotifications,
+                      borderRadius: BorderRadius.circular(20),
+                      child: Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFF8FAFC),
                               shape: BoxShape.circle,
                             ),
-                            child: const Center(
-                              child: Text(
-                                '2',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 9,
-                                  fontWeight: FontWeight.bold,
+                            child: const Icon(
+                              Icons.notifications_none_rounded,
+                              color: Color(0xFF2D2D2D),
+                              size: 22,
+                            ),
+                          ),
+                          if (notificationCount > 0)
+                            Positioned(
+                              right: -2,
+                              top: -2,
+                              child: Container(
+                                width: 14,
+                                height: 14,
+                                decoration: const BoxDecoration(
+                                  color: Color(0xFFFF3B30),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    notificationCount > 9 ? '9+' : '$notificationCount',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 9,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ],
                 ),

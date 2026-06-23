@@ -4,12 +4,16 @@ class MedicinesScreen extends StatefulWidget {
   final List<Map<String, dynamic>> medicinesList;
   final Function(int) onToggleStatus;
   final Function(String, String, String, String) onAddMedicine;
+  final int notificationCount;
+  final VoidCallback onOpenNotifications;
 
   const MedicinesScreen({
     super.key,
     required this.medicinesList,
     required this.onToggleStatus,
     required this.onAddMedicine,
+    required this.notificationCount,
+    required this.onOpenNotifications,
   });
 
   @override
@@ -42,9 +46,37 @@ class _MedicinesScreenState extends State<MedicinesScreen> {
           ),
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications_none_rounded, color: Color(0xFF475467)),
-            onPressed: () {},
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.notifications_none_rounded, color: Color(0xFF475467)),
+                onPressed: widget.onOpenNotifications,
+              ),
+              if (widget.notificationCount > 0)
+                Positioned(
+                  right: 4,
+                  top: 4,
+                  child: Container(
+                    width: 16,
+                    height: 16,
+                    decoration: const BoxDecoration(
+                      color: Color(0xFFFF3B30),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Center(
+                      child: Text(
+                        widget.notificationCount > 9 ? '9+' : '${widget.notificationCount}',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 9,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+            ],
           ),
           const SizedBox(width: 8),
         ],
