@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
+import 'package:meditrack/l10n/app_localizations.dart';
 
 // ----------------------------------------------
 // Data Models
@@ -574,7 +575,7 @@ class _ChooseDoctorScreenState extends State<ChooseDoctorScreen> {
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: _buildAppBar(
         context,
-        'Doctor Appointment',
+        AppLocalizations.of(context)!.doctorAppointment,
         actions: [
           IconButton(
             icon: const Icon(Icons.search_rounded, color: Color(0xFF1D2939), size: 24),
@@ -603,20 +604,20 @@ class _ChooseDoctorScreenState extends State<ChooseDoctorScreen> {
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
+                      children: [
                         Text(
-                          'सही डॉक्टर से\nमिलें, स्वस्थ जीवन जियें',
-                          style: TextStyle(
+                          AppLocalizations.of(context)!.bannerTitle,
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 18,
                             fontWeight: FontWeight.w800,
                             height: 1.3,
                           ),
                         ),
-                        SizedBox(height: 8),
+                        const SizedBox(height: 8),
                         Text(
-                          'अपनी स्थिति के अनुसार\nडॉक्टर चुनें',
-                          style: TextStyle(
+                          AppLocalizations.of(context)!.bannerSubtitle,
+                          style: const TextStyle(
                             color: Colors.white70,
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
@@ -644,7 +645,7 @@ class _ChooseDoctorScreenState extends State<ChooseDoctorScreen> {
               onChanged: _onSearch,
               style: const TextStyle(fontFamily: 'Outfit', fontWeight: FontWeight.w600, fontSize: 15),
               decoration: InputDecoration(
-                hintText: 'डॉक्टर, विशेषज्ञता या लक्षण खोजें...',
+                hintText: AppLocalizations.of(context)!.searchDoctorHint,
                 hintStyle: const TextStyle(fontFamily: 'Outfit', color: Color(0xFF98A2B3), fontWeight: FontWeight.normal),
                 prefixIcon: const Icon(Icons.search_rounded, color: Color(0xFF98A2B3), size: 22),
                 suffixIcon: const Icon(Icons.tune_rounded, color: Color(0xFF7F56D9), size: 22),
@@ -671,16 +672,16 @@ class _ChooseDoctorScreenState extends State<ChooseDoctorScreen> {
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
             child: Row(
               children: [
-                const Text(
-                  'विशेषज्ञता के अनुसार',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF1D2939)),
+                Text(
+                  AppLocalizations.of(context)!.bySpecialty,
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF1D2939)),
                 ),
                 const Spacer(),
                 GestureDetector(
                   onTap: () {},
-                  child: const Text(
-                    'सभी देखें >',
-                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF7F56D9)),
+                  child: Text(
+                    AppLocalizations.of(context)!.seeAllGt,
+                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF7F56D9)),
                   ),
                 ),
               ],
@@ -703,13 +704,13 @@ class _ChooseDoctorScreenState extends State<ChooseDoctorScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Row(
               children: [
-                const Text(
-                  'लोकप्रिय डॉक्टर',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF1D2939)),
+                Text(
+                  AppLocalizations.of(context)!.popularDoctors,
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF1D2939)),
                 ),
                 const Spacer(),
                 Text(
-                  '${_filteredDoctors.length} डॉक्टर',
+                  AppLocalizations.of(context)!.doctorCount('${_filteredDoctors.length}'),
                   style: const TextStyle(fontFamily: 'Outfit', fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF667085)),
                 ),
               ],
@@ -926,8 +927,8 @@ class _SelectDateTimeScreenState extends State<SelectDateTimeScreen> {
 
   String _formatDay(DateTime d) {
     final now = DateTime.now();
-    if (d.day == now.day && d.month == now.month) return 'आज';
-    if (d.day == now.add(const Duration(days: 1)).day && d.month == now.month) return 'कल';
+    if (d.day == now.day && d.month == now.month) return AppLocalizations.of(context)!.today;
+    if (d.day == now.add(const Duration(days: 1)).day && d.month == now.month) return AppLocalizations.of(context)!.tomorrow;
     
     const days = ['सोम', 'मंगल', 'बुध', 'गुरु', 'शुक्र', 'शनि', 'रवि'];
     return days[d.weekday - 1];
@@ -937,7 +938,7 @@ class _SelectDateTimeScreenState extends State<SelectDateTimeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
-      appBar: _buildAppBar(context, 'अपॉइंटमेंट बुक करें'),
+      appBar: _buildAppBar(context, AppLocalizations.of(context)!.appointmentBooking),
       body: Column(
         children: [
           Expanded(
@@ -987,10 +988,10 @@ class _SelectDateTimeScreenState extends State<SelectDateTimeScreen> {
                 const SizedBox(height: 20),
                 // Date Selector Header with Calendar Icon on the right
                 Row(
-                  children: const [
-                    Text('तारीख चुनें', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF1D2939))),
-                    Spacer(),
-                    Icon(Icons.calendar_month_rounded, color: Color(0xFF7F56D9), size: 22),
+                  children: [
+                    Text(AppLocalizations.of(context)!.selectDate, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF1D2939))),
+                    const Spacer(),
+                    const Icon(Icons.calendar_month_rounded, color: Color(0xFF7F56D9), size: 22),
                   ],
                 ),
                 const SizedBox(height: 12),
@@ -1055,7 +1056,7 @@ class _SelectDateTimeScreenState extends State<SelectDateTimeScreen> {
                 ),
                 const SizedBox(height: 24),
                 // Time Slots Header
-                const Text('समय चुनें', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF1D2939))),
+                Text(AppLocalizations.of(context)!.selectTime, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF1D2939))),
                 const SizedBox(height: 12),
                 // Time slots 3-column Grid
                 Column(
@@ -1144,12 +1145,12 @@ class _SelectDateTimeScreenState extends State<SelectDateTimeScreen> {
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                children: const [
-                                  Text('क्लिनिक का समय', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Color(0xFF667085))),
-                                  SizedBox(height: 2),
-                                  Text('सोम - शनि', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: Color(0xFF1D2939))),
-                                  SizedBox(height: 1),
-                                  Text('09:00 AM - 07:00 PM', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w500, color: Color(0xFF667085))),
+                                children: [
+                                  Text(AppLocalizations.of(context)!.clinicHours, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Color(0xFF667085))),
+                                  const SizedBox(height: 2),
+                                  Text(AppLocalizations.of(context)!.clinicDays, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: Color(0xFF1D2939))),
+                                  const SizedBox(height: 1),
+                                  Text(AppLocalizations.of(context)!.clinicTiming, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500, color: Color(0xFF667085))),
                                 ],
                               ),
                             ),
@@ -1181,7 +1182,7 @@ class _SelectDateTimeScreenState extends State<SelectDateTimeScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Text('कंसल्टेशन शुल्क', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Color(0xFF667085))),
+                                  Text(AppLocalizations.of(context)!.consultationFee, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Color(0xFF667085))),
                                   const SizedBox(height: 2),
                                   Text(widget.doctor.fee, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF7F56D9))),
                                 ],
@@ -1225,10 +1226,10 @@ class _SelectDateTimeScreenState extends State<SelectDateTimeScreen> {
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    Text('आगे बढ़ें', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
-                    SizedBox(width: 8),
-                    Icon(Icons.arrow_forward_rounded, size: 20),
+                  children: [
+                    Text(AppLocalizations.of(context)!.nextStep, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+                    const SizedBox(width: 8),
+                    const Icon(Icons.arrow_forward_rounded, size: 20),
                   ],
                 ),
               ),
@@ -1244,19 +1245,19 @@ class _SelectDateTimeScreenState extends State<SelectDateTimeScreen> {
 // Custom Process Stepper Widget
 // ----------------------------------------------
 
-Widget _buildProcessStepper(int activeStep) {
+Widget _buildProcessStepper(BuildContext context, int activeStep) {
   return Container(
     padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
     color: Colors.white,
     child: Row(
       children: [
-        _stepperNode(1, 'डॉक्टर', Icons.person_rounded, activeStep),
+        _stepperNode(1, AppLocalizations.of(context)!.stepperDoctor, Icons.person_rounded, activeStep),
         _stepperLine(1, activeStep),
-        _stepperNode(2, 'समय', Icons.access_time_rounded, activeStep),
+        _stepperNode(2, AppLocalizations.of(context)!.stepperTime, Icons.access_time_rounded, activeStep),
         _stepperLine(2, activeStep),
-        _stepperNode(3, 'जानकारी', Icons.edit_note_rounded, activeStep),
+        _stepperNode(3, AppLocalizations.of(context)!.stepperInfo, Icons.edit_note_rounded, activeStep),
         _stepperLine(3, activeStep),
-        _stepperNode(4, 'पुष्टि', Icons.assignment_turned_in_rounded, activeStep),
+        _stepperNode(4, AppLocalizations.of(context)!.stepperConfirm, Icons.assignment_turned_in_rounded, activeStep),
       ],
     ),
   );
@@ -1402,108 +1403,108 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
-      appBar: _buildAppBar(context, 'अपॉइंटमेंट बुक करें'),
+      appBar: _buildAppBar(context, AppLocalizations.of(context)!.appointmentBooking),
       body: Column(
         children: [
-          _buildProcessStepper(3),
+          _buildProcessStepper(context, 3),
           Expanded(
             child: ListView(
               padding: const EdgeInsets.all(16),
               children: [
-                const Text(
-                  'मरीज़ की जानकारी',
-                  style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: Color(0xFF1D2939)),
+                Text(
+                  AppLocalizations.of(context)!.patientInfo,
+                  style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: Color(0xFF1D2939)),
                 ),
                 const SizedBox(height: 6),
                 
-                _buildFormLabel('पूरा नाम'),
+                _buildFormLabel(AppLocalizations.of(context)!.fullName),
                 _buildInputField(controller: _nameController, prefixIcon: Icons.person_rounded),
 
-                _buildFormLabel('उम्र'),
+                _buildFormLabel(AppLocalizations.of(context)!.age),
                 _buildInputField(controller: _ageController, prefixIcon: Icons.calendar_today_rounded, keyboardType: TextInputType.text),
 
-                _buildFormLabel('लिंग'),
+                _buildFormLabel(AppLocalizations.of(context)!.gender),
                 Row(
                   children: [
                     Expanded(
-                      child: GestureDetector(
-                        onTap: () => setState(() => _gender = 'पुरुष'),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          decoration: BoxDecoration(
-                            color: _gender == 'पुरुष' ? const Color(0xFF7F56D9) : Colors.white,
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: _gender == 'पुरुष' ? const Color(0xFF7F56D9) : const Color(0xFFE2E8F0),
-                              width: 1.5,
+                        child: GestureDetector(
+                          onTap: () => setState(() => _gender = 'पुरुष'),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            decoration: BoxDecoration(
+                              color: _gender == 'पुरुष' ? const Color(0xFF7F56D9) : Colors.white,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: _gender == 'पुरुष' ? const Color(0xFF7F56D9) : const Color(0xFFE2E8F0),
+                                width: 1.5,
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.male_rounded,
+                                  color: _gender == 'पुरुष' ? Colors.white : const Color(0xFF667085),
+                                  size: 18,
+                                ),
+                                const SizedBox(width: 6),
+                                Text(
+                                  AppLocalizations.of(context)!.male,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w800,
+                                    color: _gender == 'पुरुष' ? Colors.white : const Color(0xFF1D2939),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.male_rounded,
-                                color: _gender == 'पुरुष' ? Colors.white : const Color(0xFF667085),
-                                size: 18,
-                              ),
-                              const SizedBox(width: 6),
-                              Text(
-                                'पुरुष',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w800,
-                                  color: _gender == 'पुरुष' ? Colors.white : const Color(0xFF1D2939),
-                                ),
-                              ),
-                            ],
-                          ),
                         ),
-                      ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
-                      child: GestureDetector(
-                        onTap: () => setState(() => _gender = 'महिला'),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          decoration: BoxDecoration(
-                            color: _gender == 'महिला' ? const Color(0xFF7F56D9) : Colors.white,
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: _gender == 'महिला' ? const Color(0xFF7F56D9) : const Color(0xFFE2E8F0),
-                              width: 1.5,
+                        child: GestureDetector(
+                          onTap: () => setState(() => _gender = 'महिला'),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            decoration: BoxDecoration(
+                              color: _gender == 'महिला' ? const Color(0xFF7F56D9) : Colors.white,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: _gender == 'महिला' ? const Color(0xFF7F56D9) : const Color(0xFFE2E8F0),
+                                width: 1.5,
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.female_rounded,
+                                  color: _gender == 'महिला' ? Colors.white : const Color(0xFF667085),
+                                  size: 18,
+                                ),
+                                const SizedBox(width: 6),
+                                Text(
+                                  AppLocalizations.of(context)!.female,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w800,
+                                    color: _gender == 'महिला' ? Colors.white : const Color(0xFF1D2939),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.female_rounded,
-                                color: _gender == 'महिला' ? Colors.white : const Color(0xFF667085),
-                                size: 18,
-                              ),
-                              const SizedBox(width: 6),
-                              Text(
-                                'महिला',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w800,
-                                  color: _gender == 'महिला' ? Colors.white : const Color(0xFF1D2939),
-                                ),
-                              ),
-                            ],
-                          ),
                         ),
-                      ),
                     ),
                   ],
                 ),
 
-                _buildFormLabel('मोबाइल नंबर'),
+                _buildFormLabel(AppLocalizations.of(context)!.mobileNumber),
                 _buildInputField(controller: _phoneController, prefixIcon: Icons.phone_rounded, keyboardType: TextInputType.phone),
 
-                _buildFormLabel('ईमेल (वैकल्पिक)'),
+                _buildFormLabel(AppLocalizations.of(context)!.emailOptional),
                 _buildInputField(controller: _emailController, prefixIcon: Icons.email_rounded, keyboardType: TextInputType.emailAddress),
 
-                _buildFormLabel('समस्या / लक्षण (वैकल्पिक)'),
+                _buildFormLabel(AppLocalizations.of(context)!.symptomsLabel),
                 TextField(
                   controller: _symptomsController,
                   maxLines: 4,
@@ -1564,10 +1565,10 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> {
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    Text('आगे बढ़ें', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
-                    SizedBox(width: 8),
-                    Icon(Icons.arrow_forward_rounded, size: 20),
+                  children: [
+                    Text(AppLocalizations.of(context)!.nextStep, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+                    const SizedBox(width: 8),
+                    const Icon(Icons.arrow_forward_rounded, size: 20),
                   ],
                 ),
               ),
@@ -1613,7 +1614,7 @@ class ReviewAppointmentScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
-      appBar: _buildAppBar(context, 'अपॉइंटमेंट की समीक्षा'),
+      appBar: _buildAppBar(context, AppLocalizations.of(context)!.reviewAppointment),
       body: Column(
         children: [
           Expanded(
@@ -1622,11 +1623,11 @@ class ReviewAppointmentScreen extends StatelessWidget {
               children: [
                 const SizedBox(height: 4),
                 Row(
-                  children: const [
-                    Text('आपका अपॉइंटमेंट विवरण',
-                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: Color(0xFF1D2939))),
-                    Spacer(),
-                    Icon(Icons.calendar_month_rounded, color: Color(0xFF7F56D9), size: 18),
+                  children: [
+                    Text(AppLocalizations.of(context)!.appointmentDetails,
+                      style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: Color(0xFF1D2939))),
+                    const Spacer(),
+                    const Icon(Icons.calendar_month_rounded, color: Color(0xFF7F56D9), size: 18),
                   ],
                 ),
                 const SizedBox(height: 12),
@@ -1686,29 +1687,29 @@ class ReviewAppointmentScreen extends StatelessWidget {
                   ),
                   child: Column(
                     children: [
-                      _detailRow(Icons.calendar_month_rounded, 'तारीख', dateStr, const Color(0xFF7F56D9)),
+                      _detailRow(Icons.calendar_month_rounded, AppLocalizations.of(context)!.date, dateStr, const Color(0xFF7F56D9)),
                       const Padding(
                         padding: EdgeInsets.symmetric(vertical: 10),
                         child: Divider(color: Color(0xFFF1F5F9), height: 1),
                       ),
-                      _detailRow(Icons.access_time_rounded, 'समय', time, const Color(0xFF12B76A)),
+                      _detailRow(Icons.access_time_rounded, AppLocalizations.of(context)!.selectTime, time, const Color(0xFF12B76A)),
                       const Padding(
                         padding: EdgeInsets.symmetric(vertical: 10),
                         child: Divider(color: Color(0xFFF1F5F9), height: 1),
                       ),
-                      _detailRow(Icons.location_on_rounded, 'स्थान', doctor.location, const Color(0xFFE04F5F)),
+                      _detailRow(Icons.location_on_rounded, AppLocalizations.of(context)!.location, doctor.location, const Color(0xFFE04F5F)),
                       const Padding(
                         padding: EdgeInsets.symmetric(vertical: 10),
                         child: Divider(color: Color(0xFFF1F5F9), height: 1),
                       ),
-                      _detailRow(Icons.currency_rupee_rounded, 'कंसल्टेशन शुल्क', doctor.fee, const Color(0xFF7F56D9)),
+                      _detailRow(Icons.currency_rupee_rounded, AppLocalizations.of(context)!.consultationFee, doctor.fee, const Color(0xFF7F56D9)),
                     ],
                   ),
                 ),
                 const SizedBox(height: 20),
 
-                const Text('मरीज़ की जानकारी',
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: Color(0xFF1D2939))),
+                Text(AppLocalizations.of(context)!.patientInfo,
+                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: Color(0xFF1D2939))),
                 const SizedBox(height: 12),
 
                 Container(
@@ -1752,7 +1753,7 @@ class ReviewAppointmentScreen extends StatelessWidget {
                           padding: EdgeInsets.symmetric(vertical: 12),
                           child: Divider(color: Color(0xFFF1F5F9), height: 1),
                         ),
-                        const Text('समस्या / लक्षण', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF7F56D9))),
+                        Text(AppLocalizations.of(context)!.problemSymptoms, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF7F56D9))),
                         const SizedBox(height: 6),
                         Text(symptoms, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: Color(0xFF475467), height: 1.4)),
                       ],
@@ -1769,8 +1770,8 @@ class ReviewAppointmentScreen extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text(
-                  'कन्फर्म करने पर आपको SMS/WhatsApp प्राप्त होगा',
+                Text(
+                  AppLocalizations.of(context)!.confirmNote,
                   style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF667085)),
                 ),
                 const SizedBox(height: 12),
@@ -1794,9 +1795,9 @@ class ReviewAppointmentScreen extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(vertical: 18),
                       elevation: 0,
                     ),
-                    child: const Text(
-                      'अपॉइंटमेंट कन्फर्म करें',
-                      style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
+                    child: Text(
+                      AppLocalizations.of(context)!.confirmAppointment,
+                      style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
                     ),
                   ),
                 ),
@@ -1912,9 +1913,9 @@ class _BookingSuccessScreenState extends State<BookingSuccessScreen>
           icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF1D2939), size: 26),
           onPressed: () => Navigator.of(context).popUntil((route) => route.isFirst),
         ),
-        title: const Text(
-          'अपॉइंटमेंट कन्फर्म',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF1D2939)),
+        title: Text(
+          AppLocalizations.of(context)!.confirmAppointment,
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF1D2939)),
         ),
         centerTitle: false,
       ),
@@ -1964,18 +1965,18 @@ class _BookingSuccessScreenState extends State<BookingSuccessScreen>
                   AnimatedBuilder(
                     animation: _fadeIn,
                     builder: (_, child) => Opacity(opacity: _fadeIn.value, child: child),
-                    child: const Column(
+                    child: Column(
                       children: [
                         Text(
-                          'अपॉइंटमेंट सफलतापूर्वक बुक हो गया!',
+                          AppLocalizations.of(context)!.appointmentSuccess,
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: Color(0xFF12B76A)),
+                          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: Color(0xFF12B76A)),
                         ),
-                        SizedBox(height: 8),
+                        const SizedBox(height: 8),
                         Text(
-                          'आपको SMS और WhatsApp पर जानकारी भेज दी गई है।',
+                          AppLocalizations.of(context)!.appointmentInfoSent,
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xFF667085)),
+                          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xFF667085)),
                         ),
                       ],
                     ),
@@ -2002,9 +2003,9 @@ class _BookingSuccessScreenState extends State<BookingSuccessScreen>
                         children: [
                           Row(
                             children: [
-                              const Text(
-                                'अपॉइंटमेंट विवरण',
-                                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: Color(0xFF1D2939)),
+                              Text(
+                                AppLocalizations.of(context)!.appointmentDetails2,
+                                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: Color(0xFF1D2939)),
                               ),
                               const Spacer(),
                               Container(
@@ -2014,7 +2015,7 @@ class _BookingSuccessScreenState extends State<BookingSuccessScreen>
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Text(
-                                  'ID: $randomId',
+                                  AppLocalizations.of(context)!.appointmentId(randomId),
                                   style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: Color(0xFF027A48)),
                                 ),
                               ),
@@ -2058,7 +2059,7 @@ class _BookingSuccessScreenState extends State<BookingSuccessScreen>
                           const SizedBox(height: 12),
                           _successRow(Icons.location_on_rounded, widget.doctor.location),
                           const SizedBox(height: 12),
-                          _successRow(Icons.currency_rupee_rounded, 'कंसल्टेशन शुल्क: ${widget.doctor.fee}'),
+                          _successRow(Icons.currency_rupee_rounded, '${AppLocalizations.of(context)!.consultationFee}: ${widget.doctor.fee}'),
                         ],
                       ),
                     ),
@@ -2082,8 +2083,8 @@ class _BookingSuccessScreenState extends State<BookingSuccessScreen>
                               padding: const EdgeInsets.symmetric(vertical: 18),
                               elevation: 0,
                             ),
-                            child: const Text(
-                              'मेरे अपॉइंटमेंट देखें',
+                            child: Text(
+                              AppLocalizations.of(context)!.myAppointments,
                               style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
                             ),
                           ),
@@ -2094,7 +2095,7 @@ class _BookingSuccessScreenState extends State<BookingSuccessScreen>
                           child: OutlinedButton.icon(
                             onPressed: () => Navigator.of(context).popUntil((route) => route.isFirst),
                             icon: const Icon(Icons.home_rounded, size: 22),
-                            label: const Text('होम पर जाएँ'),
+                            label: Text(AppLocalizations.of(context)!.goHome),
                             style: OutlinedButton.styleFrom(
                               foregroundColor: const Color(0xFF7F56D9),
                               side: const BorderSide(color: Color(0xFF7F56D9), width: 2),

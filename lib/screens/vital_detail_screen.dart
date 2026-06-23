@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:meditrack/l10n/app_localizations.dart';
 
 enum VitalType {
   bloodPressure,
@@ -218,7 +219,7 @@ class _VitalDetailScreenState extends State<VitalDetailScreen> {
                       ),
                       const SizedBox(width: 12),
                       Text(
-                        'आज का नवीनतम',
+                        AppLocalizations.of(context)!.todayLatest,
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w600,
@@ -239,7 +240,7 @@ class _VitalDetailScreenState extends State<VitalDetailScreen> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '$_unit • ${latest.time} पर लिया गया',
+                    AppLocalizations.of(context)!.takenAt(_unit, latest.time),
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
@@ -297,8 +298,8 @@ class _VitalDetailScreenState extends State<VitalDetailScreen> {
               children: [
                 Icon(Icons.assignment_rounded, size: 18, color: _accentColor),
                 const SizedBox(width: 8),
-                const Text(
-                  'आज का सारांश',
+                Text(
+                  AppLocalizations.of(context)!.todaySummary,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
@@ -308,11 +309,11 @@ class _VitalDetailScreenState extends State<VitalDetailScreen> {
               ],
             ),
             const SizedBox(height: 14),
-            _buildSummaryRow(Icons.check_circle_outline, 'कुल ${_readings.length} बार जाँच किया गया'),
+            _buildSummaryRow(Icons.check_circle_outline, AppLocalizations.of(context)!.checkedCount('${_readings.length}')),
             const SizedBox(height: 10),
-            _buildSummaryRow(Icons.schedule_rounded, 'नवीनतम रीडिंग: ${latest.time}'),
+            _buildSummaryRow(Icons.schedule_rounded, AppLocalizations.of(context)!.latestReading(latest.time)),
             const SizedBox(height: 10),
-            _buildSummaryRow(Icons.emoji_emotions_outlined, 'समग्र स्थिति: सामान्य'),
+            _buildSummaryRow(Icons.emoji_emotions_outlined, AppLocalizations.of(context)!.overallStatus),
           ],
         ),
       ),
@@ -353,8 +354,8 @@ class _VitalDetailScreenState extends State<VitalDetailScreen> {
                 ),
               ),
               const SizedBox(width: 10),
-              const Text(
-                'आज की रीडिंग्स',
+              Text(
+                AppLocalizations.of(context)!.todayReadings,
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w800,
@@ -510,7 +511,7 @@ class _VitalDetailScreenState extends State<VitalDetailScreen> {
               ),
               const SizedBox(width: 10),
               Text(
-                'आज का $_title ट्रेंड',
+                AppLocalizations.of(context)!.todayTrend(_title),
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w800,
@@ -569,7 +570,7 @@ class _VitalDetailScreenState extends State<VitalDetailScreen> {
             onPressed: _showAddReadingDialog,
             icon: const Icon(Icons.add_rounded, color: Colors.white, size: 24),
             label: Text(
-              '+ $_title रीडिंग जोड़ें',
+              AppLocalizations.of(context)!.addReading(_title),
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
@@ -622,7 +623,7 @@ class _VitalDetailScreenState extends State<VitalDetailScreen> {
             ),
             const SizedBox(height: 20),
             Text(
-              'नई $_title रीडिंग',
+              AppLocalizations.of(context)!.newReading(_title),
               style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w800,
@@ -634,8 +635,8 @@ class _VitalDetailScreenState extends State<VitalDetailScreen> {
               controller: valueController,
               keyboardType: widget.vitalType == VitalType.bloodPressure ? TextInputType.text : TextInputType.number,
               decoration: InputDecoration(
-                labelText: 'मान ($_unit)',
-                hintText: 'उदा: ${_getExampleValue()}',
+                labelText: AppLocalizations.of(context)!.valueIn(_unit),
+                hintText: AppLocalizations.of(context)!.egValue(_getExampleValue()),
                 filled: true,
                 fillColor: const Color(0xFFF8FAFC),
                 border: OutlineInputBorder(
@@ -678,7 +679,7 @@ class _VitalDetailScreenState extends State<VitalDetailScreen> {
               controller: noteController,
               maxLines: 2,
               decoration: InputDecoration(
-                hintText: 'नोट (वैकल्पिक)',
+                hintText: AppLocalizations.of(context)!.noteOptional,
                 filled: true,
                 fillColor: const Color(0xFFF8FAFC),
                 border: OutlineInputBorder(
@@ -714,7 +715,7 @@ class _VitalDetailScreenState extends State<VitalDetailScreen> {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(
-                        '$_title रीडिंग सहेज ली गई है',
+                        AppLocalizations.of(context)!.readingSaved(_title),
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                       backgroundColor: _accentColor,
@@ -728,8 +729,8 @@ class _VitalDetailScreenState extends State<VitalDetailScreen> {
                   elevation: 0,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                 ),
-                child: const Text(
-                  'रीडिंग सेव करें',
+                child: Text(
+                  AppLocalizations.of(context)!.saveReading,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w800,

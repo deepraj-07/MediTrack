@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import 'package:google_fonts/google_fonts.dart';
+import 'package:meditrack/l10n/app_localizations.dart';
 import 'doctor_appointment_screen.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -68,9 +69,9 @@ class HomeScreen extends StatelessWidget {
                           shaderCallback: (bounds) => const LinearGradient(
                             colors: [Color(0xFF6C4DFF), Color(0xFF8A5FFF)],
                           ).createShader(bounds),
-                          child: const Text(
-                            'MediTrack',
-                            style: TextStyle(
+                          child: Text(
+                            AppLocalizations.of(context)!.appTitle,
+                            style: const TextStyle(
                               fontFamily: 'Outfit',
                               fontSize: 24,
                               fontWeight: FontWeight.w700,
@@ -142,7 +143,7 @@ class HomeScreen extends StatelessWidget {
               children: [
                 const SizedBox(height: 16),
                 // Greeting Section — scrolls with content
-                _buildGreetingHeader(),
+                _buildGreetingHeader(context),
                 const SizedBox(height: 20),
                 // Health Status Hero Card (Purple Gradient)
                 _buildHealthStatusCard(context),
@@ -163,7 +164,7 @@ class HomeScreen extends StatelessWidget {
                 const SizedBox(height: 20),
                 
                 // Emergency SOS Card
-                _buildEmergencyCard(),
+                _buildEmergencyCard(context),
               ],
             ),
           ),
@@ -173,7 +174,7 @@ class HomeScreen extends StatelessWidget {
   }
 
   // Header Greeting Section
-  Widget _buildGreetingHeader() {
+  Widget _buildGreetingHeader(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Row(
@@ -204,26 +205,26 @@ class HomeScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
-                  children: const [
+                  children: [
                     Text(
-                      'नमस्ते रमेश जी',
-                      style: TextStyle(
+                      AppLocalizations.of(context)!.greeting,
+                      style: const TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.w800,
                         color: Color(0xFF1D2939),
                       ),
                     ),
-                    SizedBox(width: 4),
-                    Text(
+                    const SizedBox(width: 4),
+                    const Text(
                       '👋',
                       style: TextStyle(fontSize: 22),
                     ),
                   ],
                 ),
                 const SizedBox(height: 2),
-                const Text(
-                  'आशा है आप स्वस्थ हैं!',
-                  style: TextStyle(
+                Text(
+                  AppLocalizations.of(context)!.greetingSubtitle,
+                  style: const TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w500,
                     color: Color(0xFF475467),
@@ -251,12 +252,12 @@ class HomeScreen extends StatelessWidget {
                 ],
               ),
               child: Row(
-                children: const [
-                  Icon(Icons.person_add_rounded, size: 14, color: Colors.white),
-                  SizedBox(width: 4),
+                children: [
+                  const Icon(Icons.person_add_rounded, size: 14, color: Colors.white),
+                  const SizedBox(width: 4),
                   Text(
-                    'प्रोफाइल',
-                    style: TextStyle(
+                    AppLocalizations.of(context)!.profile,
+                    style: const TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
@@ -331,37 +332,37 @@ class HomeScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
+                      children: [
                         Text(
-                          'स्वास्थ्य स्थिति',
-                          style: TextStyle(
+                          AppLocalizations.of(context)!.healthStatus,
+                          style: const TextStyle(
                             color: Colors.white70,
                             fontSize: 13,
                             fontWeight: FontWeight.w500,
                             letterSpacing: 0.5,
                           ),
                         ),
-                        SizedBox(height: 2),
+                        const SizedBox(height: 2),
                         Text(
-                          'अच्छा है 🙂',
-                          style: TextStyle(
+                          AppLocalizations.of(context)!.healthStatusValue,
+                          style: const TextStyle(
                             color: Color(0xFF86EFAC), // Bright Lime Green
                             fontSize: 22,
                             fontWeight: FontWeight.w800,
                           ),
                         ),
-                        SizedBox(height: 6),
+                        const SizedBox(height: 6),
                         Text(
-                          'आज आपकी तबीयत सामान्य है!',
-                          style: TextStyle(
+                          AppLocalizations.of(context)!.healthMessage1,
+                          style: const TextStyle(
                             color: Colors.white70,
                             fontSize: 13,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
                         Text(
-                          'ऐसे ही ध्यान रखें!',
-                          style: TextStyle(
+                          AppLocalizations.of(context)!.healthMessage2,
+                          style: const TextStyle(
                             color: Colors.white60,
                             fontSize: 12,
                           ),
@@ -406,7 +407,7 @@ class HomeScreen extends StatelessWidget {
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
-                  'आज के महत्वपूर्ण आंकड़े',
+                  AppLocalizations.of(context)!.todayVitals,
                   style: GoogleFonts.outfit(
                     fontSize: 18,
                     fontWeight: FontWeight.w800,
@@ -419,7 +420,7 @@ class HomeScreen extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
                   child: Text(
-                    'सभी देखें ›',
+                    AppLocalizations.of(context)!.seeAll,
                     style: GoogleFonts.outfit(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
@@ -440,9 +441,10 @@ class HomeScreen extends StatelessWidget {
           child: Row(
             children: [
               _buildVitalCard(
-                title: 'BP',
+                context: context,
+                title: AppLocalizations.of(context)!.bp,
                 value: '120/80',
-                unit: 'mmHg',
+                unit: AppLocalizations.of(context)!.unitMmhg,
                 leadingWidget: const HeartPulseIcon(
                   color: Color(0xFFF43F5E),
                   size: 16,
@@ -453,9 +455,10 @@ class HomeScreen extends StatelessWidget {
               ),
               const SizedBox(width: 12),
               _buildVitalCard(
-                title: 'शुगर',
+                context: context,
+                title: AppLocalizations.of(context)!.sugar,
                 value: '98',
-                unit: 'mg/dL',
+                unit: AppLocalizations.of(context)!.unitMgdl,
                 leadingWidget: const Icon(
                   Icons.water_drop_rounded,
                   color: Color(0xFF3B82F6),
@@ -467,6 +470,7 @@ class HomeScreen extends StatelessWidget {
               ),
               const SizedBox(width: 12),
               _buildVitalCard(
+                context: context,
                 title: 'SpO₂',
                 value: '98%',
                 leadingWidget: RichText(
@@ -497,7 +501,8 @@ class HomeScreen extends StatelessWidget {
               ),
               const SizedBox(width: 12),
               _buildVitalCard(
-                title: 'तापमान',
+                context: context,
+                title: AppLocalizations.of(context)!.temperature,
                 value: '98.6°F',
                 leadingWidget: const Icon(
                   Icons.thermostat_rounded,
@@ -516,6 +521,7 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildVitalCard({
+    required BuildContext context,
     required String title,
     required String value,
     String? unit,
@@ -569,7 +575,7 @@ class HomeScreen extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (unit != null && title == 'शुगर') ...[
+                if (unit != null && title == AppLocalizations.of(context)!.sugar) ...[
                   // Sugar inline layout matching screenshot: "98 mg/dL"
                   RichText(
                     text: TextSpan(
@@ -640,9 +646,9 @@ class HomeScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 4),
-                    const Text(
-                      'सामान्य',
-                      style: TextStyle(
+                    Text(
+                      AppLocalizations.of(context)!.normal,
+                      style: const TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w800,
                         color: Color(0xFF12B76A),
@@ -685,16 +691,16 @@ class HomeScreen extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      'आज की अगली दवा',
-                      style: TextStyle(
+                    Text(
+                      AppLocalizations.of(context)!.todayNextMedicine,
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w800,
                         color: Color(0xFF1D2939),
                       ),
                     ),
                     Text(
-                      nextMedicine['time'] ?? '08:00 AM',
+                      nextMedicine['time'] ?? AppLocalizations.of(context)!.medicineDefaultTime,
                       style: const TextStyle(
                         fontFamily: 'Outfit',
                         fontSize: 15,
@@ -727,7 +733,7 @@ class HomeScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            nextMedicine['name'] ?? 'Metformin 500mg',
+                            nextMedicine['name'] ?? AppLocalizations.of(context)!.medicineDefaultName,
                             style: const TextStyle(
                               fontFamily: 'Outfit',
                               fontSize: 18,
@@ -737,7 +743,7 @@ class HomeScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 2),
                           Text(
-                            nextMedicine['instruction'] ?? '1 गोली - नाश्ते के बाद',
+                            nextMedicine['instruction'] ?? AppLocalizations.of(context)!.medicineDefaultInstruction,
                             style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
@@ -808,7 +814,7 @@ class HomeScreen extends StatelessWidget {
                     const SizedBox(width: 14),
                     Expanded(
                       child: Text(
-                        '$medicineTakenCount/$medicineTotalCount दवाइयाँ ली गईं',
+                        AppLocalizations.of(context)!.medicineProgress(medicineTakenCount.toString(), medicineTotalCount.toString()),
                         style: const TextStyle(
                           fontFamily: 'Outfit',
                           fontSize: 15,
@@ -844,7 +850,7 @@ class HomeScreen extends StatelessWidget {
   }
 
   // Emergency SOS section matching the mockup pill SOS layout
-  Widget _buildEmergencyCard() {
+  Widget _buildEmergencyCard(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Container(
@@ -867,19 +873,19 @@ class HomeScreen extends StatelessWidget {
             // Title and description
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
+              children: [
                 Text(
-                  'आपातकालीन मदद',
-                  style: TextStyle(
+                  AppLocalizations.of(context)!.emergencyHelp,
+                  style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w800,
                     color: Color(0xFFD92D20),
                   ),
                 ),
-                SizedBox(height: 2),
+                const SizedBox(height: 2),
                 Text(
-                  'आपातकालीन स्थिति में यहाँ दबाएँ',
-                  style: TextStyle(
+                  AppLocalizations.of(context)!.emergencySubtitle,
+                  style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                     color: Color(0xFF475467),
@@ -906,16 +912,16 @@ class HomeScreen extends StatelessWidget {
                   ],
                 ),
                 child: Row(
-                  children: const [
-                    Icon(
+                  children: [
+                    const Icon(
                       Icons.notifications_active_rounded,
                       color: Colors.white,
                       size: 20,
                     ),
-                    SizedBox(width: 8),
+                    const SizedBox(width: 8),
                     Text(
-                      'SOS',
-                      style: TextStyle(
+                      AppLocalizations.of(context)!.sosButton,
+                      style: const TextStyle(
                         fontFamily: 'Outfit',
                         color: Colors.white,
                         fontSize: 16,
@@ -937,40 +943,40 @@ class HomeScreen extends StatelessWidget {
     final quickItems = [
       _QuickAccessItem(
         icon: DoctorIcon(size: 20),
-        label: 'Doctor\nAppointment',
+        label: AppLocalizations.of(context)!.quickDoctor,
         circleColor: const Color(0xFF6C4DFF),
         chevronBgColor: const Color(0xFFF1EEFF),
         chevronIconColor: const Color(0xFF6C4DFF),
         onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ChooseDoctorScreen())),
       ),
-      const _QuickAccessItem(
-        icon: MedicalFolderIcon(size: 20),
-        label: 'Medical\nRecords',
-        circleColor: Color(0xFF00B050),
-        chevronBgColor: Color(0xFFE6F7ED),
-        chevronIconColor: Color(0xFF00B050),
+      _QuickAccessItem(
+        icon: const MedicalFolderIcon(size: 20),
+        label: AppLocalizations.of(context)!.quickRecords,
+        circleColor: const Color(0xFF00B050),
+        chevronBgColor: const Color(0xFFE6F7ED),
+        chevronIconColor: const Color(0xFF00B050),
       ),
-      const _QuickAccessItem(
-        icon: Icon(Icons.people_alt_rounded, color: Colors.white, size: 20),
-        label: 'Family\nConnect',
-        circleColor: Color(0xFF2E82FF),
-        chevronBgColor: Color(0xFFEFF6FF),
-        chevronIconColor: Color(0xFF2E82FF),
+      _QuickAccessItem(
+        icon: const Icon(Icons.people_alt_rounded, color: Colors.white, size: 20),
+        label: AppLocalizations.of(context)!.quickFamily,
+        circleColor: const Color(0xFF2E82FF),
+        chevronBgColor: const Color(0xFFEFF6FF),
+        chevronIconColor: const Color(0xFF2E82FF),
       ),
-      const _QuickAccessItem(
-        icon: HealthReportChartIcon(size: 20),
-        label: 'My Health\nReport',
-        circleColor: Color(0xFF8A5FFF),
-        chevronBgColor: Color(0xFFF5F1FF),
-        chevronIconColor: Color(0xFF8A5FFF),
+      _QuickAccessItem(
+        icon: const HealthReportChartIcon(size: 20),
+        label: AppLocalizations.of(context)!.quickReport,
+        circleColor: const Color(0xFF8A5FFF),
+        chevronBgColor: const Color(0xFFF5F1FF),
+        chevronIconColor: const Color(0xFF8A5FFF),
         isNew: true,
       ),
-      const _QuickAccessItem(
-        icon: Icon(Icons.lightbulb_outline_rounded, color: Colors.white, size: 20),
-        label: 'Health\nTips',
-        circleColor: Color(0xFFFF9800),
-        chevronBgColor: Color(0xFFFFF7ED),
-        chevronIconColor: Color(0xFFFF9800),
+      _QuickAccessItem(
+        icon: const Icon(Icons.lightbulb_outline_rounded, color: Colors.white, size: 20),
+        label: AppLocalizations.of(context)!.quickTips,
+        circleColor: const Color(0xFFFF9800),
+        chevronBgColor: const Color(0xFFFFF7ED),
+        chevronIconColor: const Color(0xFFFF9800),
       ),
     ];
 
@@ -993,7 +999,7 @@ class HomeScreen extends StatelessWidget {
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
-                  'Quick Access',
+                  AppLocalizations.of(context)!.quickAccess,
                   style: GoogleFonts.outfit(
                     fontSize: 20,
                     fontWeight: FontWeight.w700,
@@ -1006,7 +1012,7 @@ class HomeScreen extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
                   child: Text(
-                    'सभी विकल्प देखें ›',
+                    AppLocalizations.of(context)!.seeAllOptions,
                     style: GoogleFonts.outfit(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
@@ -1186,7 +1192,7 @@ class _QuickAccessCardState extends State<_QuickAccessCard>
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(
-                    'NEW',
+                    AppLocalizations.of(context)!.badgeNew,
                     style: GoogleFonts.outfit(
                       color: Colors.white,
                       fontSize: 9,

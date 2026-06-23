@@ -1,0 +1,344 @@
+{
+  "@@locale": "en",
+  "appTitle": "MediTrack",
+  "appName": "MediTrack",
+
+  "@_Navigation": "Navigation",
+  "navHome": "Home",
+  "navVitals": "Vitals",
+  "navMedicines": "Medicines",
+  "navProfile": "Profile",
+
+  "@_Common": "Common",
+  "seeAll": "See all ›",
+  "seeAllOptions": "See all options ›",
+  "seeAllGt": "See all >",
+  "normal": "Normal",
+  "taken": "Taken",
+  "pending": "Pending",
+  "all": "All",
+  "save": "Save",
+  "cancel": "Cancel",
+  "done": "Done",
+  "add": "Add",
+  "back": "Back",
+  "confirm": "Confirm",
+
+  "@_HomeScreen": "Home Screen",
+  "greeting": "Hello Ramesh ji",
+  "greetingSuffix": "👋",
+  "greetingSubtitle": "Hope you are healthy!",
+  "profile": "Profile",
+  "healthStatus": "Health Status",
+  "healthStatusValue": "Good 🙂",
+  "healthMessage1": "Your health is normal today!",
+  "healthMessage2": "Keep it up!",
+  "todayVitals": "Today's Important Vitals",
+  "todayNextMedicine": "Today's Next Medicine",
+  "emergencyHelp": "Emergency Help",
+  "emergencySubtitle": "Press here in emergency",
+  "sosButton": "SOS",
+  "medicineProgress": "{count}/{total} medicines taken",
+  "@medicineProgress": {
+    "placeholders": {
+      "count": {},
+      "total": {}
+    }
+  },
+  "medicineDefaultName": "Metformin 500mg",
+  "medicineDefaultInstruction": "1 pill - after breakfast",
+  "medicineDefaultTime": "08:00 AM",
+
+  "@_QuickAccess": "Quick Access",
+  "quickAccess": "Quick Access",
+  "quickDoctor": "Doctor\nAppointment",
+  "quickRecords": "Medical\nRecords",
+  "quickFamily": "Family\nConnect",
+  "quickReport": "My Health\nReport",
+  "quickTips": "Health\nTips",
+  "badgeNew": "NEW",
+
+  "@_Vitals": "Vitals",
+  "vitalsTitle": "My Vitals",
+  "bp": "BP",
+  "bpFull": "Blood Pressure (BP)",
+  "sugar": "Sugar",
+  "sugarFull": "Sugar (Blood Glucose)",
+  "oxygen": "SpO₂",
+  "oxygenFull": "Oxygen (SpO₂)",
+  "temperature": "Temperature",
+  "temperatureFull": "Temperature",
+  "unitMmhg": "mmHg",
+  "unitMgdl": "mg/dL",
+  "unitPercent": "%",
+  "unitF": "°F",
+  "periodDay": "Day",
+  "periodWeek": "Week",
+  "periodMonth": "Month",
+  "periodYear": "Year",
+  "today": "Today",
+  "yesterday": "Yesterday",
+  "tomorrow": "Tomorrow",
+
+  "@_VitalDetail": "Vital Detail",
+  "todayLatest": "Today's Latest",
+  "todaySummary": "Today's Summary",
+  "todayReadings": "Today's Readings",
+  "todayTrend": "Today's {title} Trend",
+  "@todayTrend": {
+    "placeholders": {
+      "title": {}
+    }
+  },
+  "addReading": "+ {title} Reading",
+  "@addReading": {
+    "placeholders": {
+      "title": {}
+    }
+  },
+  "newReading": "New {title} Reading",
+  "@newReading": {
+    "placeholders": {
+      "title": {}
+    }
+  },
+  "valueIn": "Value ({unit})",
+  "@valueIn": {
+    "placeholders": {
+      "unit": {}
+    }
+  },
+  "egValue": "e.g. {value}",
+  "@egValue": {
+    "placeholders": {
+      "value": {}
+    }
+  },
+  "noteOptional": "Note (optional)",
+  "readingSaved": "{title} Reading saved",
+  "@readingSaved": {
+    "placeholders": {
+      "title": {}
+    }
+  },
+  "saveReading": "Save Reading",
+  "takenAt": "{unit} • Taken at {time}",
+  "@takenAt": {
+    "placeholders": {
+      "unit": {},
+      "time": {}
+    }
+  },
+  "checkedCount": "Checked {count} times",
+  "@checkedCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "latestReading": "Latest reading: {time}",
+  "@latestReading": {
+    "placeholders": {
+      "time": {}
+    }
+  },
+  "overallStatus": "Overall status: Normal",
+
+  "@_Medicines": "Medicines",
+  "medicinesTitle": "Medicines & Reminders",
+  "todayMedicines": "Today's Medicines",
+  "addMedicine": "Add New Medicine",
+  "addMedicineSubtitle": "Set medicine time and reminder",
+  "medicineName": "Medicine Name",
+  "medicineNameHint": "e.g. Telmisartan 40mg",
+  "time": "Time",
+  "dose": "Dose",
+  "doseHint": "e.g. 1 pill",
+  "instruction": "Instruction",
+  "instructionAfterBreakfast": "After breakfast",
+  "instructionAfterLunch": "After lunch",
+  "instructionAfterDinner": "After dinner",
+  "instructionBeforeSleep": "Before sleep",
+  "instructionEmptyStomach": "Empty stomach",
+  "scheduleMedicine": "Schedule Medicine",
+  "noMedicines": "No medicines found",
+  "noMedicinesSubtitle": "Add new medicine using the button below.",
+  "filterTaken": "Taken",
+  "filterPending": "Active",
+  "filterAll": "All",
+
+  "@_DoctorAppointment": "Doctor Appointment",
+  "doctorAppointment": "Doctor Appointment",
+  "appointmentBooking": "Book Appointment",
+  "bannerTitle": "Meet the right\ndoctor, live healthy",
+  "bannerSubtitle": "Choose a doctor\naccording to your condition",
+  "searchDoctorHint": "Search doctor, specialty or symptom...",
+  "searchDoctor": "Search Doctor",
+  "bySpecialty": "By Specialty",
+  "popularDoctors": "Popular Doctors",
+  "doctorCount": "{count} doctors",
+  "@doctorCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "selectDate": "Select Date",
+  "selectTime": "Select Time",
+  "clinicHours": "Clinic Hours",
+  "clinicDays": "Mon - Sat",
+  "clinicTiming": "09:00 AM - 07:00 PM",
+  "consultationFee": "Consultation Fee",
+  "nextStep": "Next Step",
+  "patientInfo": "Patient Information",
+  "fullName": "Full Name",
+  "age": "Age",
+  "gender": "Gender",
+  "male": "Male",
+  "female": "Female",
+  "mobileNumber": "Mobile Number",
+  "emailOptional": "Email (optional)",
+  "symptomsLabel": "Problem / Symptoms (optional)",
+  "reviewAppointment": "Review Appointment",
+  "appointmentDetails": "Your Appointment Details",
+  "date": "Date",
+  "location": "Location",
+  "problemSymptoms": "Problem / Symptoms",
+  "confirmNote": "You will receive SMS/WhatsApp on confirmation",
+  "confirmAppointment": "Confirm Appointment",
+  "appointmentSuccess": "Appointment booked successfully!",
+  "appointmentInfoSent": "Information has been sent via SMS and WhatsApp.",
+  "appointmentDetails2": "Appointment Details",
+  "appointmentId": "ID: {id}",
+  "@appointmentId": {
+    "placeholders": {
+      "id": {}
+    }
+  },
+  "myAppointments": "My Appointments",
+  "goHome": "Go to Home",
+  "stepperDoctor": "Doctor",
+  "stepperTime": "Time",
+  "stepperInfo": "Info",
+  "stepperConfirm": "Confirm",
+
+  "@_Specialties": "Specialties",
+  "specCardiology": "Cardiology",
+  "specCardiologyFull": "Cardiology",
+  "specGeneralPhysician": "General Physician",
+  "specGeneralPhysicianFull": "General\nPhysician",
+  "specDiabetes": "Diabetes Specialist",
+  "specDiabetesFull": "Diabetes\nSpecialist",
+  "specOrthopedic": "Orthopedic",
+  "specOrthopedicFull": "Orthopedic",
+
+  "@_Notifications": "Notifications",
+  "notifications": "Notifications",
+  "newNotifications": "{count} new notifications",
+  "@newNotifications": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "markAllRead": "Mark all read",
+  "noNotifications": "No notifications",
+
+  "@_SOS": "Emergency SOS",
+  "emergencyAlert": "Emergency Alert",
+  "sosSending": "Sending help message...",
+  "sosInforming": "Doctor and your family are being notified immediately.",
+  "sosCancel": "Cancel",
+  "sosSent": "Alert sent!",
+  "sosDontWorry": "Don't worry Ramesh ji.",
+  "sosSmsSent": "SMS sent to son Amit.",
+  "sosCallingDoctor": "Calling Dr. R. K. Gupta.",
+  "sosLocationShared": "Your location (New Delhi) has been shared.",
+  "sosClose": "OK (Close)",
+  "sosCancelled": "Emergency alert cancelled.",
+  "sosAlertTitle": "SOS Alert Sent",
+  "emergencyContacts": "Emergency Contacts (Caretakers)",
+
+  "@_Profile": "Profile",
+  "myProfile": "My Profile",
+  "userName": "Ramesh Kumar Sharma",
+  "userInfo": "Age: 70 yrs | Gender: Male",
+  "bloodGroup": "Blood Group:",
+  "height": "Height:",
+  "weight": "Weight:",
+  "city": "City:",
+  "bloodGroupVal": "O+ Pos",
+  "heightVal": "170 cm",
+  "weightVal": "72 kg",
+  "cityVal": "New Delhi",
+
+  "@_VoiceAssistant": "Voice Assistant",
+  "voiceListening": "Listening...",
+  "voicePrompt": "Please speak (e.g. 'medicine', 'BP', 'help', 'home')",
+  "voiceProcessing": "Processing...",
+  "voiceTranscript": "...",
+  "voiceAssistantTitle": "MediTrack Voice Assistant",
+  "voiceMedicine": "💊 Medicines",
+  "voiceVitals": "📊 Vitals",
+  "voiceSos": "🚨 Help (SOS)",
+  "voiceHome": "🏠 Home",
+  "voiceCmdMedicine": "Open medicines screen",
+  "voiceCmdVitals": "Show reports",
+  "voiceCmdSos": "I need help",
+  "voiceCmdHome": "Go home",
+  "voiceRespMedicine": "Opening medicines screen",
+  "voiceRespVitals": "Showing your vitals",
+  "voiceRespSos": "Emergency alert is being started!",
+  "voiceRespHome": "Opening home dashboard",
+  "voiceRespFallback": "Sorry, I didn't understand.",
+  "voiceKeywordMedicine": "medicine",
+  "voiceKeywordVital": "vital",
+  "voiceKeywordReport": "report",
+  "voiceKeywordSos": "sos",
+  "voiceKeywordHelp": "help",
+  "voiceKeywordHome": "home",
+  "voiceKeywordDashboard": "dashboard",
+
+  "@_Language": "Language",
+  "selectLanguage": "Select Language",
+  "languageEnglish": "English",
+  "languageHindi": "हिन्दी",
+  "english": "English",
+  "hindi": "हिन्दी",
+
+  "@_Caretaker": "Caretaker",
+  "caretakerSon": "Amit Sharma (Son)",
+  "caretakerDoctor": "Dr. R. K. Gupta (Family Doctor)",
+  "phoneAmit": "+91 98765 43210",
+  "phoneDoctor": "+91 99999 88888",
+
+  "@_MedicineData": "Medicine Data",
+  "medMetformin": "Metformin 500mg",
+  "medTelmisartan": "Telmisartan 40mg",
+  "medVitaminD3": "Vitamin D3",
+  "medAtorvastatin": "Atorvastatin 10mg",
+  "dose1Pill": "1 pill",
+  "instAfterBreakfast": "After breakfast",
+  "instAfterLunch": "After lunch",
+  "instAfterDinner": "After dinner",
+  "instBeforeSleep": "Before sleep",
+
+  "@_DoctorData": "Doctor Data",
+  "drRajatSharma": "Dr. Rajat Sharma",
+  "drNehaVerma": "Dr. Neha Verma",
+  "drAmitPatel": "Dr. Amit Patel",
+  "specRajat": "MBBS, MD (Cardiology)\nCardiologist",
+  "specNeha": "MBBS, MD (General Medicine)\nGeneral Physician",
+  "specAmit": "MBBS, MS (Orthopedics)\nOrthopedic Surgeon",
+  "exp10plus": "10+ years experience",
+  "exp8plus": "8+ years experience",
+  "exp12plus": "12+ years experience",
+  "fee500": "₹500",
+  "fee400": "₹400",
+  "fee600": "₹600",
+  "locHeartCare": "Heart Care Clinic\nCivil Lines, Jaipur, Rajasthan",
+  "locLifeCare": "Life Care Clinic\nMalviya Nagar, Jaipur, Rajasthan",
+  "locOrthofit": "Orthofit Clinic\nVaishali Nagar, Jaipur, Rajasthan",
+  "patientName": "Ram Sharma",
+  "patientAge": "58 years",
+  "patientPhone": "+91 98765 43210",
+  "patientEmail": "ram.sharma@email.com",
+  "patientSymptoms": "Chest pain, fatigue, and shortness of breath."
+}

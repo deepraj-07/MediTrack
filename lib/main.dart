@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:meditrack/l10n/app_localizations.dart';
 import 'screens/home_screen.dart';
 import 'screens/vitals_screen.dart';
 import 'screens/medicines_screen.dart';
 import 'screens/vital_detail_screen.dart';
 import 'screens/notifications_screen.dart';
+import 'screens/language_settings_screen.dart';
 import 'dart:async';
 import 'dart:math' as math;
 import 'package:flutter/services.dart';
@@ -21,14 +24,49 @@ void main() {
   runApp(const MediTrackApp());
 }
 
-class MediTrackApp extends StatelessWidget {
+class MediTrackApp extends StatefulWidget {
   const MediTrackApp({super.key});
+
+  @override
+  State<MediTrackApp> createState() => _MediTrackAppState();
+}
+
+class _MediTrackAppState extends State<MediTrackApp> {
+  Locale _locale = const Locale('hi');
+
+  @override
+  void initState() {
+    super.initState();
+    _loadLocale();
+  }
+
+  Future<void> _loadLocale() async {
+    final prefs = await SharedPreferences.getInstance();
+    final code = prefs.getString('locale') ?? 'hi';
+    if (mounted) {
+      setState(() {
+        _locale = Locale(code);
+      });
+    }
+  }
+
+  void _setLocale(Locale locale) {
+    setState(() {
+      _locale = locale;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'MediTrack',
       debugShowCheckedModeBanner: false,
+      locale: _locale,
+      supportedLocales: const [
+        Locale('en'),
+        Locale('hi'),
+      ],
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
@@ -49,13 +87,23 @@ class MediTrackApp extends StatelessWidget {
           ),
         ),
       ),
-      home: const MainShell(),
+      home: MainShell(
+        locale: _locale,
+        onLocaleChanged: _setLocale,
+      ),
     );
   }
 }
 
 class MainShell extends StatefulWidget {
-  const MainShell({super.key});
+  final Locale locale;
+  final ValueChanged<Locale> onLocaleChanged;
+
+  const MainShell({
+    super.key,
+    required this.locale,
+    required this.onLocaleChanged,
+  });
 
   @override
   State<MainShell> createState() => _MainShellState();
@@ -298,10 +346,10 @@ class _MainShellState extends State<MainShell> {
       _isSosCountdownActive = false;
     });
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
+      SnackBar(
         content: Text(
-          'आपातकालीन अलर्ट रद्द कर दिया गया है।',
-          style: TextStyle(fontWeight: FontWeight.bold),
+          AppLocalizations.of(context)!.sosCancelled,
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         backgroundColor: Colors.grey,
         behavior: SnackBarBehavior.floating,
@@ -455,18 +503,18 @@ class _MainShellState extends State<MainShell> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _buildNavItem(0, 'होम', icon: Icons.home_rounded),
-                _buildNavItem(1, 'आँकड़े', icon: Icons.favorite_rounded),
+                _buildNavItem(0, AppLocalizations.of(context)!.navHome, icon: Icons.home_rounded),
+                _buildNavItem(1, AppLocalizations.of(context)!.navVitals, icon: Icons.favorite_rounded),
                 const SizedBox(width: 68),
                 _buildNavItem(
                   3,
-                  'दवाइयाँ',
+                  AppLocalizations.of(context)!.navMedicines,
                   customIcon: CapsuleIcon(
                     color: _currentIndex == 3 ? const Color(0xFF6C4DFF) : const Color(0xFFB0B7C3),
                     size: 22,
                   ),
                 ),
-                _buildNavItem(4, 'प्रोफाइल', icon: Icons.person_rounded),
+                _buildNavItem(4, AppLocalizations.of(context)!.navProfile, icon: Icons.person_rounded),
               ],
             ),
           ),
@@ -574,9 +622,9 @@ class _MainShellState extends State<MainShell> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    'MediTrack Voice Assistant',
-                    style: TextStyle(
+                  Text(
+                    AppLocalizations.of(context)!.voiceAssistantTitle,
+                    style: const TextStyle(
                       fontFamily: 'Outfit',
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
@@ -639,29 +687,29 @@ class _MainShellState extends State<MainShell> {
                 spacing: 10,
                 children: [
                   ActionChip(
-                    label: const Text('💊 दवाइयाँ'),
-                    onPressed: () => _processVoiceCommand('दवाइयाँ स्क्रीन खोलो'),
+                    label: Text(AppLocalizations.of(context)!.voiceMedicine),
+                    onPressed: () => _processVoiceCommand(AppLocalizations.of(context)!.voiceCmdMedicine),
                     backgroundColor: const Color(0xFFF3E8FF),
                     side: BorderSide.none,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                   ActionChip(
-                    label: const Text('📊 आंकड़े'),
-                    onPressed: () => _processVoiceCommand('रिपोर्ट दिखाओ'),
+                    label: Text(AppLocalizations.of(context)!.voiceVitals),
+                    onPressed: () => _processVoiceCommand(AppLocalizations.of(context)!.voiceCmdVitals),
                     backgroundColor: const Color(0xFFEBF5FF),
                     side: BorderSide.none,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                   ActionChip(
-                    label: const Text('🚨 मदद (SOS)'),
-                    onPressed: () => _processVoiceCommand('मदद चाहिए'),
+                    label: Text(AppLocalizations.of(context)!.voiceSos),
+                    onPressed: () => _processVoiceCommand(AppLocalizations.of(context)!.voiceCmdSos),
                     backgroundColor: const Color(0xFFFEF3F2),
                     side: BorderSide.none,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                   ActionChip(
-                    label: const Text('🏠 होम'),
-                    onPressed: () => _processVoiceCommand('होम जाओ'),
+                    label: Text(AppLocalizations.of(context)!.voiceHome),
+                    onPressed: () => _processVoiceCommand(AppLocalizations.of(context)!.voiceCmdHome),
                     backgroundColor: const Color(0xFFF2F4F7),
                     side: BorderSide.none,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -709,18 +757,18 @@ class _MainShellState extends State<MainShell> {
                 style: TextStyle(fontSize: 64),
               ),
               const SizedBox(height: 16),
-              const Text(
-                'आपातकालीन अलर्ट',
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context)!.emergencyAlert,
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 32,
                   fontWeight: FontWeight.w800,
                 ),
               ),
               const SizedBox(height: 6),
-              const Text(
-                'मदद के लिए संदेश भेजा जा रहा है...',
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context)!.sosSending,
+                style: const TextStyle(
                   color: Color(0xFF94A3B8),
                   fontSize: 16,
                 ),
@@ -756,11 +804,11 @@ class _MainShellState extends State<MainShell> {
                 ),
               ),
               const SizedBox(height: 40),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 40.0),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 40.0),
                 child: Text(
-                  'डॉक्टर और आपके परिवार को तुरंत सूचना दी जा रही है।',
-                  style: TextStyle(
+                  AppLocalizations.of(context)!.sosInforming,
+                  style: const TextStyle(
                     color: Color(0xFFE2E8F0),
                     fontSize: 15,
                     height: 1.4,
@@ -786,12 +834,12 @@ class _MainShellState extends State<MainShell> {
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
-                    children: const [
-                      Icon(Icons.close_rounded, color: Color(0xFFD92D20), size: 22),
-                      SizedBox(width: 8),
+                    children: [
+                      const Icon(Icons.close_rounded, color: Color(0xFFD92D20), size: 22),
+                      const SizedBox(width: 8),
                       Text(
-                        'रद्द करें (Cancel)',
-                        style: TextStyle(
+                        AppLocalizations.of(context)!.sosCancel,
+                        style: const TextStyle(
                           color: Color(0xFFD92D20),
                           fontSize: 18,
                           fontWeight: FontWeight.w800,
@@ -841,18 +889,18 @@ class _MainShellState extends State<MainShell> {
                 child: const Icon(Icons.check_rounded, color: Colors.white, size: 48),
               ),
               const SizedBox(height: 18),
-              const Text(
-                'अलर्ट भेज दिया गया!',
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context)!.sosSent,
+                style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.w800,
                   color: Color(0xFF12B76A),
                 ),
               ),
               const SizedBox(height: 4),
-              const Text(
-                'रमेश जी, घबराएं नहीं।',
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context)!.sosDontWorry,
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                   color: Color(0xFF475467),
@@ -867,11 +915,11 @@ class _MainShellState extends State<MainShell> {
                 ),
                 child: Column(
                   children: [
-                    _buildLogItem('💬 बेटे अमित को SMS भेज दिया गया है।'),
+                    _buildLogItem(AppLocalizations.of(context)!.sosSmsSent),
                     const SizedBox(height: 10),
-                    _buildLogItem('📞 डॉ. आर. के. गुप्ता को कॉल किया जा रहा है।'),
+                    _buildLogItem(AppLocalizations.of(context)!.sosCallingDoctor),
                     const SizedBox(height: 10),
-                    _buildLogItem('📍 आपकी लोकेशन (नई दिल्ली) शेयर कर दी गई है।'),
+                    _buildLogItem(AppLocalizations.of(context)!.sosLocationShared),
                   ],
                 ),
               ),
@@ -891,9 +939,9 @@ class _MainShellState extends State<MainShell> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: const Text(
-                    'ठीक है (Close)',
-                    style: TextStyle(
+                  child: Text(
+                    AppLocalizations.of(context)!.sosClose,
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -924,6 +972,18 @@ class _MainShellState extends State<MainShell> {
     );
   }
 
+  void _openLanguageSettings() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => LanguageSettingsScreen(
+          currentLocale: widget.locale,
+          onLocaleChanged: widget.onLocaleChanged,
+        ),
+      ),
+    );
+  }
+
   // Profile Screen Widget
   Widget _buildProfileScreen() {
     return Scaffold(
@@ -931,9 +991,9 @@ class _MainShellState extends State<MainShell> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: const Text(
-          '👤 मेरी प्रोफाइल',
-          style: TextStyle(
+        title: Text(
+          AppLocalizations.of(context)!.myProfile,
+          style: const TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.w800,
             color: Color(0xFF1D2939),
@@ -974,14 +1034,14 @@ class _MainShellState extends State<MainShell> {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  const Text(
-                    'रमेश कुमार शर्मा',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: Color(0xFF1D2939)),
+                  Text(
+                    AppLocalizations.of(context)!.userName,
+                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: Color(0xFF1D2939)),
                   ),
                   const SizedBox(height: 2),
-                  const Text(
-                    'उम्र: 70 वर्ष | लिंग: पुरुष',
-                    style: TextStyle(
+                  Text(
+                    AppLocalizations.of(context)!.userInfo,
+                    style: const TextStyle(
                       fontFamily: 'Outfit',
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
@@ -1000,13 +1060,65 @@ class _MainShellState extends State<MainShell> {
                     mainAxisSpacing: 12,
                     crossAxisSpacing: 12,
                     children: [
-                      _buildProfileDetailItem('रक्त समूह (Blood):', 'O+ Pos'),
-                      _buildProfileDetailItem('ऊँचाई (Height):', '170 cm'),
-                      _buildProfileDetailItem('वजन (Weight):', '72 kg'),
-                      _buildProfileDetailItem('शहर (City):', 'नई दिल्ली'),
+                      _buildProfileDetailItem(AppLocalizations.of(context)!.bloodGroup, AppLocalizations.of(context)!.bloodGroupVal),
+                      _buildProfileDetailItem(AppLocalizations.of(context)!.height, AppLocalizations.of(context)!.heightVal),
+                      _buildProfileDetailItem(AppLocalizations.of(context)!.weight, AppLocalizations.of(context)!.weightVal),
+                      _buildProfileDetailItem(AppLocalizations.of(context)!.city, AppLocalizations.of(context)!.cityVal),
                     ],
                   ),
                 ],
+              ),
+            ),
+            // Language Settings
+            InkWell(
+              onTap: _openLanguageSettings,
+              borderRadius: BorderRadius.circular(20),
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  border: const Border(
+                    left: BorderSide(color: Color(0xFF7F56D9), width: 4),
+                    top: BorderSide(color: Color(0xFFF1F5F9)),
+                    right: BorderSide(color: Color(0xFFF1F5F9)),
+                    bottom: BorderSide(color: Color(0xFFF1F5F9)),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF3E8FF),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Center(
+                        child: Icon(Icons.language_rounded, color: Color(0xFF7F56D9), size: 22),
+                      ),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            AppLocalizations.of(context)!.selectLanguage,
+                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF1D2939)),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            widget.locale.languageCode == 'hi' ? 'हिन्दी' : 'English',
+                            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: Color(0xFF667085)),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Icon(Icons.chevron_right_rounded, color: Color(0xFF98A2B3)),
+                  ],
+                ),
               ),
             ),
             const SizedBox(height: 20),
@@ -1033,14 +1145,14 @@ class _MainShellState extends State<MainShell> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    '🚨 आपातकालीन संपर्क (Caretakers)',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF1D2939)),
+                  Text(
+                    AppLocalizations.of(context)!.emergencyContacts,
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF1D2939)),
                   ),
                   const SizedBox(height: 16),
-                  _buildCaretakerRow('👨‍👦', 'अमित शर्मा (बेटा)', '+91 98765 43210'),
+                  _buildCaretakerRow('👨‍👦', AppLocalizations.of(context)!.caretakerSon, AppLocalizations.of(context)!.phoneAmit),
                   const Divider(color: Color(0xFFF8FAFC), height: 20),
-                  _buildCaretakerRow('🩺', 'डॉ. आर. के. गुप्ता (फैमिली डॉक्टर)', '+91 99999 88888'),
+                  _buildCaretakerRow('🩺', AppLocalizations.of(context)!.caretakerDoctor, AppLocalizations.of(context)!.phoneDoctor),
                 ],
               ),
             ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:meditrack/l10n/app_localizations.dart';
 
 class NotificationsScreen extends StatelessWidget {
   final List<Map<String, dynamic>> notifications;
@@ -29,7 +30,7 @@ class NotificationsScreen extends StatelessWidget {
                   const Icon(Icons.notifications_rounded, color: Color(0xFF7F56D9), size: 24),
                   const SizedBox(width: 10),
                   Text(
-                    '$unreadCount नई सूचनाएँ',
+                    AppLocalizations.of(context)!.newNotifications('$unreadCount'),
                     style: const TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
@@ -45,7 +46,7 @@ class NotificationsScreen extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.all(8),
                     child: Text(
-                      'सभी पढ़ें',
+                      AppLocalizations.of(context)!.markAllRead,
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
@@ -61,16 +62,16 @@ class NotificationsScreen extends StatelessWidget {
         // List
         Expanded(
           child: notifications.isEmpty
-                ? const Padding(
-                    padding: EdgeInsets.all(40),
+                ? Padding(
+                    padding: const EdgeInsets.all(40),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.notifications_off_rounded, size: 48, color: Color(0xFFCBD5E1)),
-                        SizedBox(height: 12),
+                        const Icon(Icons.notifications_off_rounded, size: 48, color: Color(0xFFCBD5E1)),
+                        const SizedBox(height: 12),
                         Text(
-                          'कोई सूचना नहीं',
-                          style: TextStyle(
+                          AppLocalizations.of(context)!.noNotifications,
+                          style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                             color: Color(0xFF98A2B3),

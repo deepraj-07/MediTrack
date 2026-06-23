@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:meditrack/l10n/app_localizations.dart';
 
 class VitalsScreen extends StatefulWidget {
   final VoidCallback onBack;
@@ -62,8 +63,8 @@ class _VitalsScreenState extends State<VitalsScreen> {
           icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF1D2939), size: 28),
           onPressed: widget.onBack,
         ),
-        title: const Text(
-          'मेरे आंकड़े (Vitals)',
+        title: Text(
+          AppLocalizations.of(context)!.vitalsTitle,
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w800,
@@ -92,9 +93,9 @@ class _VitalsScreenState extends State<VitalsScreen> {
             
             // Vital Graph Card 1: BP
             _buildGraphCard(
-              title: 'ब्लड प्रेशर (BP)',
+              title: AppLocalizations.of(context)!.bpFull,
               value: '120/80',
-              unit: 'mmHg',
+              unit: AppLocalizations.of(context)!.unitMmhg,
               emoji: '❤️',
               emojiBg: const Color(0xFFFFF0F2),
               lineColor: const Color(0xFFF43F5E),
@@ -108,9 +109,9 @@ class _VitalsScreenState extends State<VitalsScreen> {
             
             // Vital Graph Card 2: Sugar
             _buildGraphCard(
-              title: 'शुगर (रक्त शर्करा)',
+              title: AppLocalizations.of(context)!.sugarFull,
               value: '98',
-              unit: 'mg/dL',
+              unit: AppLocalizations.of(context)!.unitMgdl,
               emoji: '🩸',
               emojiBg: const Color(0xFFEBF5FF),
               lineColor: const Color(0xFF3B82F6),
@@ -124,7 +125,7 @@ class _VitalsScreenState extends State<VitalsScreen> {
             
             // Vital Graph Card 3: Oxygen SpO2
             _buildGraphCard(
-              title: 'ऑक्सीजन (SpO₂)',
+              title: AppLocalizations.of(context)!.oxygenFull,
               value: '98%',
               unit: '',
               emoji: '🫁',
@@ -140,7 +141,7 @@ class _VitalsScreenState extends State<VitalsScreen> {
             
             // Vital Graph Card 4: Temp
             _buildGraphCard(
-              title: 'तापमान',
+              title: AppLocalizations.of(context)!.temperatureFull,
               value: '98.6°F',
               unit: '',
               emoji: '🌡️',
@@ -167,10 +168,10 @@ class _VitalsScreenState extends State<VitalsScreen> {
       padding: const EdgeInsets.all(4),
       child: Row(
         children: [
-          _buildSegmentTab('day', 'दिन'),
-          _buildSegmentTab('week', 'सप्ताह'),
-          _buildSegmentTab('month', 'महीना'),
-          _buildSegmentTab('year', 'वर्ष'),
+          _buildSegmentTab('day', AppLocalizations.of(context)!.periodDay),
+          _buildSegmentTab('week', AppLocalizations.of(context)!.periodWeek),
+          _buildSegmentTab('month', AppLocalizations.of(context)!.periodMonth),
+          _buildSegmentTab('year', AppLocalizations.of(context)!.periodYear),
         ],
       ),
     );
@@ -311,8 +312,8 @@ class _VitalsScreenState extends State<VitalsScreen> {
                   color: const Color(0xFFECFDF3),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Text(
-                  'सामान्य',
+                child: Text(
+                  AppLocalizations.of(context)!.normal,
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w800,

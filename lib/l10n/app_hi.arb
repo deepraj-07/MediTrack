@@ -1,0 +1,344 @@
+{
+  "@@locale": "hi",
+  "appTitle": "MediTrack",
+  "appName": "MediTrack",
+
+  "@_Navigation": "नेविगेशन",
+  "navHome": "होम",
+  "navVitals": "आँकड़े",
+  "navMedicines": "दवाइयाँ",
+  "navProfile": "प्रोफाइल",
+
+  "@_Common": "सामान्य",
+  "seeAll": "सभी देखें ›",
+  "seeAllOptions": "सभी विकल्प देखें ›",
+  "seeAllGt": "सभी देखें >",
+  "normal": "सामान्य",
+  "taken": "ले ली",
+  "pending": "लेनी बाकी",
+  "all": "सभी",
+  "save": "सेव करें",
+  "cancel": "रद्द करें",
+  "done": "ठीक है",
+  "add": "जोड़ें",
+  "back": "वापस",
+  "confirm": "पुष्टि करें",
+
+  "@_HomeScreen": "होम स्क्रीन",
+  "greeting": "नमस्ते रमेश जी",
+  "greetingSuffix": "👋",
+  "greetingSubtitle": "आशा है आप स्वस्थ हैं!",
+  "profile": "प्रोफाइल",
+  "healthStatus": "स्वास्थ्य स्थिति",
+  "healthStatusValue": "अच्छा है 🙂",
+  "healthMessage1": "आज आपकी तबीयत सामान्य है!",
+  "healthMessage2": "ऐसे ही ध्यान रखें!",
+  "todayVitals": "आज के महत्वपूर्ण आंकड़े",
+  "todayNextMedicine": "आज की अगली दवा",
+  "emergencyHelp": "आपातकालीन मदद",
+  "emergencySubtitle": "आपातकालीन स्थिति में यहाँ दबाएँ",
+  "sosButton": "SOS",
+  "medicineProgress": "{count}/{total} दवाइयाँ ली गईं",
+  "@medicineProgress": {
+    "placeholders": {
+      "count": {},
+      "total": {}
+    }
+  },
+  "medicineDefaultName": "Metformin 500mg",
+  "medicineDefaultInstruction": "1 गोली - नाश्ते के बाद",
+  "medicineDefaultTime": "08:00 AM",
+
+  "@_QuickAccess": "त्वरित विकल्प",
+  "quickAccess": "त्वरित विकल्प",
+  "quickDoctor": "Doctor\nAppointment",
+  "quickRecords": "Medical\nRecords",
+  "quickFamily": "Family\nConnect",
+  "quickReport": "My Health\nReport",
+  "quickTips": "Health\nTips",
+  "badgeNew": "NEW",
+
+  "@_Vitals": "आँकड़े",
+  "vitalsTitle": "मेरे आंकड़े (Vitals)",
+  "bp": "BP",
+  "bpFull": "ब्लड प्रेशर (BP)",
+  "sugar": "शुगर",
+  "sugarFull": "शुगर (रक्त शर्करा)",
+  "oxygen": "SpO₂",
+  "oxygenFull": "ऑक्सीजन (SpO₂)",
+  "temperature": "तापमान",
+  "temperatureFull": "तापमान",
+  "unitMmhg": "mmHg",
+  "unitMgdl": "mg/dL",
+  "unitPercent": "%",
+  "unitF": "°F",
+  "periodDay": "दिन",
+  "periodWeek": "सप्ताह",
+  "periodMonth": "महीना",
+  "periodYear": "वर्ष",
+  "today": "आज",
+  "yesterday": "कल",
+  "tomorrow": "कल",
+
+  "@_VitalDetail": "वाइटल विवरण",
+  "todayLatest": "आज का नवीनतम",
+  "todaySummary": "आज का सारांश",
+  "todayReadings": "आज की रीडिंग्स",
+  "todayTrend": "आज का {title} ट्रेंड",
+  "@todayTrend": {
+    "placeholders": {
+      "title": {}
+    }
+  },
+  "addReading": "+ {title} रीडिंग जोड़ें",
+  "@addReading": {
+    "placeholders": {
+      "title": {}
+    }
+  },
+  "newReading": "नई {title} रीडिंग",
+  "@newReading": {
+    "placeholders": {
+      "title": {}
+    }
+  },
+  "valueIn": "मान ({unit})",
+  "@valueIn": {
+    "placeholders": {
+      "unit": {}
+    }
+  },
+  "egValue": "उदा: {value}",
+  "@egValue": {
+    "placeholders": {
+      "value": {}
+    }
+  },
+  "noteOptional": "नोट (वैकल्पिक)",
+  "readingSaved": "{title} रीडिंग सहेज ली गई है",
+  "@readingSaved": {
+    "placeholders": {
+      "title": {}
+    }
+  },
+  "saveReading": "रीडिंग सेव करें",
+  "takenAt": "{unit} • {time} पर लिया गया",
+  "@takenAt": {
+    "placeholders": {
+      "unit": {},
+      "time": {}
+    }
+  },
+  "checkedCount": "कुल {count} बार जाँच किया गया",
+  "@checkedCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "latestReading": "नवीनतम रीडिंग: {time}",
+  "@latestReading": {
+    "placeholders": {
+      "time": {}
+    }
+  },
+  "overallStatus": "समग्र स्थिति: सामान्य",
+
+  "@_Medicines": "दवाइयाँ",
+  "medicinesTitle": "दवाइयाँ और रिमाइंडर",
+  "todayMedicines": "आज की दवाइयाँ",
+  "addMedicine": "नई दवा जोड़ें",
+  "addMedicineSubtitle": "दवा का समय और रिमाइंडर सेट करें",
+  "medicineName": "दवा का नाम (Medicine Name)",
+  "medicineNameHint": "जैसे: Telmisartan 40mg",
+  "time": "समय (Time)",
+  "dose": "खुराक (Dose)",
+  "doseHint": "जैसे: 1 गोली",
+  "instruction": "निर्देश (Instruction)",
+  "instructionAfterBreakfast": "नाश्ते के बाद",
+  "instructionAfterLunch": "दोपहर के भोजन के बाद",
+  "instructionAfterDinner": "रात के भोजन के बाद",
+  "instructionBeforeSleep": "सोने से पहले",
+  "instructionEmptyStomach": "खाली पेट",
+  "scheduleMedicine": "दवा शेड्यूल करें",
+  "noMedicines": "कोई दवा नहीं मिली",
+  "noMedicinesSubtitle": "नीचे बटन दबाकर नई दवा जोड़ें।",
+  "filterTaken": "पूर्ण",
+  "filterPending": "सक्रिय",
+  "filterAll": "सभी",
+
+  "@_DoctorAppointment": "डॉक्टर अपॉइंटमेंट",
+  "doctorAppointment": "Doctor Appointment",
+  "appointmentBooking": "अपॉइंटमेंट बुक करें",
+  "bannerTitle": "सही डॉक्टर से\nमिलें, स्वस्थ जीवन जियें",
+  "bannerSubtitle": "अपनी स्थिति के अनुसार\nडॉक्टर चुनें",
+  "searchDoctorHint": "डॉक्टर, विशेषज्ञता या लक्षण खोजें...",
+  "searchDoctor": "डॉक्टर खोजें",
+  "bySpecialty": "विशेषज्ञता के अनुसार",
+  "popularDoctors": "लोकप्रिय डॉक्टर",
+  "doctorCount": "{count} डॉक्टर",
+  "@doctorCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "selectDate": "तारीख चुनें",
+  "selectTime": "समय चुनें",
+  "clinicHours": "क्लिनिक का समय",
+  "clinicDays": "सोम - शनि",
+  "clinicTiming": "09:00 AM - 07:00 PM",
+  "consultationFee": "कंसल्टेशन शुल्क",
+  "nextStep": "आगे बढ़ें",
+  "patientInfo": "मरीज़ की जानकारी",
+  "fullName": "पूरा नाम",
+  "age": "उम्र",
+  "gender": "लिंग",
+  "male": "पुरुष",
+  "female": "महिला",
+  "mobileNumber": "मोबाइल नंबर",
+  "emailOptional": "ईमेल (वैकल्पिक)",
+  "symptomsLabel": "समस्या / लक्षण (वैकल्पिक)",
+  "reviewAppointment": "अपॉइंटमेंट की समीक्षा",
+  "appointmentDetails": "आपका अपॉइंटमेंट विवरण",
+  "date": "तारीख",
+  "location": "स्थान",
+  "problemSymptoms": "समस्या / लक्षण",
+  "confirmNote": "कन्फर्म करने पर आपको SMS/WhatsApp प्राप्त होगा",
+  "confirmAppointment": "अपॉइंटमेंट कन्फर्म करें",
+  "appointmentSuccess": "अपॉइंटमेंट सफलतापूर्वक बुक हो गया!",
+  "appointmentInfoSent": "आपको SMS और WhatsApp पर जानकारी भेज दी गई है।",
+  "appointmentDetails2": "अपॉइंटमेंट विवरण",
+  "appointmentId": "ID: {id}",
+  "@appointmentId": {
+    "placeholders": {
+      "id": {}
+    }
+  },
+  "myAppointments": "मेरे अपॉइंटमेंट देखें",
+  "goHome": "होम पर जाएँ",
+  "stepperDoctor": "डॉक्टर",
+  "stepperTime": "समय",
+  "stepperInfo": "जानकारी",
+  "stepperConfirm": "पुष्टि",
+
+  "@_Specialties": "विशेषज्ञताएँ",
+  "specCardiology": "हृदय रोग",
+  "specCardiologyFull": "हृदय रोग\n(कार्डियोलॉजिस्ट)",
+  "specGeneralPhysician": "जनरल फिजिशियन",
+  "specGeneralPhysicianFull": "जनरल\nफिजिशियन",
+  "specDiabetes": "डायबिटीज विशेषज्ञ",
+  "specDiabetesFull": "डायबिटीज\nविशेषज्ञ",
+  "specOrthopedic": "हड्डी रोग",
+  "specOrthopedicFull": "हड्डी रोग\n(ऑर्थोपेडिक)",
+
+  "@_Notifications": "सूचनाएँ",
+  "notifications": "सूचनाएँ",
+  "newNotifications": "{count} नई सूचनाएँ",
+  "@newNotifications": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "markAllRead": "सभी पढ़ें",
+  "noNotifications": "कोई सूचना नहीं",
+
+  "@_SOS": "आपातकालीन SOS",
+  "emergencyAlert": "आपातकालीन अलर्ट",
+  "sosSending": "मदद के लिए संदेश भेजा जा रहा है...",
+  "sosInforming": "डॉक्टर और आपके परिवार को तुरंत सूचना दी जा रही है।",
+  "sosCancel": "रद्द करें (Cancel)",
+  "sosSent": "अलर्ट भेज दिया गया!",
+  "sosDontWorry": "रमेश जी, घबराएं नहीं।",
+  "sosSmsSent": "💬 बेटे अमित को SMS भेज दिया गया है।",
+  "sosCallingDoctor": "📞 डॉ. आर. के. गुप्ता को कॉल किया जा रहा है।",
+  "sosLocationShared": "📍 आपकी लोकेशन (नई दिल्ली) शेयर कर दी गई है।",
+  "sosClose": "ठीक है (Close)",
+  "sosCancelled": "आपातकालीन अलर्ट रद्द कर दिया गया है।",
+  "sosAlertTitle": "SOS अलर्ट भेजा गया",
+  "emergencyContacts": "🚨 आपातकालीन संपर्क (Caretakers)",
+
+  "@_Profile": "प्रोफाइल",
+  "myProfile": "👤 मेरी प्रोफाइल",
+  "userName": "रमेश कुमार शर्मा",
+  "userInfo": "उम्र: 70 वर्ष | लिंग: पुरुष",
+  "bloodGroup": "रक्त समूह (Blood):",
+  "height": "ऊँचाई (Height):",
+  "weight": "वजन (Weight):",
+  "city": "शहर (City):",
+  "bloodGroupVal": "O+ Pos",
+  "heightVal": "170 cm",
+  "weightVal": "72 kg",
+  "cityVal": "नई दिल्ली",
+
+  "@_VoiceAssistant": "वॉइस असिस्टेंट",
+  "voiceListening": "सुन रहा हूँ...",
+  "voicePrompt": "कृपया बोलिए (जैसे: 'दवा', 'बीपी', 'मदद', 'होम')",
+  "voiceProcessing": "प्रोसेस कर रहा हूँ...",
+  "voiceTranscript": "...",
+  "voiceAssistantTitle": "MediTrack Voice Assistant",
+  "voiceMedicine": "💊 दवाइयाँ",
+  "voiceVitals": "📊 आंकड़े",
+  "voiceSos": "🚨 मदद (SOS)",
+  "voiceHome": "🏠 होम",
+  "voiceCmdMedicine": "दवाइयाँ स्क्रीन खोलो",
+  "voiceCmdVitals": "रिपोर्ट दिखाओ",
+  "voiceCmdSos": "मदद चाहिए",
+  "voiceCmdHome": "होम जाओ",
+  "voiceRespMedicine": "दवाइयाँ स्क्रीन खोल रहा हूँ",
+  "voiceRespVitals": "आपके आंकड़े दिखा रहा हूँ",
+  "voiceRespSos": "आपातकालीन अलर्ट शुरू किया जा रहा है!",
+  "voiceRespHome": "होम डैशबोर्ड खोल रहा हूँ",
+  "voiceRespFallback": "माफ़ कीजिये, समझ नहीं आया।",
+  "voiceKeywordMedicine": "दवा",
+  "voiceKeywordVital": "बीपी",
+  "voiceKeywordReport": "शुगर",
+  "voiceKeywordSos": "मदद",
+  "voiceKeywordHelp": "आपातकाल",
+  "voiceKeywordHome": "होम",
+  "voiceKeywordDashboard": "डैशबोर्ड",
+
+  "@_Language": "भाषा",
+  "selectLanguage": "भाषा चुनें",
+  "languageEnglish": "🇺🇸 English",
+  "languageHindi": "🇮🇳 हिन्दी",
+  "english": "English",
+  "hindi": "हिन्दी",
+
+  "@_Caretaker": "देखभालकर्ता",
+  "caretakerSon": "अमित शर्मा (बेटा)",
+  "caretakerDoctor": "डॉ. आर. के. गुप्ता (फैमिली डॉक्टर)",
+  "phoneAmit": "+91 98765 43210",
+  "phoneDoctor": "+91 99999 88888",
+
+  "@_MedicineData": "दवा डेटा",
+  "medMetformin": "Metformin 500mg",
+  "medTelmisartan": "Telmisartan 40mg",
+  "medVitaminD3": "Vitamin D3",
+  "medAtorvastatin": "Atorvastatin 10mg",
+  "dose1Pill": "1 गोली",
+  "instAfterBreakfast": "नाश्ते के बाद",
+  "instAfterLunch": "दोपहर के भोजन के बाद",
+  "instAfterDinner": "रात के भोजन के बाद",
+  "instBeforeSleep": "सोने से पहले",
+
+  "@_DoctorData": "डॉक्टर डेटा",
+  "drRajatSharma": "Dr. Rajat Sharma",
+  "drNehaVerma": "Dr. Neha Verma",
+  "drAmitPatel": "Dr. Amit Patel",
+  "specRajat": "MBBS, MD (Cardiology)\nहृदय रोग विशेषज्ञ",
+  "specNeha": "MBBS, MD (General Medicine)\nजनरल फिजिशियन",
+  "specAmit": "MBBS, MS (Orthopedics)\nहड्डी रोग विशेषज्ञ",
+  "exp10plus": "10+ वर्ष अनुभव",
+  "exp8plus": "8+ वर्ष अनुभव",
+  "exp12plus": "12+ वर्ष अनुभव",
+  "fee500": "₹500",
+  "fee400": "₹400",
+  "fee600": "₹600",
+  "locHeartCare": "Heart Care Clinic\nसिविल लाइन्स, जयपुर, राजस्थान",
+  "locLifeCare": "Life Care Clinic\nमालवीय नगर, जयपुर, राजस्थान",
+  "locOrthofit": "Orthofit Clinic\nवैशाली नगर, जयपुर, राजस्थान",
+  "patientName": "राम शर्मा",
+  "patientAge": "58 वर्ष",
+  "patientPhone": "+91 98765 43210",
+  "patientEmail": "ram.sharma@email.com",
+  "patientSymptoms": "छाती में दर्द, थकान और सांस लेने में दिक्कत हो रही है।"
+}

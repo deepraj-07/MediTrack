@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:meditrack/l10n/app_localizations.dart';
 
 class MedicinesScreen extends StatefulWidget {
   final List<Map<String, dynamic>> medicinesList;
@@ -37,9 +38,9 @@ class _MedicinesScreenState extends State<MedicinesScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: const Text(
-          'दवाइयाँ और रिमाइंडर',
-          style: TextStyle(
+        title: Text(
+          AppLocalizations.of(context)!.medicinesTitle,
+          style: const TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.w800,
             color: Color(0xFF1D2939),
@@ -98,10 +99,10 @@ class _MedicinesScreenState extends State<MedicinesScreen> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Row(
-              children: const [
+              children: [
                 Text(
-                  'आज की दवाइयाँ',
-                  style: TextStyle(
+                  AppLocalizations.of(context)!.todayMedicines,
+                  style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w800,
                     color: Color(0xFF1D2939),
@@ -147,9 +148,9 @@ class _MedicinesScreenState extends State<MedicinesScreen> {
       padding: const EdgeInsets.all(4),
       child: Row(
         children: [
-          _buildFilterTab('all', 'सभी'),
-          _buildFilterTab('pending', 'सक्रिय'),
-          _buildFilterTab('taken', 'पूर्ण'),
+          _buildFilterTab('all', AppLocalizations.of(context)!.filterAll),
+          _buildFilterTab('pending', AppLocalizations.of(context)!.filterPending),
+          _buildFilterTab('taken', AppLocalizations.of(context)!.filterTaken),
         ],
       ),
     );
@@ -263,7 +264,7 @@ class _MedicinesScreenState extends State<MedicinesScreen> {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  item['name'] ?? 'Metformin 500mg',
+                  item['name'] ?? AppLocalizations.of(context)!.medicineDefaultName,
                   style: const TextStyle(
                     fontFamily: 'Outfit',
                     fontSize: 17,
@@ -313,7 +314,7 @@ class _MedicinesScreenState extends State<MedicinesScreen> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  isTaken ? 'ले ली' : 'लेनी बाकी',
+                  isTaken ? AppLocalizations.of(context)!.taken : AppLocalizations.of(context)!.pending,
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w800,
@@ -374,18 +375,18 @@ class _MedicinesScreenState extends State<MedicinesScreen> {
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
+                children: [
                   Text(
-                    'नई दवा जोड़ें',
-                    style: TextStyle(
+                    AppLocalizations.of(context)!.addMedicine,
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 17,
                       fontWeight: FontWeight.w800,
                     ),
                   ),
                   Text(
-                    'दवा का समय और रिमाइंडर सेट करें',
-                    style: TextStyle(
+                    AppLocalizations.of(context)!.addMedicineSubtitle,
+                    style: const TextStyle(
                       color: Colors.white70,
                       fontSize: 11,
                       fontWeight: FontWeight.w500,
@@ -405,7 +406,7 @@ class _MedicinesScreenState extends State<MedicinesScreen> {
     final nameController = TextEditingController();
     final doseController = TextEditingController(text: '1 गोली');
     TimeOfDay selectedTime = const TimeOfDay(hour: 8, minute: 0);
-    String selectedInstruction = 'नाश्ते के बाद';
+    String selectedInstruction = AppLocalizations.of(context)!.instructionAfterBreakfast;
 
     showModalBottomSheet(
       context: context,
@@ -444,9 +445,9 @@ class _MedicinesScreenState extends State<MedicinesScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
-                        'नई दवा जोड़ें',
-                        style: TextStyle(
+                      Text(
+                        AppLocalizations.of(context)!.addMedicine,
+                        style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w800,
                           color: Color(0xFF1D2939),
@@ -462,16 +463,16 @@ class _MedicinesScreenState extends State<MedicinesScreen> {
                   const SizedBox(height: 12),
                   
                   // Medicine Name Field
-                  const Text(
-                    'दवा का नाम (Medicine Name)',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF475467)),
+                  Text(
+                    AppLocalizations.of(context)!.medicineName,
+                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF475467)),
                   ),
                   const SizedBox(height: 6),
                   TextField(
                     controller: nameController,
                     style: const TextStyle(fontFamily: 'Outfit', fontWeight: FontWeight.w600),
                     decoration: InputDecoration(
-                      hintText: 'जैसे: Telmisartan 40mg',
+                      hintText: AppLocalizations.of(context)!.medicineNameHint,
                       hintStyle: const TextStyle(fontFamily: 'Outfit', color: Color(0xFF98A2B3), fontWeight: FontWeight.normal),
                       filled: true,
                       fillColor: const Color(0xFFF8FAFC),
@@ -496,9 +497,9 @@ class _MedicinesScreenState extends State<MedicinesScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
-                              'समय (Time)',
-                              style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF475467)),
+                            Text(
+                              AppLocalizations.of(context)!.time,
+                              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF475467)),
                             ),
                             const SizedBox(height: 6),
                             InkWell(
@@ -547,16 +548,16 @@ class _MedicinesScreenState extends State<MedicinesScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
-                              'खुराक (Dose)',
-                              style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF475467)),
+                            Text(
+                              AppLocalizations.of(context)!.dose,
+                              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF475467)),
                             ),
                             const SizedBox(height: 6),
                             TextField(
                               controller: doseController,
                               style: const TextStyle(fontWeight: FontWeight.w600),
                               decoration: InputDecoration(
-                                hintText: 'जैसे: 1 गोली',
+                                hintText: AppLocalizations.of(context)!.doseHint,
                                 filled: true,
                                 fillColor: const Color(0xFFF8FAFC),
                                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -579,9 +580,9 @@ class _MedicinesScreenState extends State<MedicinesScreen> {
                   const SizedBox(height: 16),
                   
                   // Instruction Dropdown
-                  const Text(
-                    'निर्देश (Instruction)',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF475467)),
+                  Text(
+                    AppLocalizations.of(context)!.instruction,
+                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF475467)),
                   ),
                   const SizedBox(height: 6),
                   Container(
@@ -602,11 +603,11 @@ class _MedicinesScreenState extends State<MedicinesScreen> {
                           color: Color(0xFF1D2939),
                         ),
                         items: <String>[
-                          'नाश्ते के बाद',
-                          'दोपहर के भोजन के बाद',
-                          'रात के भोजन के बाद',
-                          'सोने से पहले',
-                          'खाली पेट'
+                          AppLocalizations.of(context)!.instructionAfterBreakfast,
+                          AppLocalizations.of(context)!.instructionAfterLunch,
+                          AppLocalizations.of(context)!.instructionAfterDinner,
+                          AppLocalizations.of(context)!.instructionBeforeSleep,
+                          AppLocalizations.of(context)!.instructionEmptyStomach,
                         ].map<DropdownMenuItem<String>>((String value) {
                           return DropdownMenuItem<String>(
                             value: value,
@@ -650,9 +651,9 @@ class _MedicinesScreenState extends State<MedicinesScreen> {
                         ),
                         elevation: 0,
                       ),
-                      child: const Text(
-                        'दवा शेड्यूल करें',
-                        style: TextStyle(
+                      child: Text(
+                        AppLocalizations.of(context)!.scheduleMedicine,
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 16,
                           fontWeight: FontWeight.w800,
@@ -674,20 +675,19 @@ class _MedicinesScreenState extends State<MedicinesScreen> {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: const [
-          Text('💊', style: TextStyle(fontSize: 48)),
-          SizedBox(height: 12),
+        children: [
+          const Text('💊', style: TextStyle(fontSize: 48)),
+          const SizedBox(height: 12),
           Text(
-            'कोई दवा नहीं मिली',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF475467)),
+            AppLocalizations.of(context)!.noMedicines,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF475467)),
           ),
           Text(
-            'नीचे बटन दबाकर नई दवा जोड़ें।',
-            style: TextStyle(fontSize: 13, color: Color(0xFF98A2B3)),
+            AppLocalizations.of(context)!.noMedicinesSubtitle,
+            style: const TextStyle(fontSize: 13, color: Color(0xFF98A2B3)),
           ),
         ],
       ),
     );
   }
 }
-
