@@ -184,16 +184,34 @@ class _MainShellState extends State<MainShell> {
   }
 
   void _openNotifications() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-      ),
-      builder: (_) => NotificationsScreen(
-        notifications: _notifications,
-        onMarkRead: _markNotificationRead,
-        onMarkAllRead: _markAllNotificationsRead,
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => Scaffold(
+          backgroundColor: const Color(0xFFF8FAFC),
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF1D2939)),
+              onPressed: () => Navigator.pop(context),
+            ),
+            title: const Text(
+              'सूचनाएँ',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.w800,
+                color: Color(0xFF1D2939),
+              ),
+            ),
+            centerTitle: false,
+          ),
+          body: NotificationsScreen(
+            notifications: _notifications,
+            onMarkRead: _markNotificationRead,
+            onMarkAllRead: _markAllNotificationsRead,
+          ),
+        ),
       ),
     );
   }
