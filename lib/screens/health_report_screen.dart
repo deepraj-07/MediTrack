@@ -1,23 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:meditrack/l10n/app_localizations.dart';
+import 'package:meditrack/theme/app_theme.dart';
 
 class HealthReportScreen extends StatelessWidget {
   const HealthReportScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    final c = context.appColors;
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: c.scaffoldBg,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF1D2939), size: 26),
+          icon: Icon(Icons.arrow_back_rounded, color: c.primaryText, size: 26),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          AppLocalizations.of(context)!.quickReport.replaceAll('\n', ' '),
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: Color(0xFF1D2939)),
+          l.quickReport.replaceAll('\n', ' '),
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: c.primaryText),
         ),
         centerTitle: false,
         actions: [
@@ -26,7 +29,7 @@ class HealthReportScreen extends StatelessWidget {
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: const Text('रिपोर्ट शेयर की जा रही है...'),
+                  content: Text(l.reportShared),
                   backgroundColor: const Color(0xFF7F56D9),
                   behavior: SnackBarBehavior.floating,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -43,29 +46,27 @@ class HealthReportScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 8),
-            // Date selector
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: c.cardBg,
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: const Color(0xFFF1F5F9)),
+                border: Border.all(color: c.border),
               ),
               child: Row(
                 children: [
                   const Icon(Icons.calendar_today_rounded, size: 18, color: Color(0xFF7F56D9)),
                   const SizedBox(width: 10),
-                  const Text(
-                    'जून 2026',
-                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: Color(0xFF1D2939)),
+                  Text(
+                    '${l.monthJun} 2026',
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: c.primaryText),
                   ),
                   const Spacer(),
-                  const Icon(Icons.keyboard_arrow_down_rounded, color: Color(0xFF98A2B3)),
+                  Icon(Icons.keyboard_arrow_down_rounded, color: c.tertiaryText),
                 ],
               ),
             ),
             const SizedBox(height: 16),
-            // Overall status card
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
@@ -98,52 +99,53 @@ class HealthReportScreen extends StatelessWidget {
                       ),
                       const SizedBox(width: 12),
                       Text(
-                        'आपकी स्वास्थ्य रिपोर्ट',
+                        l.yourHealthReport,
                         style: TextStyle(color: Colors.white.withValues(alpha: 0.85), fontSize: 15, fontWeight: FontWeight.w600),
                       ),
                     ],
                   ),
                   const SizedBox(height: 16),
-                  const Text(
-                    'स्वस्थ',
-                    style: TextStyle(fontSize: 32, fontWeight: FontWeight.w800, color: Color(0xFF86EFAC)),
+                  Text(
+                    l.healthy,
+                    style: const TextStyle(fontSize: 32, fontWeight: FontWeight.w800, color: Color(0xFF86EFAC)),
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'सभी महत्वपूर्ण आंकड़े सामान्य सीमा में हैं',
+                    l.allVitalsNormal,
                     style: TextStyle(color: Colors.white.withValues(alpha: 0.75), fontSize: 13, fontWeight: FontWeight.w500),
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 20),
-            // Health parameters grid
-            const Text('स्वास्थ्य पैरामीटर', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF1D2939))),
+            Text(l.healthParameters, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: c.primaryText)),
             const SizedBox(height: 12),
-            _buildParamGrid(),
+            _buildParamGrid(l, c),
             const SizedBox(height: 20),
-            // Recommendations
-            const Text('सुझाव', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF1D2939))),
+            Text(l.recommendations, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: c.primaryText)),
             const SizedBox(height: 12),
             _buildRecommendationCard(
               Icons.wb_sunny_rounded,
-              'विटामिन D3 थोड़ा कम',
-              'धूप में बैठें और विटामिन D3 सप्लीमेंट लें',
+              l.recVitaminD,
+              l.recVitaminDDesc,
               const Color(0xFFF59E0B),
+              c,
             ),
             const SizedBox(height: 10),
             _buildRecommendationCard(
               Icons.directions_walk_rounded,
-              'रोजाना व्यायाम',
-              '30 मिनट टहलना या हल्का व्यायाम करें',
+              l.recExercise,
+              l.recExerciseDesc,
               const Color(0xFF12B76A),
+              c,
             ),
             const SizedBox(height: 10),
             _buildRecommendationCard(
               Icons.water_drop_rounded,
-              'पानी पिएं',
-              'दिन में 8-10 गिलास पानी पिएं',
+              l.recWater,
+              l.recWaterDesc,
               const Color(0xFF2E82FF),
+              c,
             ),
           ],
         ),
@@ -151,14 +153,14 @@ class HealthReportScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildParamGrid() {
+  Widget _buildParamGrid(AppLocalizations l, AppColors c) {
     final params = [
-      _HealthParam('बीपी', '120/80', 'mmHg', const Color(0xFFF43F5E), Icons.favorite_rounded, true),
-      _HealthParam('शुगर', '98', 'mg/dL', const Color(0xFF3B82F6), Icons.water_drop_rounded, true),
-      _HealthParam('SpO₂', '98%', '', const Color(0xFF8B5CF6), Icons.circle, true),
-      _HealthParam('तापमान', '98.6°F', '', const Color(0xFFF97316), Icons.thermostat_rounded, true),
-      _HealthParam('कोलेस्ट्रॉल', '180', 'mg/dL', const Color(0xFFEC4899), Icons.opacity_rounded, true),
-      _HealthParam('HbA1c', '6.2', '%', const Color(0xFF7F56D9), Icons.bloodtype_rounded, true),
+      _HealthParam(l.bp, '120/80', 'mmHg', const Color(0xFFF43F5E), Icons.favorite_rounded, true),
+      _HealthParam(l.sugar, '98', 'mg/dL', const Color(0xFF3B82F6), Icons.water_drop_rounded, true),
+      _HealthParam(l.oxygen, '98%', '', const Color(0xFF8B5CF6), Icons.circle, true),
+      _HealthParam(l.temperature, '98.6°F', '', const Color(0xFFF97316), Icons.thermostat_rounded, true),
+      _HealthParam(l.tipCholesterol, '180', 'mg/dL', const Color(0xFFEC4899), Icons.opacity_rounded, true),
+      _HealthParam(l.recordTypeHba1c, '6.2', l.unitPercent, const Color(0xFF7F56D9), Icons.bloodtype_rounded, true),
     ];
     return GridView.builder(
       shrinkWrap: true,
@@ -170,17 +172,17 @@ class HealthReportScreen extends StatelessWidget {
         mainAxisSpacing: 10,
       ),
       itemCount: params.length,
-      itemBuilder: (_, i) => _buildParamCard(params[i]),
+      itemBuilder: (_, i) => _buildParamCard(params[i], l, c),
     );
   }
 
-  Widget _buildParamCard(_HealthParam param) {
+  Widget _buildParamCard(_HealthParam param, AppLocalizations l, AppColors c) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: c.cardBg,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFF1F5F9)),
+        border: Border.all(color: c.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -198,7 +200,7 @@ class HealthReportScreen extends StatelessWidget {
               ),
               const SizedBox(width: 4),
               Expanded(
-                child: Text(param.label, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: Color(0xFF475467))),
+                child: Text(param.label, style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: c.secondaryText)),
               ),
             ],
           ),
@@ -207,10 +209,10 @@ class HealthReportScreen extends StatelessWidget {
             children: [
               Text(
                 param.value,
-                style: const TextStyle(fontFamily: 'Outfit', fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF1D2939)),
+                style: TextStyle(fontFamily: 'Outfit', fontSize: 18, fontWeight: FontWeight.w800, color: c.primaryText),
               ),
               if (param.unit.isNotEmpty)
-                Text(param.unit, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: Color(0xFF667085))),
+                Text(param.unit, style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: c.secondaryText)),
             ],
           ),
           Container(
@@ -219,20 +221,20 @@ class HealthReportScreen extends StatelessWidget {
               color: const Color(0xFFE6F7ED),
               borderRadius: BorderRadius.circular(6),
             ),
-            child: const Text('सामान्य', style: TextStyle(fontSize: 9, fontWeight: FontWeight.w800, color: Color(0xFF12B76A))),
+            child: Text(l.normal, style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w800, color: Color(0xFF12B76A))),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildRecommendationCard(IconData icon, String title, String desc, Color color) {
+  Widget _buildRecommendationCard(IconData icon, String title, String desc, Color color, AppColors c) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: c.cardBg,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: const Color(0xFFF1F5F9)),
+        border: Border.all(color: c.border),
       ),
       child: Row(
         children: [
@@ -249,9 +251,9 @@ class HealthReportScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: Color(0xFF1D2939))),
+                Text(title, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: c.primaryText)),
                 const SizedBox(height: 2),
-                Text(desc, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: Color(0xFF667085))),
+                Text(desc, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: c.secondaryText)),
               ],
             ),
           ),

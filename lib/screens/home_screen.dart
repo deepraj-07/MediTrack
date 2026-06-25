@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:meditrack/l10n/app_localizations.dart';
+import 'package:meditrack/theme/app_theme.dart';
 import 'doctor_appointment_screen.dart';
 import 'medical_records_screen.dart';
 import 'family_screen.dart';
@@ -38,12 +39,13 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = context.appColors;
     return Column(
       children: [
         // Fixed Sticky Header — only logo + notification
         Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: c.cardBg,
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.06),
@@ -97,12 +99,12 @@ class HomeScreen extends StatelessWidget {
                             width: 40,
                             height: 40,
                             decoration: BoxDecoration(
-                              color: const Color(0xFFF8FAFC),
+                              color: c.scaffoldBg,
                               shape: BoxShape.circle,
                             ),
-                            child: const Icon(
+                            child: Icon(
                               Icons.notifications_none_rounded,
-                              color: Color(0xFF2D2D2D),
+                              color: c.primaryText,
                               size: 22,
                             ),
                           ),
@@ -179,6 +181,7 @@ class HomeScreen extends StatelessWidget {
 
   // Header Greeting Section
   Widget _buildGreetingHeader(BuildContext context) {
+    final c = context.appColors;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Row(
@@ -187,7 +190,7 @@ class HomeScreen extends StatelessWidget {
           Container(
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(color: Colors.white, width: 3),
+              border: Border.all(color: c.cardBg, width: 3),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.05),
@@ -212,10 +215,10 @@ class HomeScreen extends StatelessWidget {
                   children: [
                     Text(
                       AppLocalizations.of(context)!.greeting,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.w800,
-                        color: Color(0xFF1D2939),
+                        color: c.primaryText,
                       ),
                     ),
                     const SizedBox(width: 4),
@@ -228,10 +231,10 @@ class HomeScreen extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   AppLocalizations.of(context)!.greetingSubtitle,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w500,
-                    color: Color(0xFF475467),
+                    color: c.secondaryText,
                   ),
                 ),
               ],
@@ -385,6 +388,7 @@ class HomeScreen extends StatelessWidget {
 
   // Today's Vitals Cards Section with Horizontal Scroll
   Widget _buildVitalsGridSection(BuildContext context) {
+    final c = context.appColors;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -415,7 +419,7 @@ class HomeScreen extends StatelessWidget {
                   style: GoogleFonts.outfit(
                     fontSize: 18,
                     fontWeight: FontWeight.w800,
-                    color: const Color(0xFF1D2939),
+                    color: c.primaryText,
                   ),
                 ),
               ),
@@ -475,7 +479,7 @@ class HomeScreen extends StatelessWidget {
               const SizedBox(width: 12),
               _buildVitalCard(
                 context: context,
-                title: 'SpO₂',
+                title: AppLocalizations.of(context)!.oxygen,
                 value: '98%',
                 leadingWidget: RichText(
                   text: TextSpan(
@@ -534,6 +538,7 @@ class HomeScreen extends StatelessWidget {
     required Color borderColor,
     required VoidCallback onTap,
   }) {
+    final c = context.appColors;
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(20),
@@ -561,16 +566,16 @@ class HomeScreen extends StatelessWidget {
                     style: GoogleFonts.outfit(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: const Color(0xFF475467),
+                      color: c.secondaryText,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                const Icon(
+                Icon(
                   Icons.chevron_right_rounded,
                   size: 16,
-                  color: Color(0xFF1D2939),
+                  color: c.primaryText,
                 ),
               ],
             ),
@@ -589,7 +594,7 @@ class HomeScreen extends StatelessWidget {
                           style: GoogleFonts.outfit(
                             fontSize: 20,
                             fontWeight: FontWeight.w800,
-                            color: const Color(0xFF1D2939),
+                            color: c.primaryText,
                           ),
                         ),
                         const TextSpan(text: ' '),
@@ -598,7 +603,7 @@ class HomeScreen extends StatelessWidget {
                           style: GoogleFonts.outfit(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
-                            color: const Color(0xFF667085),
+                            color: c.secondaryText,
                           ),
                         ),
                       ],
@@ -611,7 +616,7 @@ class HomeScreen extends StatelessWidget {
                     style: GoogleFonts.outfit(
                       fontSize: 20,
                       fontWeight: FontWeight.w800,
-                      color: const Color(0xFF1D2939),
+                      color: c.primaryText,
                       height: 1.1,
                     ),
                   ),
@@ -621,7 +626,7 @@ class HomeScreen extends StatelessWidget {
                       style: GoogleFonts.outfit(
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
-                        color: const Color(0xFF667085),
+                        color: c.secondaryText,
                         height: 1.1,
                       ),
                     ),
@@ -670,6 +675,7 @@ class HomeScreen extends StatelessWidget {
 
   // Today's Next Medicine Card matching mockup columns exactly
   Widget _buildNextMedicineSection(BuildContext context) {
+    final c = context.appColors;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Column(
@@ -679,9 +685,9 @@ class HomeScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: c.cardBg,
               borderRadius: BorderRadius.circular(24),
-              border: Border.all(color: const Color(0xFFF1F5F9)),
+              border: Border.all(color: c.border),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.04),
@@ -697,10 +703,10 @@ class HomeScreen extends StatelessWidget {
                   children: [
                     Text(
                       AppLocalizations.of(context)!.todayNextMedicine,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w800,
-                        color: Color(0xFF1D2939),
+                        color: c.primaryText,
                       ),
                     ),
                     Text(
@@ -738,20 +744,20 @@ class HomeScreen extends StatelessWidget {
                         children: [
                           Text(
                             nextMedicine['name'] ?? AppLocalizations.of(context)!.medicineDefaultName,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontFamily: 'Outfit',
                               fontSize: 18,
                               fontWeight: FontWeight.w800,
-                              color: Color(0xFF1D2939),
+                              color: c.primaryText,
                             ),
                           ),
                           const SizedBox(height: 2),
                           Text(
                             nextMedicine['instruction'] ?? AppLocalizations.of(context)!.medicineDefaultInstruction,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
-                              color: Color(0xFF475467),
+                              color: c.secondaryText,
                             ),
                           ),
                         ],
@@ -768,9 +774,9 @@ class HomeScreen extends StatelessWidget {
                         height: 42,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: isNextMedTaken ? const Color(0xFF12B76A) : Colors.white,
+                          color: isNextMedTaken ? const Color(0xFF12B76A) : c.cardBg,
                           border: Border.all(
-                            color: isNextMedTaken ? const Color(0xFF12B76A) : const Color(0xFFE2E8F0),
+                            color: isNextMedTaken ? const Color(0xFF12B76A) : c.divider,
                             width: 2,
                           ),
                           boxShadow: isNextMedTaken
@@ -807,7 +813,7 @@ class HomeScreen extends StatelessWidget {
                         margin: const EdgeInsets.only(right: 6),
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: isFilled ? const Color(0xFF12B76A) : const Color(0xFFE2E8F0),
+                          color: isFilled ? const Color(0xFF12B76A) : c.divider,
                           border: Border.all(
                             color: isFilled ? const Color(0xFF12B76A) : const Color(0xFFCBD5E1),
                             width: 2,
@@ -819,11 +825,11 @@ class HomeScreen extends StatelessWidget {
                     Expanded(
                       child: Text(
                         AppLocalizations.of(context)!.medicineProgress(medicineTakenCount.toString(), medicineTotalCount.toString()),
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontFamily: 'Outfit',
                           fontSize: 15,
                           fontWeight: FontWeight.w600,
-                          color: Color(0xFF1D2939),
+                          color: c.primaryText,
                         ),
                       ),
                     ),
@@ -855,6 +861,7 @@ class HomeScreen extends StatelessWidget {
 
   // Emergency SOS section matching the mockup pill SOS layout
   Widget _buildEmergencyCard(BuildContext context) {
+    final c = context.appColors;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Container(
@@ -889,10 +896,10 @@ class HomeScreen extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   AppLocalizations.of(context)!.emergencySubtitle,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF475467),
+                    color: c.secondaryText,
                   ),
                 ),
               ],
@@ -944,6 +951,7 @@ class HomeScreen extends StatelessWidget {
 
   // Quick Access Section
   Widget _buildQuickAccessSection(BuildContext context) {
+    final c = context.appColors;
     final quickItems = [
       _QuickAccessItem(
         icon: DoctorIcon(size: 20),
@@ -1011,7 +1019,7 @@ class HomeScreen extends StatelessWidget {
                   style: GoogleFonts.outfit(
                     fontSize: 20,
                     fontWeight: FontWeight.w700,
-                    color: const Color(0xFF1D2939),
+                    color: c.primaryText,
                   ),
                 ),
               ),
@@ -1096,6 +1104,7 @@ class _QuickAccessCardState extends State<_QuickAccessCard>
 
   @override
   Widget build(BuildContext context) {
+    final c = context.appColors;
     return GestureDetector(
       onTapDown: (_) => _controller.forward(),
       onTapUp: (_) {
@@ -1119,7 +1128,7 @@ class _QuickAccessCardState extends State<_QuickAccessCard>
               height: 72,
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: c.cardBg,
                 borderRadius: BorderRadius.circular(18),
                 boxShadow: [
                   BoxShadow(
@@ -1151,7 +1160,7 @@ class _QuickAccessCardState extends State<_QuickAccessCard>
                       style: GoogleFonts.outfit(
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
-                        color: const Color(0xFF1D2939),
+                        color: c.primaryText,
                         height: 1.15,
                       ),
                     ),

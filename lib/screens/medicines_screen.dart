@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:meditrack/l10n/app_localizations.dart';
+import 'package:meditrack/theme/app_theme.dart';
 
 class MedicinesScreen extends StatefulWidget {
   final List<Map<String, dynamic>> medicinesList;
@@ -33,17 +34,18 @@ class _MedicinesScreenState extends State<MedicinesScreen> {
       return true;
     }).toList();
 
+    final c = context.appColors;
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: c.scaffoldBg,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: Text(
           AppLocalizations.of(context)!.medicinesTitle,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.w800,
-            color: Color(0xFF1D2939),
+            color: c.primaryText,
           ),
         ),
         actions: [
@@ -51,7 +53,7 @@ class _MedicinesScreenState extends State<MedicinesScreen> {
             clipBehavior: Clip.none,
             children: [
               IconButton(
-                icon: const Icon(Icons.notifications_none_rounded, color: Color(0xFF475467)),
+                icon: Icon(Icons.notifications_none_rounded, color: c.secondaryText),
                 onPressed: widget.onOpenNotifications,
               ),
               if (widget.notificationCount > 0)
@@ -102,10 +104,10 @@ class _MedicinesScreenState extends State<MedicinesScreen> {
               children: [
                 Text(
                   AppLocalizations.of(context)!.todayMedicines,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w800,
-                    color: Color(0xFF1D2939),
+                    color: c.primaryText,
                   ),
                 ),
               ],
@@ -140,9 +142,10 @@ class _MedicinesScreenState extends State<MedicinesScreen> {
 
   // Segmented filters
   Widget _buildFilterTabs() {
+    final c = context.appColors;
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFFE2E8F0),
+        color: c.divider,
         borderRadius: BorderRadius.circular(14),
       ),
       padding: const EdgeInsets.all(4),
@@ -157,6 +160,7 @@ class _MedicinesScreenState extends State<MedicinesScreen> {
   }
 
   Widget _buildFilterTab(String filter, String label) {
+    final c = context.appColors;
     bool isActive = _activeFilter == filter;
     return Expanded(
       child: InkWell(
@@ -170,7 +174,7 @@ class _MedicinesScreenState extends State<MedicinesScreen> {
           duration: const Duration(milliseconds: 200),
           padding: const EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(
-            color: isActive ? Colors.white : Colors.transparent,
+            color: isActive ? c.cardBg : Colors.transparent,
             borderRadius: BorderRadius.circular(10),
             boxShadow: isActive
                 ? [
@@ -188,7 +192,7 @@ class _MedicinesScreenState extends State<MedicinesScreen> {
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.bold,
-                color: isActive ? const Color(0xFF7F56D9) : const Color(0xFF475467),
+                color: isActive ? const Color(0xFF7F56D9) : c.secondaryText,
               ),
             ),
           ),
@@ -199,6 +203,7 @@ class _MedicinesScreenState extends State<MedicinesScreen> {
 
   // Custom Item Card
   Widget _buildMedicineItemCard(Map<String, dynamic> item, int mainIndex) {
+    final c = context.appColors;
     bool isTaken = item['isTaken'] ?? false;
     String timeStr = item['time'] ?? '08:00 AM';
     
@@ -219,10 +224,10 @@ class _MedicinesScreenState extends State<MedicinesScreen> {
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: c.cardBg,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isTaken ? const Color(0xFFECFDF3) : const Color(0xFFF1F5F9),
+          color: isTaken ? const Color(0xFFECFDF3) : c.border,
         ),
         boxShadow: [
           BoxShadow(
@@ -265,20 +270,20 @@ class _MedicinesScreenState extends State<MedicinesScreen> {
                 const SizedBox(height: 2),
                 Text(
                   item['name'] ?? AppLocalizations.of(context)!.medicineDefaultName,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontFamily: 'Outfit',
                     fontSize: 17,
                     fontWeight: FontWeight.w700,
-                    color: Color(0xFF1D2939),
+                    color: c.primaryText,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   '${item['dose']} - ${item['instruction']}',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
-                    color: Color(0xFF475467),
+                    color: c.secondaryText,
                   ),
                 ),
               ],
@@ -298,9 +303,9 @@ class _MedicinesScreenState extends State<MedicinesScreen> {
                   height: 38,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: isTaken ? const Color(0xFF12B76A) : Colors.white,
+                    color: isTaken ? const Color(0xFF12B76A) : c.cardBg,
                     border: Border.all(
-                      color: isTaken ? const Color(0xFF12B76A) : const Color(0xFFE2E8F0),
+                      color: isTaken ? const Color(0xFF12B76A) : c.divider,
                       width: 2,
                     ),
                   ),
@@ -318,7 +323,7 @@ class _MedicinesScreenState extends State<MedicinesScreen> {
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w800,
-                    color: isTaken ? const Color(0xFF12B76A) : const Color(0xFF98A2B3),
+                    color: isTaken ? const Color(0xFF12B76A) : c.tertiaryText,
                   ),
                 ),
               ],
@@ -404,19 +409,20 @@ class _MedicinesScreenState extends State<MedicinesScreen> {
   // Modal Bottom Sheet Form for adding medicine
   void _showAddMedicineModal(BuildContext context) {
     final nameController = TextEditingController();
-    final doseController = TextEditingController(text: '1 गोली');
+    final doseController = TextEditingController(text: AppLocalizations.of(context)!.dose1Pill);
     TimeOfDay selectedTime = const TimeOfDay(hour: 8, minute: 0);
     String selectedInstruction = AppLocalizations.of(context)!.instructionAfterBreakfast;
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      shape: RoundedRectangleBorder(
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
       ),
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setModalState) {
+            final c = context.appColors;
             return Padding(
               padding: EdgeInsets.only(
                 left: 20.0,
@@ -434,7 +440,7 @@ class _MedicinesScreenState extends State<MedicinesScreen> {
                       width: 48,
                       height: 5,
                       decoration: BoxDecoration(
-                        color: const Color(0xFFE2E8F0),
+                        color: c.divider,
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
@@ -447,43 +453,43 @@ class _MedicinesScreenState extends State<MedicinesScreen> {
                     children: [
                       Text(
                         AppLocalizations.of(context)!.addMedicine,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w800,
-                          color: Color(0xFF1D2939),
+                          color: c.primaryText,
                         ),
                       ),
                       IconButton(
-                        icon: const Icon(Icons.close, color: Color(0xFF98A2B3)),
+                        icon: Icon(Icons.close, color: c.tertiaryText),
                         onPressed: () => Navigator.pop(context),
                       ),
                     ],
                   ),
-                  const Divider(color: Color(0xFFF1F5F9)),
+                  Divider(color: c.border),
                   const SizedBox(height: 12),
                   
                   // Medicine Name Field
                   Text(
                     AppLocalizations.of(context)!.medicineName,
-                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF475467)),
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: c.secondaryText),
                   ),
                   const SizedBox(height: 6),
                   TextField(
                     controller: nameController,
-                    style: const TextStyle(fontFamily: 'Outfit', fontWeight: FontWeight.w600),
+                    style: TextStyle(fontFamily: 'Outfit', fontWeight: FontWeight.w600, color: c.primaryText),
                     decoration: InputDecoration(
                       hintText: AppLocalizations.of(context)!.medicineNameHint,
-                      hintStyle: const TextStyle(fontFamily: 'Outfit', color: Color(0xFF98A2B3), fontWeight: FontWeight.normal),
+                      hintStyle: TextStyle(fontFamily: 'Outfit', color: c.tertiaryText, fontWeight: FontWeight.normal),
                       filled: true,
-                      fillColor: const Color(0xFFF8FAFC),
+                      fillColor: c.scaffoldBg,
                       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(color: Color(0xFFE2E8F0), width: 2),
+                        borderSide: BorderSide(color: c.divider, width: 2),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(color: Color(0xFFE2E8F0), width: 2),
+                        borderSide: BorderSide(color: c.divider, width: 2),
                       ),
                     ),
                   ),
@@ -499,7 +505,7 @@ class _MedicinesScreenState extends State<MedicinesScreen> {
                           children: [
                             Text(
                               AppLocalizations.of(context)!.time,
-                              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF475467)),
+                              style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: c.secondaryText),
                             ),
                             const SizedBox(height: 6),
                             InkWell(
@@ -517,20 +523,20 @@ class _MedicinesScreenState extends State<MedicinesScreen> {
                               child: Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFFF8FAFC),
+                                  color: c.scaffoldBg,
                                   borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(color: const Color(0xFFE2E8F0), width: 2),
+                                  border: Border.all(color: c.divider, width: 2),
                                 ),
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
                                       selectedTime.format(context),
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontFamily: 'Outfit',
                                         fontSize: 16,
                                         fontWeight: FontWeight.w600,
-                                        color: Color(0xFF1D2939),
+                                        color: c.primaryText,
                                       ),
                                     ),
                                     const Icon(Icons.access_time_rounded, color: Color(0xFF7F56D9)),
@@ -550,24 +556,24 @@ class _MedicinesScreenState extends State<MedicinesScreen> {
                           children: [
                             Text(
                               AppLocalizations.of(context)!.dose,
-                              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF475467)),
+                              style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: c.secondaryText),
                             ),
                             const SizedBox(height: 6),
                             TextField(
                               controller: doseController,
-                              style: const TextStyle(fontWeight: FontWeight.w600),
+                              style: TextStyle(fontWeight: FontWeight.w600, color: c.primaryText),
                               decoration: InputDecoration(
                                 hintText: AppLocalizations.of(context)!.doseHint,
                                 filled: true,
-                                fillColor: const Color(0xFFF8FAFC),
+                                fillColor: c.scaffoldBg,
                                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
-                                  borderSide: const BorderSide(color: Color(0xFFE2E8F0), width: 2),
+                                  borderSide: BorderSide(color: c.divider, width: 2),
                                 ),
                                 enabledBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
-                                  borderSide: const BorderSide(color: Color(0xFFE2E8F0), width: 2),
+                                  borderSide: BorderSide(color: c.divider, width: 2),
                                 ),
                               ),
                             ),
@@ -582,25 +588,25 @@ class _MedicinesScreenState extends State<MedicinesScreen> {
                   // Instruction Dropdown
                   Text(
                     AppLocalizations.of(context)!.instruction,
-                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF475467)),
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: c.secondaryText),
                   ),
                   const SizedBox(height: 6),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF8FAFC),
+                      color: c.scaffoldBg,
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: const Color(0xFFE2E8F0), width: 2),
+                      border: Border.all(color: c.divider, width: 2),
                     ),
                     child: DropdownButtonHideUnderline(
                       child: DropdownButton<String>(
                         value: selectedInstruction,
                         isExpanded: true,
                         icon: const Icon(Icons.keyboard_arrow_down_rounded, color: Color(0xFF7F56D9)),
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w600,
-                          color: Color(0xFF1D2939),
+                          color: c.primaryText,
                         ),
                         items: <String>[
                           AppLocalizations.of(context)!.instructionAfterBreakfast,
@@ -672,6 +678,7 @@ class _MedicinesScreenState extends State<MedicinesScreen> {
   }
 
   Widget _buildEmptyState() {
+    final c = context.appColors;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -680,11 +687,11 @@ class _MedicinesScreenState extends State<MedicinesScreen> {
           const SizedBox(height: 12),
           Text(
             AppLocalizations.of(context)!.noMedicines,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF475467)),
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: c.secondaryText),
           ),
           Text(
             AppLocalizations.of(context)!.noMedicinesSubtitle,
-            style: const TextStyle(fontSize: 13, color: Color(0xFF98A2B3)),
+            style: TextStyle(fontSize: 13, color: c.tertiaryText),
           ),
         ],
       ),

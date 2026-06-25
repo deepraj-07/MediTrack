@@ -23,6 +23,8 @@
   "add": "Add",
   "back": "Back",
   "confirm": "Confirm",
+  "close": "Close",
+  "search": "Search",
 
   "@_HomeScreen": "Home Screen",
   "greeting": "Hello Ramesh ji",
@@ -142,6 +144,13 @@
     }
   },
   "overallStatus": "Overall status: Normal",
+  "statusNormal": "Normal",
+  "statusNormalFasting": "Normal (Fasting)",
+  "statusNormalPostMeal": "Normal (Post-meal)",
+  "vitalBp": "Blood Pressure",
+  "vitalSugar": "Blood Sugar",
+  "vitalOxygen": "Oxygen (SpO₂)",
+  "vitalTemp": "Temperature",
 
   "@_Medicines": "Medicines",
   "medicinesTitle": "Medicines & Reminders",
@@ -223,6 +232,35 @@
   "stepperInfo": "Info",
   "stepperConfirm": "Confirm",
 
+  "monthJan": "January",
+  "monthFeb": "February",
+  "monthMar": "March",
+  "monthApr": "April",
+  "monthMayLabel": "May",
+  "monthJun": "June",
+  "monthJul": "July",
+  "monthAug": "August",
+  "monthSep": "September",
+  "monthOct": "October",
+  "monthNov": "November",
+  "monthDec": "December",
+
+  "dayShortMon": "Mon",
+  "dayShortTue": "Tue",
+  "dayShortWed": "Wed",
+  "dayShortThu": "Thu",
+  "dayShortFri": "Fri",
+  "dayShortSat": "Sat",
+  "dayShortSun": "Sun",
+
+  "dayMonday": "Monday",
+  "dayTuesday": "Tuesday",
+  "dayWednesday": "Wednesday",
+  "dayThursday": "Thursday",
+  "dayFriday": "Friday",
+  "daySaturday": "Saturday",
+  "daySunday": "Sunday",
+
   "@_Specialties": "Specialties",
   "specCardiology": "Cardiology",
   "specCardiologyFull": "Cardiology",
@@ -243,6 +281,37 @@
   },
   "markAllRead": "Mark all read",
   "noNotifications": "No notifications",
+  "notifMedTaken": "Medicine taken",
+  "notifMedTakenBody": "{name} has been taken at {time}.",
+  "@notifMedTakenBody": {
+    "placeholders": {
+      "name": {},
+      "time": {}
+    }
+  },
+  "notifMedReminder": "Medicine reminder",
+  "notifMedReminderBody": "{name} at {time}. Take after food.",
+  "@notifMedReminderBody": {
+    "placeholders": {
+      "name": {},
+      "time": {}
+    }
+  },
+  "notifBpReading": "BP Reading: {value}",
+  "@notifBpReading": {
+    "placeholders": {
+      "value": {}
+    }
+  },
+  "notifBpReadingBody": "Your blood pressure is slightly elevated. Please consult your doctor.",
+  "notifAppointment": "Doctor Appointment",
+  "notifAppointmentBody": "Appointment with Dr. {name} tomorrow at {time}.",
+  "@notifAppointmentBody": {
+    "placeholders": {
+      "name": {},
+      "time": {}
+    }
+  },
 
   "@_SOS": "Emergency SOS",
   "emergencyAlert": "Emergency Alert",
@@ -271,6 +340,191 @@
   "heightVal": "170 cm",
   "weightVal": "72 kg",
   "cityVal": "New Delhi",
+  "myOptions": "My Options",
+  "personalInfo": "Personal Information",
+  "healthInfo": "Health Information",
+  "emergencyContactsLabel": "Emergency Contacts",
+  "languageDisplay": "Language & Display",
+  "notificationSettings": "Notification Settings",
+  "privacySecurity": "Privacy & Security",
+  "editProfile": "Edit Profile",
+  "statHealthScore": "Health Score",
+  "statMemberSince": "Member Since",
+  "statFamilyMembers": "Family Members",
+  "userId": "ID: {id}",
+  "@userId": {
+    "placeholders": {
+      "id": {}
+    }
+  },
+  "primaryAccount": "Primary Account",
+  "settingsComingSoon": "Settings coming soon",
+  "personalInfoHeading": "Personal Information",
+  "fullNameLabel": "Full Name",
+  "dobLabel": "Date of Birth",
+  "genderLabel": "Gender",
+  "mobileLabel": "Mobile Number",
+  "emailLabel": "Email ID",
+  "addressLabel": "Address",
+  "bloodGroupLabel": "Blood Group",
+  "editInfo": "Edit Information",
+  "healthInfoHeading": "Health Information",
+  "primaryConditions": "Primary Conditions",
+  "addNewCondition": "Add New Condition",
+  "allergiesLabel": "Allergies",
+  "addNewAllergy": "Add New Allergy",
+  "regularMedicines": "Regular Medicines",
+  "profileNameHi": "Ramesh Ji Sharma",
+  "emergencyInfo": "We will notify these contacts in emergency situations.",
+  "addNewContact": "Add New Contact",
+  "languageSection": "Language",
+  "chooseLanguage": "Choose Language",
+  "textSize": "Text Size",
+  "sizeSmall": "Small",
+  "sizeMedium": "Medium",
+  "sizeLarge": "Large",
+  "darkMode": "Dark Mode",
+  "highContrast": "High Contrast Mode",
+  "allNotifications": "All Notifications",
+  "medicineReminders": "Medicine Reminders",
+  "appointmentReminders": "Appointment Reminders",
+  "healthAlerts": "Health Alerts",
+  "familyUpdates": "Family Updates",
+  "promotionsTips": "Promotions & Tips",
+  "passcodeBiometric": "Passcode / Biometric Lock",
+  "changePasscode": "Change Passcode",
+  "twoFactorAuth": "Two-Factor Authentication",
+  "dataSharing": "Data Sharing Preference",
+  "privacyPolicy": "Privacy Policy",
+  "logoutTitle": "Logout",
+  "logoutQuestion": "Are you sure you want to logout?",
+  "logoutCancel": "Cancel",
+  "logoutConfirm": "Logout",
+  "logoutSnackbar": "Logged out",
+  "logoutButton": "Logout",
+  "saveChanges": "Save Changes",
+  "passcodeEnabled": "Enabled",
+  "twoFactorDisabled": "Disabled",
+  "userDob": "15 Mar 1958",
+  "userGender": "Male",
+  "userMobile": "+91 98765 43210",
+  "userEmail": "ramesh.sharma@gmail.com",
+  "userAddress": "25, Shanti Nagar, Jaipur, Rajasthan - 302001",
+  "userBloodGroup": "B+",
+  "condHypertension": "Hypertension",
+  "condDiabetes": "Diabetes Type 2",
+  "condArthritis": "Arthritis",
+  "allergyDust": "Dust Allergy",
+  "allergyPenicillin": "Penicillin",
+  "medAmlodipine": "Amlodipine 5mg",
+  "medAmlodipineDose": "Morning - 1 pill",
+  "contactWife": "Seeta Sharma (Wife)",
+  "contactSon": "Amit Sharma (Son)",
+  "contactDaughter": "Neha Sharma (Daughter)",
+  "contactWifePhone": "+91 98765 12345",
+  "contactSonPhone": "+91 87654 32109",
+  "contactDaughterPhone": "+91 76543 21098",
+  "tagPrimary": "Primary",
+  "tagSecondary": "Secondary",
+  "addContactComingSoon": "Add contact coming soon",
+
+  "@_Family": "Family Connect",
+  "addMember": "Add Member",
+  "familyMembersTitle": "Family Members",
+  "members": "members",
+  "self": "You",
+  "medicinesCount": "{count} medicines",
+  "@medicinesCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "memberStatus": "{count} members • All healthy",
+  "@memberStatus": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "addMemberSnackbar": "Add family member",
+  "memberCount": "{count} members",
+  "@memberCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+
+  "@_MedicalRecords": "Medical Records",
+  "recordsTitle": "Medical Records",
+  "thisYear": "This Year",
+  "reportSummary": "Report Summary",
+  "reportDownloading": "Downloading report...",
+
+  "@_HealthReport": "Health Report",
+  "healthReport": "My Health Report",
+  "yourHealthReport": "Your Health Report",
+  "healthy": "Healthy",
+  "allVitalsNormal": "All vital parameters are within normal range.",
+  "healthParameters": "Health Parameters",
+  "recommendations": "Recommendations",
+  "recVitaminD": "Vitamin D is slightly low",
+  "recVitaminDDesc": "Sit in sunlight and take Vitamin D3 supplement",
+  "recExercise": "Daily Exercise",
+  "recExerciseDesc": "Walk for 30 minutes or do light exercise",
+  "recWater": "Drink Water",
+  "recWaterDesc": "Drink 8-10 glasses of water daily",
+  "reportShared": "Sharing report...",
+
+  "@_HealthTips": "Health Tips",
+  "healthTipsTitle": "Health Tips",
+  "healthyLivingTips": "Healthy Living Tips",
+  "categories": "categories",
+  "tipsCount": "{count} tips",
+  "@tipsCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "catDiabetes": "Diabetes",
+  "catHeart": "Heart Health",
+  "catNutrition": "Nutrition",
+  "catMedicine": "Medicine Management",
+  "tipRegularCheckup": "Regular Checkup",
+  "tipRegularCheckupDesc": "Get HbA1c tested every 3 months",
+  "tipDiet": "Diet",
+  "tipDietDesc": "Avoid sweets and eat fiber",
+  "tipExercise": "Exercise",
+  "tipExerciseDesc": "Walk 30 minutes daily",
+  "tipBpControl": "BP Control",
+  "tipBpControlDesc": "Eat less salt, check BP regularly",
+  "tipCholesterol": "Cholesterol",
+  "tipCholesterolDesc": "Reduce oil/ghee, eat green vegetables",
+  "tipStressFree": "Stress Free",
+  "tipStressFreeDesc": "Meditate and do yoga, reduce stress",
+  "tipBalancedDiet": "Balanced Diet",
+  "tipBalancedDietDesc": "Eat protein, vitamins and minerals",
+  "tipDrinkWater": "Drink Water",
+  "tipDrinkWaterDesc": "Drink 8-10 glasses of water daily",
+  "tipEatOnTime": "Eat on Time",
+  "tipEatOnTimeDesc": "Have breakfast, lunch and dinner on time",
+  "tipMedicineOnTime": "Medicine on Time",
+  "tipMedicineOnTimeDesc": "Take medicine on time, set alarm",
+  "tipConsultDoctor": "Consult Doctor",
+  "tipConsultDoctorDesc": "Don't change medicine without doctor's advice",
+  "tipMedicineList": "Medicine List",
+  "tipMedicineListDesc": "Keep a list of all medicines with you",
+  "tipsHeroSubtitle": "{categories} categories • {tips} tips",
+  "@tipsHeroSubtitle": {
+    "placeholders": {
+      "categories": {},
+      "tips": {}
+    }
+  },
+  "tipCount": "{count} tips",
+  "@tipCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
 
   "@_VoiceAssistant": "Voice Assistant",
   "voiceListening": "Listening...",
@@ -343,5 +597,54 @@
   "patientAge": "58 years",
   "patientPhone": "+91 98765 43210",
   "patientEmail": "ram.sharma@email.com",
-  "patientSymptoms": "Chest pain, fatigue, and shortness of breath."
+  "patientSymptoms": "Chest pain, fatigue, and shortness of breath.",
+
+  "@_RecordData": "Medical Record Data",
+  "recordHealthCheckup": "Health Checkup Report",
+  "recordHeartCheckup": "Heart Checkup Report",
+  "recordDiabetesCheckup": "Diabetes Checkup",
+  "recordXray": "X-Ray Report",
+  "recordAnnualCheckup": "Annual Health Checkup",
+  "recordDocGupta": "Dr. R. K. Gupta",
+  "recordDocSharma": "Dr. Rajat Sharma",
+  "recordDocVerma": "Dr. Neha Verma",
+  "recordDocPatel": "Dr. Amit Patel",
+  "recordTypeBlood": "Blood Test",
+  "recordTypeECG": "ECG",
+  "recordTypeHba1c": "HbA1c",
+  "recordTypeXray": "X-Ray",
+  "recordTypeFullBody": "Full Body Checkup",
+  "recordSummaryHealthCheckup": "BP 120/80, Sugar 98 mg/dL, Cholesterol normal",
+  "recordSummaryHeartCheckup": "ECG normal, Heart rate 72 bpm",
+  "recordSummaryDiabetesCheckup": "HbA1c 6.2% - within normal range",
+  "recordSummaryXray": "Chest X-ray normal, no abnormalities",
+  "recordSummaryAnnualCheckup": "All parameters normal, Vitamin D3 slightly low",
+
+  "@_FamilyData": "Family Data",
+  "familyNameWife": "Sunita Devi",
+  "familyRelationWife": "Wife",
+  "familyAgeWife": "62 yrs",
+  "familyNameSon": "Amit Sharma",
+  "familyRelationSon": "Son",
+  "familyAgeSon": "35 yrs",
+  "familyNameDaughterInLaw": "Priya Sharma",
+  "familyRelationDaughterInLaw": "Daughter-in-law",
+  "familyAgeDaughterInLaw": "30 yrs",
+  "familyNameGrandson": "Aarav Sharma",
+  "familyRelationGrandson": "Grandson",
+  "familyAgeGrandson": "5 yrs",
+  "familyMedsWife": "BP medicine, Thyroid",
+  "familyMedsGrandson": "Vitamin D3",
+
+  "@_ProfileData": "Profile Data",
+  "profileNameHi": "Ramesh Ji Sharma",
+  "profileNameEn": "Ramesh Ji Sharma",
+  "profileId": "ID: MT-2024-5687",
+  "profilePrimaryAccount": "Primary Account",
+  "profileHealthScore": "85/100",
+  "profileMemberSince": "Jan 2024",
+  "profileFamilyCount": "2",
+  "statHealthScore": "Health Score",
+  "statMemberSince": "Member Since",
+  "statFamilyMembers": "Family Members"
 }

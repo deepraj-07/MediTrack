@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:meditrack/l10n/app_localizations.dart';
+import 'package:meditrack/theme/app_theme.dart';
 
 class FamilyScreen extends StatefulWidget {
   const FamilyScreen({super.key});
@@ -9,59 +10,63 @@ class FamilyScreen extends StatefulWidget {
 }
 
 class _FamilyScreenState extends State<FamilyScreen> {
-  final List<_FamilyMember> _members = [
-    _FamilyMember(
-      name: 'सुनीता देवी',
-      relation: 'पत्नी',
-      age: '62 वर्ष',
-      bloodGroup: 'B+',
-      emoji: '👩',
-      color: Color(0xFFF43F5E),
-      medicines: ['बीपी की दवा', 'थायरॉइड'],
-    ),
-    _FamilyMember(
-      name: 'अमित शर्मा',
-      relation: 'बेटा',
-      age: '35 वर्ष',
-      bloodGroup: 'O+',
-      emoji: '👨',
-      color: Color(0xFF2E82FF),
-      medicines: [],
-    ),
-    _FamilyMember(
-      name: 'प्रिया शर्मा',
-      relation: 'बहू',
-      age: '30 वर्ष',
-      bloodGroup: 'A+',
-      emoji: '👩‍🦰',
-      color: Color(0xFF12B76A),
-      medicines: [],
-    ),
-    _FamilyMember(
-      name: 'आरव शर्मा',
-      relation: 'पोता',
-      age: '5 वर्ष',
-      bloodGroup: 'O+',
-      emoji: '👦',
-      color: Color(0xFFF59E0B),
-      medicines: ['विटामिन D3'],
-    ),
-  ];
+  List<_FamilyMember> get _members {
+    final l = AppLocalizations.of(context)!;
+    return [
+      _FamilyMember(
+        name: l.familyNameWife,
+        relation: l.familyRelationWife,
+        age: l.familyAgeWife,
+        bloodGroup: 'B+',
+        emoji: '👩',
+        color: const Color(0xFFF43F5E),
+        medicines: l.familyMedsWife.split(', '),
+      ),
+      _FamilyMember(
+        name: l.familyNameSon,
+        relation: l.familyRelationSon,
+        age: l.familyAgeSon,
+        bloodGroup: 'O+',
+        emoji: '👨',
+        color: const Color(0xFF2E82FF),
+        medicines: [],
+      ),
+      _FamilyMember(
+        name: l.familyNameDaughterInLaw,
+        relation: l.familyRelationDaughterInLaw,
+        age: l.familyAgeDaughterInLaw,
+        bloodGroup: 'A+',
+        emoji: '👩‍🦰',
+        color: const Color(0xFF12B76A),
+        medicines: [],
+      ),
+      _FamilyMember(
+        name: l.familyNameGrandson,
+        relation: l.familyRelationGrandson,
+        age: l.familyAgeGrandson,
+        bloodGroup: 'O+',
+        emoji: '👦',
+        color: const Color(0xFFF59E0B),
+        medicines: l.familyMedsGrandson.split(', '),
+      ),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
+    final c = context.appColors;
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: c.scaffoldBg,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF1D2939), size: 26),
+          icon: Icon(Icons.arrow_back_rounded, color: c.primaryText, size: 26),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           AppLocalizations.of(context)!.quickFamily.replaceAll('\n', ' '),
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: Color(0xFF1D2939)),
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: c.primaryText),
         ),
         centerTitle: false,
         actions: [
@@ -70,7 +75,7 @@ class _FamilyScreenState extends State<FamilyScreen> {
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: const Text('परिवार का सदस्य जोड़ें'),
+                  content: Text(AppLocalizations.of(context)!.addMemberSnackbar),
                   backgroundColor: const Color(0xFF7F56D9),
                   behavior: SnackBarBehavior.floating,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -124,7 +129,7 @@ class _FamilyScreenState extends State<FamilyScreen> {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          '${_members.length} सदस्य • सभी स्वस्थ',
+                          AppLocalizations.of(context)!.memberStatus(_members.length),
                           style: const TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.w500),
                         ),
                       ],
@@ -136,7 +141,7 @@ class _FamilyScreenState extends State<FamilyScreen> {
                       color: Colors.white.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: const Text('+ जोड़ें', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 13)),
+                    child: Text(AppLocalizations.of(context)!.addMember, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 13)),
                   ),
                 ],
               ),
@@ -157,11 +162,11 @@ class _FamilyScreenState extends State<FamilyScreen> {
                 ),
                 const SizedBox(width: 10),
                 Text(
-                  'परिवार के सदस्य',
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF1D2939)),
+                  AppLocalizations.of(context)!.familyMembersTitle,
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: c.primaryText),
                 ),
                 const Spacer(),
-                Text('${_members.length} सदस्य', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF667085))),
+                Text(AppLocalizations.of(context)!.memberCount(_members.length), style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: c.secondaryText)),
               ],
             ),
           ),
@@ -180,13 +185,14 @@ class _FamilyScreenState extends State<FamilyScreen> {
   }
 
   Widget _buildMemberCard(_FamilyMember member, bool isSelf) {
+    final c = context.appColors;
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: c.cardBg,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFF1F5F9)),
+        border: Border.all(color: c.border),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.02),
@@ -235,7 +241,7 @@ class _FamilyScreenState extends State<FamilyScreen> {
                     children: [
                       Text(
                         member.name,
-                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF1D2939)),
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: c.primaryText),
                       ),
                       if (isSelf) ...[
                         const SizedBox(width: 6),
@@ -245,7 +251,7 @@ class _FamilyScreenState extends State<FamilyScreen> {
                             color: const Color(0xFFF3E8FF),
                             borderRadius: BorderRadius.circular(6),
                           ),
-                          child: const Text('आप', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: Color(0xFF7F56D9))),
+                          child: Text(AppLocalizations.of(context)!.self, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: Color(0xFF7F56D9))),
                         ),
                       ],
                     ],
@@ -253,7 +259,7 @@ class _FamilyScreenState extends State<FamilyScreen> {
                   const SizedBox(height: 2),
                   Text(
                     '${member.relation} • ${member.age}',
-                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: Color(0xFF667085)),
+                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: c.secondaryText),
                   ),
                   const SizedBox(height: 4),
                   Row(
@@ -261,12 +267,12 @@ class _FamilyScreenState extends State<FamilyScreen> {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFF8FAFC),
+                          color: c.scaffoldBg,
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Text(
                           '${AppLocalizations.of(context)!.bloodGroup} ${member.bloodGroup}',
-                          style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Color(0xFF475467)),
+                          style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: c.secondaryText),
                         ),
                       ),
                       if (member.medicines.isNotEmpty) ...[
@@ -278,7 +284,7 @@ class _FamilyScreenState extends State<FamilyScreen> {
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: Text(
-                            '💊 ${member.medicines.length} दवाएँ',
+                            '💊 ${AppLocalizations.of(context)!.medicinesCount(member.medicines.length)}',
                             style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Color(0xFFF97316)),
                           ),
                         ),

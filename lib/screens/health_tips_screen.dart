@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:meditrack/l10n/app_localizations.dart';
+import 'package:meditrack/theme/app_theme.dart';
 
 class HealthTipsScreen extends StatefulWidget {
   const HealthTipsScreen({super.key});
@@ -9,82 +10,89 @@ class HealthTipsScreen extends StatefulWidget {
 }
 
 class _HealthTipsScreenState extends State<HealthTipsScreen> {
-  final List<_TipCategory> _categories = [
-    _TipCategory(
-      name: 'डायबिटीज',
-      icon: Icons.bloodtype_rounded,
-      color: Color(0xFF3B82F6),
-      tips: [
-        _HealthTip('नियमित जांच', 'हर 3 महीने में HbA1c जांच कराएं', '📊', false),
-        _HealthTip('डाइट', 'मीठे से परहेज करें और फाइबर लें', '🥗', true),
-        _HealthTip('व्यायाम', 'रोज 30 मिनट टहलें', '🚶', false),
-      ],
-    ),
-    _TipCategory(
-      name: 'हृदय स्वास्थ्य',
-      icon: Icons.favorite_rounded,
-      color: Color(0xFFF43F5E),
-      tips: [
-        _HealthTip('बीपी नियंत्रण', 'नमक कम खाएं, बीपी नियमित जांचें', '❤️', false),
-        _HealthTip('कोलेस्ट्रॉल', 'तेल-घी कम लें, हरी सब्जी खाएं', '🥬', true),
-        _HealthTip('तनाव मुक्त', 'ध्यान और योग करें, तनाव कम लें', '🧘', false),
-      ],
-    ),
-    _TipCategory(
-      name: 'पोषण',
-      icon: Icons.restaurant_rounded,
-      color: Color(0xFFF59E0B),
-      tips: [
-        _HealthTip('संतुलित आहार', 'प्रोटीन, विटामिन और मिनरल्स लें', '🍎', false),
-        _HealthTip('पानी पिएं', 'दिन में 8-10 गिलास पानी पिएं', '💧', true),
-        _HealthTip('समय पर खाएं', 'नाश्ता, दोपहर और रात का भोजन समय पर करें', '⏰', false),
-      ],
-    ),
-    _TipCategory(
-      name: 'दवा प्रबंधन',
-      icon: Icons.medication_rounded,
-      color: Color(0xFF7F56D9),
-      tips: [
-        _HealthTip('समय पर दवा', 'दवा समय पर लें, अलार्म लगाएं', '💊', false),
-        _HealthTip('डॉक्टर से सलाह', 'बिना डॉक्टर की सलाह दवा न बदलें', '👨‍⚕️', true),
-        _HealthTip('दवा सूची', 'सभी दवाओं की सूची अपने पास रखें', '📋', false),
-      ],
-    ),
-  ];
-
   int _expandedCategory = -1;
+
+  List<_TipCategory> _buildCategories(AppLocalizations l) {
+    return [
+      _TipCategory(
+        name: l.catDiabetes,
+        icon: Icons.bloodtype_rounded,
+        color: const Color(0xFF3B82F6),
+        tips: [
+          _HealthTip(l.tipRegularCheckup, l.tipRegularCheckupDesc, '📊', false),
+          _HealthTip(l.tipDiet, l.tipDietDesc, '🥗', true),
+          _HealthTip(l.tipExercise, l.tipExerciseDesc, '🚶', false),
+        ],
+      ),
+      _TipCategory(
+        name: l.catHeart,
+        icon: Icons.favorite_rounded,
+        color: const Color(0xFFF43F5E),
+        tips: [
+          _HealthTip(l.tipBpControl, l.tipBpControlDesc, '❤️', false),
+          _HealthTip(l.tipCholesterol, l.tipCholesterolDesc, '🥬', true),
+          _HealthTip(l.tipStressFree, l.tipStressFreeDesc, '🧘', false),
+        ],
+      ),
+      _TipCategory(
+        name: l.catNutrition,
+        icon: Icons.restaurant_rounded,
+        color: const Color(0xFFF59E0B),
+        tips: [
+          _HealthTip(l.tipBalancedDiet, l.tipBalancedDietDesc, '🍎', false),
+          _HealthTip(l.tipDrinkWater, l.tipDrinkWaterDesc, '💧', true),
+          _HealthTip(l.tipEatOnTime, l.tipEatOnTimeDesc, '⏰', false),
+        ],
+      ),
+      _TipCategory(
+        name: l.catMedicine,
+        icon: Icons.medication_rounded,
+        color: const Color(0xFF7F56D9),
+        tips: [
+          _HealthTip(l.tipMedicineOnTime, l.tipMedicineOnTimeDesc, '💊', false),
+          _HealthTip(l.tipConsultDoctor, l.tipConsultDoctorDesc, '👨‍⚕️', true),
+          _HealthTip(l.tipMedicineList, l.tipMedicineListDesc, '📋', false),
+        ],
+      ),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    final c = context.appColors;
+    final categories = _buildCategories(l);
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: c.scaffoldBg,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF1D2939), size: 26),
+          icon: Icon(Icons.arrow_back_rounded, color: c.primaryText, size: 26),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          AppLocalizations.of(context)!.quickTips.replaceAll('\n', ' '),
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: Color(0xFF1D2939)),
+          l.quickTips.replaceAll('\n', ' '),
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: c.primaryText),
         ),
         centerTitle: false,
       ),
       body: ListView.builder(
         padding: const EdgeInsets.all(16),
-        itemCount: _categories.length + 1,
+        itemCount: categories.length + 1,
         itemBuilder: (context, index) {
-          if (index == 0) return _buildHeroSection();
-          final cat = _categories[index - 1];
+          if (index == 0) return _buildHeroSection(l, categories);
+          final cat = categories[index - 1];
           final isExpanded = _expandedCategory == index - 1;
-          return _buildCategoryCard(cat, isExpanded, index - 1);
+          return _buildCategoryCard(l, cat, isExpanded, index - 1);
         },
       ),
     );
   }
 
-  Widget _buildHeroSection() {
+  Widget _buildHeroSection(AppLocalizations l, List<_TipCategory> categories) {
+    final categoriesCount = categories.length;
+    final tipsCount = categories.fold(0, (sum, c) => sum + c.tips.length);
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(20),
@@ -118,13 +126,13 @@ class _HealthTipsScreenState extends State<HealthTipsScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'स्वस्थ रहने के टिप्स',
-                  style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w800),
+                Text(
+                  l.healthyLivingTips,
+                  style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w800),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  '${_categories.length} श्रेणियाँ • ${_categories.fold(0, (sum, c) => sum + c.tips.length)} टिप्स',
+                  l.tipsHeroSubtitle(categoriesCount.toString(), tipsCount.toString()),
                   style: const TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.w500),
                 ),
               ],
@@ -135,13 +143,14 @@ class _HealthTipsScreenState extends State<HealthTipsScreen> {
     );
   }
 
-  Widget _buildCategoryCard(_TipCategory cat, bool isExpanded, int catIndex) {
+  Widget _buildCategoryCard(AppLocalizations l, _TipCategory cat, bool isExpanded, int catIndex) {
+    final c = context.appColors;
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: c.cardBg,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFF1F5F9)),
+        border: Border.all(color: c.border),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.02),
@@ -178,12 +187,12 @@ class _HealthTipsScreenState extends State<HealthTipsScreen> {
                       children: [
                         Text(
                           cat.name,
-                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF1D2939)),
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: c.primaryText),
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          '${cat.tips.length} टिप्स',
-                          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Color(0xFF667085)),
+                          l.tipsCount('${cat.tips.length}'),
+                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: c.secondaryText),
                         ),
                       ],
                     ),
@@ -201,7 +210,7 @@ class _HealthTipsScreenState extends State<HealthTipsScreen> {
             firstChild: const SizedBox.shrink(),
             secondChild: Column(
               children: [
-                const Divider(color: Color(0xFFF1F5F9), height: 1),
+                Divider(color: c.border, height: 1),
                 ...cat.tips.map((tip) => _buildTipTile(tip)),
               ],
             ),
@@ -214,6 +223,7 @@ class _HealthTipsScreenState extends State<HealthTipsScreen> {
   }
 
   Widget _buildTipTile(_HealthTip tip) {
+    final c = context.appColors;
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
       child: Row(
@@ -221,7 +231,7 @@ class _HealthTipsScreenState extends State<HealthTipsScreen> {
           Container(
             width: 36, height: 36,
             decoration: BoxDecoration(
-              color: const Color(0xFFF8FAFC),
+              color: c.scaffoldBg,
               shape: BoxShape.circle,
             ),
             child: Center(child: Text(tip.emoji, style: const TextStyle(fontSize: 18))),
@@ -233,12 +243,12 @@ class _HealthTipsScreenState extends State<HealthTipsScreen> {
               children: [
                 Text(
                   tip.title,
-                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF1D2939)),
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: c.primaryText),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   tip.desc,
-                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Color(0xFF667085)),
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: c.secondaryText),
                 ),
               ],
             ),

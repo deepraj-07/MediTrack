@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:meditrack/l10n/app_localizations.dart';
+import 'package:meditrack/theme/app_theme.dart';
 
 enum VitalType {
   bloodPressure,
@@ -18,9 +19,8 @@ class VitalDetailScreen extends StatefulWidget {
 }
 
 class _VitalDetailScreenState extends State<VitalDetailScreen> {
-  final String _selectedDate = 'आज';
+  String _selectedDate = '';
 
-  late final String _title;
   late final String _unit;
   late final Color _accentColor;
   late final IconData _icon;
@@ -31,77 +31,84 @@ class _VitalDetailScreenState extends State<VitalDetailScreen> {
     _initVitalData();
   }
 
+  String get _title {
+    switch (widget.vitalType) {
+      case VitalType.bloodPressure: return AppLocalizations.of(context)!.vitalBp;
+      case VitalType.bloodSugar: return AppLocalizations.of(context)!.vitalSugar;
+      case VitalType.oxygen: return AppLocalizations.of(context)!.vitalOxygen;
+      case VitalType.temperature: return AppLocalizations.of(context)!.vitalTemp;
+    }
+  }
+
   void _initVitalData() {
+    _selectedDate = AppLocalizations.of(context)!.today;
     switch (widget.vitalType) {
       case VitalType.bloodPressure:
-        _title = 'ब्लड प्रेशर';
-        _unit = 'mmHg';
+        _unit = AppLocalizations.of(context)!.unitMmhg;
         _accentColor = const Color(0xFFF43F5E);
         _icon = Icons.favorite_rounded;
         _readings = [
-          _Reading('08:00 AM', '120/80', 'सामान्य', true),
-          _Reading('10:30 AM', '122/82', 'सामान्य', true),
-          _Reading('01:30 PM', '125/85', 'सामान्य', true),
-          _Reading('04:00 PM', '118/78', 'सामान्य', true),
-          _Reading('08:00 PM', '121/80', 'सामान्य', true),
+          _Reading('08:00 AM', '120/80', AppLocalizations.of(context)!.statusNormal, true),
+          _Reading('10:30 AM', '122/82', AppLocalizations.of(context)!.statusNormal, true),
+          _Reading('01:30 PM', '125/85', AppLocalizations.of(context)!.statusNormal, true),
+          _Reading('04:00 PM', '118/78', AppLocalizations.of(context)!.statusNormal, true),
+          _Reading('08:00 PM', '121/80', AppLocalizations.of(context)!.statusNormal, true),
         ];
       case VitalType.bloodSugar:
-        _title = 'शुगर (रक्त शर्करा)';
-        _unit = 'mg/dL';
+        _unit = AppLocalizations.of(context)!.unitMgdl;
         _accentColor = const Color(0xFFEC4899);
         _icon = Icons.water_drop_rounded;
         _readings = [
-          _Reading('08:00 AM', '98', 'सामान्य (उपवास)', true),
-          _Reading('10:30 AM', '110', 'सामान्य', true),
-          _Reading('01:30 PM', '105', 'सामान्य (भोजनोपरांत)', true),
-          _Reading('05:00 PM', '95', 'सामान्य', true),
-          _Reading('08:00 PM', '108', 'सामान्य', true),
+          _Reading('08:00 AM', '98', AppLocalizations.of(context)!.statusNormalFasting, true),
+          _Reading('10:30 AM', '110', AppLocalizations.of(context)!.statusNormal, true),
+          _Reading('01:30 PM', '105', AppLocalizations.of(context)!.statusNormalPostMeal, true),
+          _Reading('05:00 PM', '95', AppLocalizations.of(context)!.statusNormal, true),
+          _Reading('08:00 PM', '108', AppLocalizations.of(context)!.statusNormal, true),
         ];
       case VitalType.oxygen:
-        _title = 'ऑक्सीजन (SpO₂)';
-        _unit = '%';
+        _unit = AppLocalizations.of(context)!.unitPercent;
         _accentColor = const Color(0xFF8B5CF6);
         _icon = Icons.circle;
         _readings = [
-          _Reading('08:00 AM', '98%', 'सामान्य', true),
-          _Reading('10:30 AM', '97%', 'सामान्य', true),
-          _Reading('01:30 PM', '99%', 'सामान्य', true),
-          _Reading('04:00 PM', '98%', 'सामान्य', true),
-          _Reading('08:00 PM', '97%', 'सामान्य', true),
+          _Reading('08:00 AM', '98%', AppLocalizations.of(context)!.statusNormal, true),
+          _Reading('10:30 AM', '97%', AppLocalizations.of(context)!.statusNormal, true),
+          _Reading('01:30 PM', '99%', AppLocalizations.of(context)!.statusNormal, true),
+          _Reading('04:00 PM', '98%', AppLocalizations.of(context)!.statusNormal, true),
+          _Reading('08:00 PM', '97%', AppLocalizations.of(context)!.statusNormal, true),
         ];
       case VitalType.temperature:
-        _title = 'तापमान';
-        _unit = '°F';
+        _unit = AppLocalizations.of(context)!.unitF;
         _accentColor = const Color(0xFFF97316);
         _icon = Icons.thermostat_rounded;
         _readings = [
-          _Reading('08:00 AM', '98.4°F', 'सामान्य', true),
-          _Reading('10:30 AM', '98.6°F', 'सामान्य', true),
-          _Reading('01:30 PM', '98.5°F', 'सामान्य', true),
-          _Reading('04:00 PM', '98.2°F', 'सामान्य', true),
-          _Reading('08:00 PM', '98.6°F', 'सामान्य', true),
+          _Reading('08:00 AM', '98.4°F', AppLocalizations.of(context)!.statusNormal, true),
+          _Reading('10:30 AM', '98.6°F', AppLocalizations.of(context)!.statusNormal, true),
+          _Reading('01:30 PM', '98.5°F', AppLocalizations.of(context)!.statusNormal, true),
+          _Reading('04:00 PM', '98.2°F', AppLocalizations.of(context)!.statusNormal, true),
+          _Reading('08:00 PM', '98.6°F', AppLocalizations.of(context)!.statusNormal, true),
         ];
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final c = context.appColors;
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: c.scaffoldBg,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: c.cardBg,
         elevation: 0,
         scrolledUnderElevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF1D2939), size: 26),
+          icon: Icon(Icons.arrow_back_rounded, color: c.primaryText, size: 26),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           _title,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w800,
-            color: Color(0xFF1D2939),
+            color: c.primaryText,
           ),
         ),
         centerTitle: true,
@@ -110,20 +117,20 @@ class _VitalDetailScreenState extends State<VitalDetailScreen> {
             margin: const EdgeInsets.only(right: 12),
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: const Color(0xFFF1F5F9),
+              color: c.border,
               borderRadius: BorderRadius.circular(20),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.calendar_today_rounded, size: 14, color: Color(0xFF475467)),
+                Icon(Icons.calendar_today_rounded, size: 14, color: c.secondaryText),
                 const SizedBox(width: 6),
                 Text(
                   _selectedDate,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF475467),
+                    color: c.secondaryText,
                   ),
                 ),
               ],
@@ -280,6 +287,7 @@ class _VitalDetailScreenState extends State<VitalDetailScreen> {
   }
 
   Widget _buildSummaryCard() {
+    final c = context.appColors;
     final latest = _readings.first;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -303,7 +311,7 @@ class _VitalDetailScreenState extends State<VitalDetailScreen> {
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
-                    color: Color(0xFF1D2939),
+                    color: c.primaryText,
                   ),
                 ),
               ],
@@ -321,16 +329,17 @@ class _VitalDetailScreenState extends State<VitalDetailScreen> {
   }
 
   Widget _buildSummaryRow(IconData icon, String text) {
+    final c = context.appColors;
     return Row(
       children: [
         Icon(icon, size: 18, color: _accentColor.withValues(alpha: 0.7)),
         const SizedBox(width: 10),
         Text(
           text,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
-            color: Color(0xFF475467),
+            color: c.secondaryText,
           ),
         ),
       ],
@@ -338,6 +347,7 @@ class _VitalDetailScreenState extends State<VitalDetailScreen> {
   }
 
   Widget _buildReadingsSection() {
+    final c = context.appColors;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -359,7 +369,7 @@ class _VitalDetailScreenState extends State<VitalDetailScreen> {
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w800,
-                  color: Color(0xFF1D2939),
+                  color: c.primaryText,
                 ),
               ),
             ],
@@ -377,6 +387,7 @@ class _VitalDetailScreenState extends State<VitalDetailScreen> {
   }
 
   Widget _buildReadingTimelineItem(_Reading reading, {required bool isLast}) {
+    final c = context.appColors;
     return Padding(
       padding: const EdgeInsets.only(left: 16, right: 16),
       child: IntrinsicHeight(
@@ -395,7 +406,7 @@ class _VitalDetailScreenState extends State<VitalDetailScreen> {
                     decoration: BoxDecoration(
                       color: _accentColor,
                       shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 1.5),
+                      border: Border.all(color: c.cardBg, width: 1.5),
                     ),
                   ),
                   if (!isLast)
@@ -414,7 +425,7 @@ class _VitalDetailScreenState extends State<VitalDetailScreen> {
                 margin: EdgeInsets.only(bottom: isLast ? 0 : 6),
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: c.cardBg,
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
@@ -448,11 +459,11 @@ class _VitalDetailScreenState extends State<VitalDetailScreen> {
                           const SizedBox(height: 4),
                           Text(
                             reading.value,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontFamily: 'Outfit',
                               fontSize: 20,
                               fontWeight: FontWeight.w800,
-                              color: Color(0xFF1D2939),
+                              color: c.primaryText,
                             ),
                           ),
                           const SizedBox(height: 4),
@@ -494,6 +505,7 @@ class _VitalDetailScreenState extends State<VitalDetailScreen> {
   }
 
   Widget _buildTrendGraph() {
+    final c = context.appColors;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
@@ -512,10 +524,10 @@ class _VitalDetailScreenState extends State<VitalDetailScreen> {
               const SizedBox(width: 10),
               Text(
                 AppLocalizations.of(context)!.todayTrend(_title),
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w800,
-                  color: Color(0xFF1D2939),
+                  color: c.primaryText,
                 ),
               ),
             ],
@@ -525,7 +537,7 @@ class _VitalDetailScreenState extends State<VitalDetailScreen> {
             height: 240,
             padding: const EdgeInsets.fromLTRB(4, 16, 4, 8),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: c.cardBg,
               borderRadius: BorderRadius.circular(24),
               boxShadow: [
                 BoxShadow(
@@ -596,11 +608,13 @@ class _VitalDetailScreenState extends State<VitalDetailScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (ctx) => Container(
+      builder: (ctx) {
+        final c = context.appColors;
+        return Container(
         height: MediaQuery.of(context).size.height * 0.55,
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+        decoration: BoxDecoration(
+          color: c.cardBg,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
         ),
         padding: EdgeInsets.only(
           left: 24,
@@ -616,7 +630,7 @@ class _VitalDetailScreenState extends State<VitalDetailScreen> {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFE2E8F0),
+                  color: c.divider,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -624,10 +638,10 @@ class _VitalDetailScreenState extends State<VitalDetailScreen> {
             const SizedBox(height: 20),
             Text(
               AppLocalizations.of(context)!.newReading(_title),
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w800,
-                color: Color(0xFF1D2939),
+                color: c.primaryText,
               ),
             ),
             const SizedBox(height: 20),
@@ -638,7 +652,7 @@ class _VitalDetailScreenState extends State<VitalDetailScreen> {
                 labelText: AppLocalizations.of(context)!.valueIn(_unit),
                 hintText: AppLocalizations.of(context)!.egValue(_getExampleValue()),
                 filled: true,
-                fillColor: const Color(0xFFF8FAFC),
+                fillColor: c.scaffoldBg,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16),
                   borderSide: BorderSide.none,
@@ -652,24 +666,25 @@ class _VitalDetailScreenState extends State<VitalDetailScreen> {
                   color: _accentColor,
                 ),
               ),
-              style: const TextStyle(
+              style: TextStyle(
                 fontFamily: 'Outfit',
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
+                color: c.primaryText,
               ),
             ),
             const SizedBox(height: 16),
             Row(
               children: [
-                const Icon(Icons.calendar_today_rounded, size: 16, color: Color(0xFF475467)),
+                Icon(Icons.calendar_today_rounded, size: 16, color: c.secondaryText),
                 const SizedBox(width: 8),
                 Text(
                   '${DateTime.now().hour.toString().padLeft(2, '0')}:${DateTime.now().minute.toString().padLeft(2, '0')} • ${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontFamily: 'Outfit',
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF475467),
+                    color: c.secondaryText,
                   ),
                 ),
               ],
@@ -681,12 +696,12 @@ class _VitalDetailScreenState extends State<VitalDetailScreen> {
               decoration: InputDecoration(
                 hintText: AppLocalizations.of(context)!.noteOptional,
                 filled: true,
-                fillColor: const Color(0xFFF8FAFC),
+                fillColor: c.scaffoldBg,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16),
                   borderSide: BorderSide.none,
                 ),
-                hintStyle: const TextStyle(color: Color(0xFF98A2B3)),
+                hintStyle: TextStyle(color: c.tertiaryText),
               ),
             ),
             const SizedBox(height: 20),
@@ -703,13 +718,13 @@ class _VitalDetailScreenState extends State<VitalDetailScreen> {
                     final timeStr = '${hour.toString().padLeft(2, '0')}:$minute $period';
 
                     setState(() {
-                      _readings.insert(0, _Reading(
-                        timeStr,
-                        valueController.text.trim(),
-                        'सामान्य',
-                        true,
-                      ));
-                    });
+                       _readings.insert(0, _Reading(
+                         timeStr,
+                         valueController.text.trim(),
+                         AppLocalizations.of(context)!.statusNormal,
+                         true,
+                       ));
+                     });
                   }
                   Navigator.pop(ctx);
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -741,8 +756,9 @@ class _VitalDetailScreenState extends State<VitalDetailScreen> {
             ),
           ],
         ),
-      ),
-    );
+      );
+    },
+  );
   }
 
   String _getExampleValue() {

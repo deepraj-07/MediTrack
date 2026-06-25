@@ -66,6 +66,12 @@ class AppLocalizationsHi extends AppLocalizations {
   String get confirm => 'पुष्टि करें';
 
   @override
+  String get close => 'बंद करें';
+
+  @override
+  String get search => 'खोजें';
+
+  @override
   String get greeting => 'नमस्ते रमेश जी';
 
   @override
@@ -261,6 +267,27 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get overallStatus => 'समग्र स्थिति: सामान्य';
+
+  @override
+  String get statusNormal => 'सामान्य';
+
+  @override
+  String get statusNormalFasting => 'सामान्य (उपवास)';
+
+  @override
+  String get statusNormalPostMeal => 'सामान्य (भोजनोपरांत)';
+
+  @override
+  String get vitalBp => 'ब्लड प्रेशर';
+
+  @override
+  String get vitalSugar => 'शुगर (रक्त शर्करा)';
+
+  @override
+  String get vitalOxygen => 'ऑक्सीजन (SpO₂)';
+
+  @override
+  String get vitalTemp => 'तापमान';
 
   @override
   String get medicinesTitle => 'दवाइयाँ और रिमाइंडर';
@@ -466,6 +493,84 @@ class AppLocalizationsHi extends AppLocalizations {
   String get stepperConfirm => 'पुष्टि';
 
   @override
+  String get monthJan => 'जनवरी';
+
+  @override
+  String get monthFeb => 'फरवरी';
+
+  @override
+  String get monthMar => 'मार्च';
+
+  @override
+  String get monthApr => 'अप्रैल';
+
+  @override
+  String get monthMayLabel => 'मई';
+
+  @override
+  String get monthJun => 'जून';
+
+  @override
+  String get monthJul => 'जुलाई';
+
+  @override
+  String get monthAug => 'अगस्त';
+
+  @override
+  String get monthSep => 'सितंबर';
+
+  @override
+  String get monthOct => 'अक्टूबर';
+
+  @override
+  String get monthNov => 'नवंबर';
+
+  @override
+  String get monthDec => 'दिसंबर';
+
+  @override
+  String get dayShortMon => 'सोम';
+
+  @override
+  String get dayShortTue => 'मंगल';
+
+  @override
+  String get dayShortWed => 'बुध';
+
+  @override
+  String get dayShortThu => 'गुरु';
+
+  @override
+  String get dayShortFri => 'शुक्र';
+
+  @override
+  String get dayShortSat => 'शनि';
+
+  @override
+  String get dayShortSun => 'रवि';
+
+  @override
+  String get dayMonday => 'सोमवार';
+
+  @override
+  String get dayTuesday => 'मंगलवार';
+
+  @override
+  String get dayWednesday => 'बुधवार';
+
+  @override
+  String get dayThursday => 'गुरुवार';
+
+  @override
+  String get dayFriday => 'शुक्रवार';
+
+  @override
+  String get daySaturday => 'शनिवार';
+
+  @override
+  String get daySunday => 'रविवार';
+
+  @override
   String get specCardiology => 'हृदय रोग';
 
   @override
@@ -502,6 +607,39 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get noNotifications => 'कोई सूचना नहीं';
+
+  @override
+  String get notifMedTaken => 'दवा ले ली गई';
+
+  @override
+  String notifMedTakenBody(Object name, Object time) {
+    return '$name $time बजे ले ली गई है।';
+  }
+
+  @override
+  String get notifMedReminder => 'दवा लेने का समय';
+
+  @override
+  String notifMedReminderBody(Object name, Object time) {
+    return '$name $time बजे लेनी है। खाने के बाद लें।';
+  }
+
+  @override
+  String notifBpReading(Object value) {
+    return 'BP रीडिंग: $value';
+  }
+
+  @override
+  String get notifBpReadingBody =>
+      'आपका ब्लड प्रेशर सामान्य से थोड़ा ऊपर है। कृपया डॉक्टर से सलाह लें।';
+
+  @override
+  String get notifAppointment => 'डॉक्टर अपॉइंटमेंट';
+
+  @override
+  String notifAppointmentBody(Object name, Object time) {
+    return 'डॉ. $name से कल $time बजे अपॉइंटमेंट है।';
+  }
 
   @override
   String get emergencyAlert => 'आपातकालीन अलर्ट';
@@ -576,6 +714,445 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get cityVal => 'नई दिल्ली';
+
+  @override
+  String get myOptions => 'मेरे विकल्प';
+
+  @override
+  String get personalInfo => 'व्यक्तिगत जानकारी';
+
+  @override
+  String get healthInfo => 'स्वास्थ्य जानकारी';
+
+  @override
+  String get emergencyContactsLabel => 'आपातकालीन संपर्क';
+
+  @override
+  String get languageDisplay => 'भाषा और प्रदर्शन';
+
+  @override
+  String get notificationSettings => 'नोटिफिकेशन सेटिंग';
+
+  @override
+  String get privacySecurity => 'गोपनीयता और सुरक्षा';
+
+  @override
+  String get editProfile => 'प्रोफाइल संपादित करें';
+
+  @override
+  String get statHealthScore => 'स्वास्थ्य स्कोर';
+
+  @override
+  String get statMemberSince => 'अकाउंट उम्र';
+
+  @override
+  String get statFamilyMembers => 'परिवार सदस्य';
+
+  @override
+  String userId(Object id) {
+    return 'ID: $id';
+  }
+
+  @override
+  String get primaryAccount => 'Primary Account';
+
+  @override
+  String get settingsComingSoon => 'सेटिंग्स जल्द आ रही हैं';
+
+  @override
+  String get personalInfoHeading => 'व्यक्तिगत जानकारी';
+
+  @override
+  String get fullNameLabel => 'पूरा नाम';
+
+  @override
+  String get dobLabel => 'जन्म तिथि';
+
+  @override
+  String get genderLabel => 'लिंग';
+
+  @override
+  String get mobileLabel => 'मोबाइल नंबर';
+
+  @override
+  String get emailLabel => 'ईमेल आईडी';
+
+  @override
+  String get addressLabel => 'पता';
+
+  @override
+  String get bloodGroupLabel => 'रक्त समूह';
+
+  @override
+  String get editInfo => 'संपादित करें (Edit Information)';
+
+  @override
+  String get healthInfoHeading => 'स्वास्थ्य जानकारी';
+
+  @override
+  String get primaryConditions => 'प्राथमिक स्वास्थ्य स्थितियाँ';
+
+  @override
+  String get addNewCondition => 'नई स्थिति जोड़ें';
+
+  @override
+  String get allergiesLabel => 'एलर्जी';
+
+  @override
+  String get addNewAllergy => 'नई एलर्जी जोड़ें';
+
+  @override
+  String get regularMedicines => 'नियमित दवाएं';
+
+  @override
+  String get profileNameHi => 'रमेश जी शर्मा';
+
+  @override
+  String get emergencyInfo =>
+      'आपातकालीन स्थिति में हम इन संपर्कों को सूचित करेंगे।\nWe will notify these contacts in emergency situations.';
+
+  @override
+  String get addNewContact => 'नया संपर्क जोड़ें (Add New Contact)';
+
+  @override
+  String get languageSection => 'भाषा';
+
+  @override
+  String get chooseLanguage => 'भाषा चुनें';
+
+  @override
+  String get textSize => 'टेक्स्ट आकार';
+
+  @override
+  String get sizeSmall => 'छोटा';
+
+  @override
+  String get sizeMedium => 'मध्यम';
+
+  @override
+  String get sizeLarge => 'बड़ा';
+
+  @override
+  String get darkMode => 'डार्क मोड';
+
+  @override
+  String get highContrast => 'हाई कंट्रास्ट मोड';
+
+  @override
+  String get allNotifications => 'सभी नोटिफिकेशन';
+
+  @override
+  String get medicineReminders => 'दवा रिमाइंडर';
+
+  @override
+  String get appointmentReminders => 'अपॉइंटमेंट रिमाइंडर';
+
+  @override
+  String get healthAlerts => 'स्वास्थ्य अलर्ट';
+
+  @override
+  String get familyUpdates => 'परिवार अपडेट';
+
+  @override
+  String get promotionsTips => 'प्रचार और सुझाव';
+
+  @override
+  String get passcodeBiometric => 'पासकोड / बायोमेट्रिक लॉक';
+
+  @override
+  String get changePasscode => 'पासकोड बदलें';
+
+  @override
+  String get twoFactorAuth => '2-फैक्टर ऑथेंटिकेशन';
+
+  @override
+  String get dataSharing => 'डेटा शेयरिंग प्रेफरेंस';
+
+  @override
+  String get privacyPolicy => 'प्राइवेसी पॉलिसी';
+
+  @override
+  String get logoutTitle => 'लॉगआउट (Logout)';
+
+  @override
+  String get logoutQuestion => 'क्या आप लॉगआउट करना चाहते हैं?';
+
+  @override
+  String get logoutCancel => 'रद्द करें';
+
+  @override
+  String get logoutConfirm => 'लॉगआउट';
+
+  @override
+  String get logoutSnackbar => 'लॉगआउट किया गया';
+
+  @override
+  String get logoutButton => 'लॉगआउट करें (Logout)';
+
+  @override
+  String get saveChanges => 'सेव करें (Save Changes)';
+
+  @override
+  String get passcodeEnabled => 'सक्षम';
+
+  @override
+  String get twoFactorDisabled => 'बंद';
+
+  @override
+  String get userDob => '15 मार्च 1958';
+
+  @override
+  String get userGender => 'पुरुष';
+
+  @override
+  String get userMobile => '+91 98765 43210';
+
+  @override
+  String get userEmail => 'ramesh.sharma@gmail.com';
+
+  @override
+  String get userAddress => '25, शांति नगर, जयपुर, राजस्थान - 302001';
+
+  @override
+  String get userBloodGroup => 'B+';
+
+  @override
+  String get condHypertension => 'हाइपरटेंशन';
+
+  @override
+  String get condDiabetes => 'डायबिटीज टाइप 2';
+
+  @override
+  String get condArthritis => 'अर्थराइटिस';
+
+  @override
+  String get allergyDust => 'धूल से एलर्जी';
+
+  @override
+  String get allergyPenicillin => 'पेनिसिलिन';
+
+  @override
+  String get medAmlodipine => 'Amlodipine 5mg';
+
+  @override
+  String get medAmlodipineDose => 'सुबह - 1 गोली';
+
+  @override
+  String get contactWife => 'सीता शर्मा (पत्नी)';
+
+  @override
+  String get contactSon => 'अमित शर्मा (पुत्र)';
+
+  @override
+  String get contactDaughter => 'नेहा शर्मा (पुत्री)';
+
+  @override
+  String get contactWifePhone => '+91 98765 12345';
+
+  @override
+  String get contactSonPhone => '+91 87654 32109';
+
+  @override
+  String get contactDaughterPhone => '+91 76543 21098';
+
+  @override
+  String get tagPrimary => 'Primary';
+
+  @override
+  String get tagSecondary => 'Secondary';
+
+  @override
+  String get addContactComingSoon =>
+      'नया संपर्क जोड़ने की सुविधा जल्द आ रही है';
+
+  @override
+  String get addMember => '+ जोड़ें';
+
+  @override
+  String get familyMembersTitle => 'परिवार के सदस्य';
+
+  @override
+  String get members => 'सदस्य';
+
+  @override
+  String get self => 'आप';
+
+  @override
+  String medicinesCount(Object count) {
+    return '$count दवाएँ';
+  }
+
+  @override
+  String memberStatus(Object count) {
+    return '$count सदस्य • सभी स्वस्थ';
+  }
+
+  @override
+  String get addMemberSnackbar => 'परिवार का सदस्य जोड़ें';
+
+  @override
+  String memberCount(Object count) {
+    return '$count सदस्य';
+  }
+
+  @override
+  String get recordsTitle => 'मेडिकल रिकॉर्ड';
+
+  @override
+  String get thisYear => 'यह वर्ष';
+
+  @override
+  String get reportSummary => 'रिपोर्ट सारांश';
+
+  @override
+  String get reportDownloading => 'रिपोर्ट डाउनलोड हो रही है...';
+
+  @override
+  String get healthReport => 'मेरी सेहत रिपोर्ट';
+
+  @override
+  String get yourHealthReport => 'आपकी स्वास्थ्य रिपोर्ट';
+
+  @override
+  String get healthy => 'स्वस्थ';
+
+  @override
+  String get allVitalsNormal => 'सभी महत्वपूर्ण आंकड़े सामान्य सीमा में हैं';
+
+  @override
+  String get healthParameters => 'स्वास्थ्य पैरामीटर';
+
+  @override
+  String get recommendations => 'सुझाव';
+
+  @override
+  String get recVitaminD => 'विटामिन D3 थोड़ा कम';
+
+  @override
+  String get recVitaminDDesc => 'धूप में बैठें और विटामिन D3 सप्लीमेंट लें';
+
+  @override
+  String get recExercise => 'रोजाना व्यायाम';
+
+  @override
+  String get recExerciseDesc => '30 मिनट टहलना या हल्का व्यायाम करें';
+
+  @override
+  String get recWater => 'पानी पिएं';
+
+  @override
+  String get recWaterDesc => 'दिन में 8-10 गिलास पानी पिएं';
+
+  @override
+  String get reportShared => 'रिपोर्ट शेयर की जा रही है...';
+
+  @override
+  String get healthTipsTitle => 'स्वास्थ्य सुझाव';
+
+  @override
+  String get healthyLivingTips => 'स्वस्थ रहने के टिप्स';
+
+  @override
+  String get categories => 'श्रेणियाँ';
+
+  @override
+  String tipsCount(Object count) {
+    return '$count टिप्स';
+  }
+
+  @override
+  String get catDiabetes => 'डायबिटीज';
+
+  @override
+  String get catHeart => 'हृदय स्वास्थ्य';
+
+  @override
+  String get catNutrition => 'पोषण';
+
+  @override
+  String get catMedicine => 'दवा प्रबंधन';
+
+  @override
+  String get tipRegularCheckup => 'नियमित जांच';
+
+  @override
+  String get tipRegularCheckupDesc => 'हर 3 महीने में HbA1c जांच कराएं';
+
+  @override
+  String get tipDiet => 'डाइट';
+
+  @override
+  String get tipDietDesc => 'मीठे से परहेज करें और फाइबर लें';
+
+  @override
+  String get tipExercise => 'व्यायाम';
+
+  @override
+  String get tipExerciseDesc => 'रोज 30 मिनट टहलें';
+
+  @override
+  String get tipBpControl => 'बीपी नियंत्रण';
+
+  @override
+  String get tipBpControlDesc => 'नमक कम खाएं, बीपी नियमित जांचें';
+
+  @override
+  String get tipCholesterol => 'कोलेस्ट्रॉल';
+
+  @override
+  String get tipCholesterolDesc => 'तेल-घी कम लें, हरी सब्जी खाएं';
+
+  @override
+  String get tipStressFree => 'तनाव मुक्त';
+
+  @override
+  String get tipStressFreeDesc => 'ध्यान और योग करें, तनाव कम लें';
+
+  @override
+  String get tipBalancedDiet => 'संतुलित आहार';
+
+  @override
+  String get tipBalancedDietDesc => 'प्रोटीन, विटामिन और मिनरल्स लें';
+
+  @override
+  String get tipDrinkWater => 'पानी पिएं';
+
+  @override
+  String get tipDrinkWaterDesc => 'दिन में 8-10 गिलास पानी पिएं';
+
+  @override
+  String get tipEatOnTime => 'समय पर खाएं';
+
+  @override
+  String get tipEatOnTimeDesc => 'नाश्ता, दोपहर और रात का भोजन समय पर करें';
+
+  @override
+  String get tipMedicineOnTime => 'समय पर दवा';
+
+  @override
+  String get tipMedicineOnTimeDesc => 'दवा समय पर लें, अलार्म लगाएं';
+
+  @override
+  String get tipConsultDoctor => 'डॉक्टर से सलाह';
+
+  @override
+  String get tipConsultDoctorDesc => 'बिना डॉक्टर की सलाह दवा न बदलें';
+
+  @override
+  String get tipMedicineList => 'दवा सूची';
+
+  @override
+  String get tipMedicineListDesc => 'सभी दवाओं की सूची अपने पास रखें';
+
+  @override
+  String tipsHeroSubtitle(Object categories, Object tips) {
+    return '$categories श्रेणियाँ • $tips टिप्स';
+  }
+
+  @override
+  String tipCount(Object count) {
+    return '$count टिप्स';
+  }
 
   @override
   String get voiceListening => 'सुन रहा हूँ...';
@@ -767,4 +1344,124 @@ class AppLocalizationsHi extends AppLocalizations {
   @override
   String get patientSymptoms =>
       'छाती में दर्द, थकान और सांस लेने में दिक्कत हो रही है।';
+
+  @override
+  String get recordHealthCheckup => 'स्वास्थ्य जांच रिपोर्ट';
+
+  @override
+  String get recordHeartCheckup => 'हृदय जांच रिपोर्ट';
+
+  @override
+  String get recordDiabetesCheckup => 'डायबिटीज जांच';
+
+  @override
+  String get recordXray => 'एक्स-रे रिपोर्ट';
+
+  @override
+  String get recordAnnualCheckup => 'वार्षिक स्वास्थ्य जांच';
+
+  @override
+  String get recordDocGupta => 'डॉ. आर. के. गुप्ता';
+
+  @override
+  String get recordDocSharma => 'डॉ. राजत शर्मा';
+
+  @override
+  String get recordDocVerma => 'डॉ. नेहा वर्मा';
+
+  @override
+  String get recordDocPatel => 'डॉ. अमित पटेल';
+
+  @override
+  String get recordTypeBlood => 'ब्लड टेस्ट';
+
+  @override
+  String get recordTypeECG => 'ईसीजी';
+
+  @override
+  String get recordTypeHba1c => 'HbA1c';
+
+  @override
+  String get recordTypeXray => 'एक्स-रे';
+
+  @override
+  String get recordTypeFullBody => 'फुल बॉडी चेकअप';
+
+  @override
+  String get recordSummaryHealthCheckup =>
+      'BP 120/80, शुगर 98 mg/dL, कोलेस्ट्रॉल सामान्य';
+
+  @override
+  String get recordSummaryHeartCheckup => 'ईसीजी सामान्य, हृदय गति 72 bpm';
+
+  @override
+  String get recordSummaryDiabetesCheckup => 'HbA1c 6.2% - सामान्य सीमा में';
+
+  @override
+  String get recordSummaryXray =>
+      'छाती का एक्स-रे सामान्य, कोई असामान्यता नहीं';
+
+  @override
+  String get recordSummaryAnnualCheckup =>
+      'सभी पैरामीटर सामान्य, विटामिन D3 थोड़ा कम';
+
+  @override
+  String get familyNameWife => 'सुनीता देवी';
+
+  @override
+  String get familyRelationWife => 'पत्नी';
+
+  @override
+  String get familyAgeWife => '62 वर्ष';
+
+  @override
+  String get familyNameSon => 'अमित शर्मा';
+
+  @override
+  String get familyRelationSon => 'बेटा';
+
+  @override
+  String get familyAgeSon => '35 वर्ष';
+
+  @override
+  String get familyNameDaughterInLaw => 'प्रिया शर्मा';
+
+  @override
+  String get familyRelationDaughterInLaw => 'बहू';
+
+  @override
+  String get familyAgeDaughterInLaw => '30 वर्ष';
+
+  @override
+  String get familyNameGrandson => 'आरव शर्मा';
+
+  @override
+  String get familyRelationGrandson => 'पोता';
+
+  @override
+  String get familyAgeGrandson => '5 वर्ष';
+
+  @override
+  String get familyMedsWife => 'बीपी की दवा, थायरॉइड';
+
+  @override
+  String get familyMedsGrandson => 'विटामिन D3';
+
+  @override
+  String get profileNameEn => 'Ramesh Ji Sharma';
+
+  @override
+  String get profileId => 'ID: MT-2024-5687';
+
+  @override
+  String get profilePrimaryAccount => 'Primary Account';
+
+  @override
+  String get profileHealthScore => '85/100';
+
+  @override
+  String get profileMemberSince => 'Jan 2024';
+
+  @override
+  String get profileFamilyCount => '2';
 }

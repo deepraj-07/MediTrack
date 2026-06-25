@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import 'package:meditrack/l10n/app_localizations.dart';
+import 'package:meditrack/theme/app_theme.dart';
 
 // ----------------------------------------------
 // Data Models
@@ -422,75 +423,104 @@ class _DoctorAvatar extends StatelessWidget {
 }
 
 // ----------------------------------------------
-// Sample Data
+// Localization Helpers
 // ----------------------------------------------
 
-const List<Specialty> _specialties = [
+List<String> months(AppLocalizations l) => [
+  l.monthJan,
+  l.monthFeb,
+  l.monthMar,
+  l.monthApr,
+  l.monthMayLabel,
+  l.monthJun,
+  l.monthJul,
+  l.monthAug,
+  l.monthSep,
+  l.monthOct,
+  l.monthNov,
+  l.monthDec,
+];
+
+List<String> dayNames(AppLocalizations l) => [
+  l.dayMonday,
+  l.dayTuesday,
+  l.dayWednesday,
+  l.dayThursday,
+  l.dayFriday,
+  l.daySaturday,
+  l.daySunday,
+];
+
+// ----------------------------------------------
+// Sample Data Builders
+// ----------------------------------------------
+
+List<Specialty> buildSpecialties(AppLocalizations l) => [
   Specialty(
-    name: 'हृदय रोग',
-    displayName: 'हृदय रोग\n(कार्डियोलॉजिस्ट)',
+    name: l.specCardiology,
+    displayName: l.specCardiologyFull,
     icon: Icons.favorite_rounded,
     color: Color(0xFFD92D20),
     bgColor: Color(0xFFFEF3F2),
   ),
   Specialty(
-    name: 'जनरल फिजिशियन',
-    displayName: 'जनरल\nफिजिशियन',
+    name: l.specGeneralPhysician,
+    displayName: l.specGeneralPhysicianFull,
     icon: Icons.local_hospital_rounded,
     color: Color(0xFF079455),
     bgColor: Color(0xFFECFDF3),
   ),
   Specialty(
-    name: 'डायबिटीज विशेषज्ञ',
-    displayName: 'डायबिटीज\nविशेषज्ञ',
+    name: l.specDiabetes,
+    displayName: l.specDiabetesFull,
     icon: Icons.bloodtype_rounded,
     color: Color(0xFFE04F5F),
     bgColor: Color(0xFFFFF1F3),
   ),
   Specialty(
-    name: 'हड्डी रोग',
-    displayName: 'हड्डी रोग\n(ऑर्थोपेडिक)',
+    name: l.specOrthopedic,
+    displayName: l.specOrthopedicFull,
     icon: Icons.accessibility_new_rounded,
     color: Color(0xFF2E90FA),
     bgColor: Color(0xFFF2F8FF),
   ),
 ];
 
-const List<Doctor> _doctors = [
+List<Doctor> buildDoctors(AppLocalizations l) => [
   Doctor(
-    name: 'Dr. Rajat Sharma',
-    specialization: 'MBBS, MD (Cardiology)\nहृदय रोग विशेषज्ञ',
-    experience: '10+ वर्ष अनुभव',
+    name: l.drRajatSharma,
+    specialization: l.specRajat,
+    experience: l.exp10plus,
     rating: 4.8,
     reviewCount: 256,
     initials: 'RS',
     avatarColor: Color(0xFF7F56D9),
-    fee: '₹500',
-    location: 'Heart Care Clinic\nसिविल लाइन्स, जयपुर, राजस्थान',
+    fee: l.fee500,
+    location: l.locHeartCare,
     imageUrl: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&w=256&q=80',
   ),
   Doctor(
-    name: 'Dr. Neha Verma',
-    specialization: 'MBBS, MD (General Medicine)\nजनरल फिजिशियन',
-    experience: '8+ वर्ष अनुभव',
+    name: l.drNehaVerma,
+    specialization: l.specNeha,
+    experience: l.exp8plus,
     rating: 4.7,
     reviewCount: 189,
     initials: 'NV',
     avatarColor: Color(0xFF12B76A),
-    fee: '₹400',
-    location: 'Life Care Clinic\nमालवीय नगर, जयपुर, राजस्थान',
+    fee: l.fee400,
+    location: l.locLifeCare,
     imageUrl: 'https://images.unsplash.com/photo-1594824813573-246434de83fb?auto=format&fit=crop&w=256&q=80',
   ),
   Doctor(
-    name: 'Dr. Amit Patel',
-    specialization: 'MBBS, MS (Orthopedics)\nहड्डी रोग विशेषज्ञ',
-    experience: '12+ वर्ष अनुभव',
+    name: l.drAmitPatel,
+    specialization: l.specAmit,
+    experience: l.exp12plus,
     rating: 4.6,
     reviewCount: 132,
     initials: 'AP',
     avatarColor: Color(0xFF2E90FA),
-    fee: '₹600',
-    location: 'Orthofit Clinic\nवैशाली नगर, जयपुर, राजस्थान',
+    fee: l.fee600,
+    location: l.locOrthofit,
     imageUrl: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=256&q=80',
   ),
 ];
@@ -500,17 +530,18 @@ const List<Doctor> _doctors = [
 // ----------------------------------------------
 
 PreferredSizeWidget _buildAppBar(BuildContext context, String title, {List<Widget>? actions, VoidCallback? onBackPressed}) {
+  final c = context.appColors;
   return AppBar(
-    backgroundColor: Colors.white,
+    backgroundColor: c.cardBg,
     elevation: 0,
     scrolledUnderElevation: 0,
     leading: IconButton(
-      icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF1D2939), size: 26),
+      icon: Icon(Icons.arrow_back_rounded, color: c.primaryText, size: 26),
       onPressed: onBackPressed ?? () => Navigator.pop(context),
     ),
     title: Text(
       title,
-      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF1D2939)),
+      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: c.primaryText),
     ),
     centerTitle: false,
     actions: actions,
@@ -530,8 +561,23 @@ class ChooseDoctorScreen extends StatefulWidget {
 
 class _ChooseDoctorScreenState extends State<ChooseDoctorScreen> {
   final _searchController = TextEditingController();
-  List<Doctor> _filteredDoctors = List.from(_doctors);
+  late List<Doctor> _allDoctors;
+  late List<Specialty> _specialties;
+  late List<Doctor> _filteredDoctors;
   int? _selectedSpecialtyIndex;
+  bool _dataInitialized = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_dataInitialized) {
+      _dataInitialized = true;
+      final l = AppLocalizations.of(context)!;
+      _allDoctors = buildDoctors(l);
+      _specialties = buildSpecialties(l);
+      _filteredDoctors = List.from(_allDoctors);
+    }
+  }
 
   @override
   void dispose() {
@@ -543,9 +589,9 @@ class _ChooseDoctorScreenState extends State<ChooseDoctorScreen> {
     setState(() {
       _selectedSpecialtyIndex = null;
       if (query.isEmpty) {
-        _filteredDoctors = List.from(_doctors);
+        _filteredDoctors = List.from(_allDoctors);
       } else {
-        _filteredDoctors = _doctors.where((d) =>
+        _filteredDoctors = _allDoctors.where((d) =>
           d.name.toLowerCase().contains(query.toLowerCase()) ||
           d.specialization.toLowerCase().contains(query.toLowerCase())
         ).toList();
@@ -557,12 +603,12 @@ class _ChooseDoctorScreenState extends State<ChooseDoctorScreen> {
     setState(() {
       if (_selectedSpecialtyIndex == index) {
         _selectedSpecialtyIndex = null;
-        _filteredDoctors = List.from(_doctors);
+        _filteredDoctors = List.from(_allDoctors);
       } else {
         _selectedSpecialtyIndex = index;
         _searchController.clear();
         final spec = _specialties[index];
-        _filteredDoctors = _doctors.where((d) =>
+        _filteredDoctors = _allDoctors.where((d) =>
           d.specialization.contains(spec.name)
         ).toList();
       }
@@ -571,14 +617,15 @@ class _ChooseDoctorScreenState extends State<ChooseDoctorScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final c = context.appColors;
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: c.scaffoldBg,
       appBar: _buildAppBar(
         context,
         AppLocalizations.of(context)!.doctorAppointment,
         actions: [
           IconButton(
-            icon: const Icon(Icons.search_rounded, color: Color(0xFF1D2939), size: 24),
+            icon: Icon(Icons.search_rounded, color: c.primaryText, size: 24),
             onPressed: () {},
           ),
         ],
@@ -643,22 +690,22 @@ class _ChooseDoctorScreenState extends State<ChooseDoctorScreen> {
             child: TextField(
               controller: _searchController,
               onChanged: _onSearch,
-              style: const TextStyle(fontFamily: 'Outfit', fontWeight: FontWeight.w600, fontSize: 15),
+              style: TextStyle(fontFamily: 'Outfit', fontWeight: FontWeight.w600, fontSize: 15, color: c.primaryText),
               decoration: InputDecoration(
                 hintText: AppLocalizations.of(context)!.searchDoctorHint,
-                hintStyle: const TextStyle(fontFamily: 'Outfit', color: Color(0xFF98A2B3), fontWeight: FontWeight.normal),
-                prefixIcon: const Icon(Icons.search_rounded, color: Color(0xFF98A2B3), size: 22),
+                hintStyle: TextStyle(fontFamily: 'Outfit', color: c.tertiaryText, fontWeight: FontWeight.normal),
+                prefixIcon: Icon(Icons.search_rounded, color: c.tertiaryText, size: 22),
                 suffixIcon: const Icon(Icons.tune_rounded, color: Color(0xFF7F56D9), size: 22),
                 filled: true,
-                fillColor: Colors.white,
+                fillColor: c.cardBg,
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16),
-                  borderSide: const BorderSide(color: Color(0xFFE2E8F0), width: 1.5),
+                  borderSide: BorderSide(color: c.divider, width: 1.5),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16),
-                  borderSide: const BorderSide(color: Color(0xFFE2E8F0), width: 1.5),
+                  borderSide: BorderSide(color: c.divider, width: 1.5),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16),
@@ -674,7 +721,7 @@ class _ChooseDoctorScreenState extends State<ChooseDoctorScreen> {
               children: [
                 Text(
                   AppLocalizations.of(context)!.bySpecialty,
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF1D2939)),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: c.primaryText),
                 ),
                 const Spacer(),
                 GestureDetector(
@@ -706,12 +753,12 @@ class _ChooseDoctorScreenState extends State<ChooseDoctorScreen> {
               children: [
                 Text(
                   AppLocalizations.of(context)!.popularDoctors,
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF1D2939)),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: c.primaryText),
                 ),
                 const Spacer(),
                 Text(
                   AppLocalizations.of(context)!.doctorCount('${_filteredDoctors.length}'),
-                  style: const TextStyle(fontFamily: 'Outfit', fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF667085)),
+                  style: TextStyle(fontFamily: 'Outfit', fontSize: 13, fontWeight: FontWeight.w600, color: c.secondaryText),
                 ),
               ],
             ),
@@ -738,6 +785,7 @@ class _ChooseDoctorScreenState extends State<ChooseDoctorScreen> {
   }
 
   Widget _buildSpecialtyCard(int index) {
+    final c = context.appColors;
     final s = _specialties[index];
     final isSelected = _selectedSpecialtyIndex == index;
     return GestureDetector(
@@ -747,10 +795,10 @@ class _ChooseDoctorScreenState extends State<ChooseDoctorScreen> {
         width: 90,
         padding: const EdgeInsets.symmetric(vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF7F56D9) : Colors.white,
+          color: isSelected ? const Color(0xFF7F56D9) : c.cardBg,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: isSelected ? const Color(0xFF7F56D9) : const Color(0xFFE2E8F0),
+            color: isSelected ? const Color(0xFF7F56D9) : c.divider,
             width: 1.5,
           ),
         ),
@@ -771,7 +819,7 @@ class _ChooseDoctorScreenState extends State<ChooseDoctorScreen> {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 10, fontWeight: FontWeight.w800,
-                color: isSelected ? Colors.white : const Color(0xFF475467),
+                color: isSelected ? Colors.white : c.secondaryText,
                 height: 1.2,
               ),
             ),
@@ -815,6 +863,7 @@ class _DoctorCardState extends State<_DoctorCard>
 
   @override
   Widget build(BuildContext context) {
+    final c = context.appColors;
     return GestureDetector(
       onTapDown: (_) => _controller.forward(),
       onTapUp: (_) { _controller.reverse(); widget.onTap(); },
@@ -826,7 +875,7 @@ class _DoctorCardState extends State<_DoctorCard>
           margin: const EdgeInsets.only(bottom: 12),
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: c.cardBg,
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
@@ -848,7 +897,7 @@ class _DoctorCardState extends State<_DoctorCard>
                       children: [
                         Text(
                           widget.doctor.name,
-                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF1D2939)),
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: c.primaryText),
                         ),
                         const SizedBox(width: 4),
                         const Icon(
@@ -861,7 +910,7 @@ class _DoctorCardState extends State<_DoctorCard>
                     const SizedBox(height: 2),
                     Text(
                       widget.doctor.specialization,
-                      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: Color(0xFF475467), height: 1.3),
+                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: c.secondaryText, height: 1.3),
                     ),
                     const SizedBox(height: 6),
                     Row(
@@ -870,14 +919,14 @@ class _DoctorCardState extends State<_DoctorCard>
                         const SizedBox(width: 4),
                         Text(
                           '${widget.doctor.rating} (${widget.doctor.reviewCount})',
-                          style: const TextStyle(fontFamily: 'Outfit', fontSize: 13, fontWeight: FontWeight.w800, color: Color(0xFF1D2939)),
+                          style: TextStyle(fontFamily: 'Outfit', fontSize: 13, fontWeight: FontWeight.w800, color: c.primaryText),
                         ),
                         const SizedBox(width: 12),
-                        const Icon(Icons.business_center_rounded, size: 14, color: Color(0xFF667085)),
+                        Icon(Icons.business_center_rounded, size: 14, color: c.secondaryText),
                         const SizedBox(width: 4),
                         Text(
                           widget.doctor.experience,
-                          style: const TextStyle(fontFamily: 'Outfit', fontSize: 13, fontWeight: FontWeight.w500, color: Color(0xFF667085)),
+                          style: TextStyle(fontFamily: 'Outfit', fontSize: 13, fontWeight: FontWeight.w500, color: c.secondaryText),
                         ),
                       ],
                     ),
@@ -904,8 +953,6 @@ class _DoctorCardState extends State<_DoctorCard>
 // Screen 2 - Select Date & Time
 // ----------------------------------------------
 
-const _months = ['जनवरी', 'फरवरी', 'मार्च', 'अप्रैल', 'मई', 'जून', 'जुलाई', 'अगस्त', 'सितंबर', 'अक्टूबर', 'नवंबर', 'दिसंबर'];
-
 class SelectDateTimeScreen extends StatefulWidget {
   final Doctor doctor;
   const SelectDateTimeScreen({super.key, required this.doctor});
@@ -925,20 +972,22 @@ class _SelectDateTimeScreenState extends State<SelectDateTimeScreen> {
     '04:00 PM', '05:00 PM', '06:00 PM',
   ];
 
-  String _formatDay(DateTime d) {
+  String _formatDay(DateTime d, AppLocalizations l) {
     final now = DateTime.now();
-    if (d.day == now.day && d.month == now.month) return AppLocalizations.of(context)!.today;
-    if (d.day == now.add(const Duration(days: 1)).day && d.month == now.month) return AppLocalizations.of(context)!.tomorrow;
+    if (d.day == now.day && d.month == now.month) return l.today;
+    if (d.day == now.add(const Duration(days: 1)).day && d.month == now.month) return l.tomorrow;
     
-    const days = ['सोम', 'मंगल', 'बुध', 'गुरु', 'शुक्र', 'शनि', 'रवि'];
+    final days = [l.dayShortMon, l.dayShortTue, l.dayShortWed, l.dayShortThu, l.dayShortFri, l.dayShortSat, l.dayShortSun];
     return days[d.weekday - 1];
   }
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    final c = context.appColors;
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
-      appBar: _buildAppBar(context, AppLocalizations.of(context)!.appointmentBooking),
+      backgroundColor: c.scaffoldBg,
+      appBar: _buildAppBar(context, l.appointmentBooking),
       body: Column(
         children: [
           Expanded(
@@ -950,7 +999,7 @@ class _SelectDateTimeScreenState extends State<SelectDateTimeScreen> {
                 Container(
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: c.cardBg,
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
@@ -971,14 +1020,14 @@ class _SelectDateTimeScreenState extends State<SelectDateTimeScreen> {
                             Row(
                               children: [
                                 Text(widget.doctor.name,
-                                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF1D2939))),
+                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: c.primaryText)),
                                 const SizedBox(width: 4),
                                 const Icon(Icons.verified_rounded, color: Color(0xFF2E90FA), size: 16),
                               ],
                             ),
                             const SizedBox(height: 3),
                             Text(widget.doctor.specialization,
-                              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: Color(0xFF475467), height: 1.3)),
+                              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: c.secondaryText, height: 1.3)),
                           ],
                         ),
                       ),
@@ -989,7 +1038,7 @@ class _SelectDateTimeScreenState extends State<SelectDateTimeScreen> {
                 // Date Selector Header with Calendar Icon on the right
                 Row(
                   children: [
-                    Text(AppLocalizations.of(context)!.selectDate, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF1D2939))),
+                    Text(l.selectDate, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: c.primaryText)),
                     const Spacer(),
                     const Icon(Icons.calendar_month_rounded, color: Color(0xFF7F56D9), size: 22),
                   ],
@@ -1011,10 +1060,10 @@ class _SelectDateTimeScreenState extends State<SelectDateTimeScreen> {
                           width: 80,
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           decoration: BoxDecoration(
-                            color: isSelected ? const Color(0xFF7F56D9) : Colors.white,
+                            color: isSelected ? const Color(0xFF7F56D9) : c.cardBg,
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(
-                              color: isSelected ? const Color(0xFF7F56D9) : const Color(0xFFE2E8F0),
+                              color: isSelected ? const Color(0xFF7F56D9) : c.divider,
                               width: 1.5,
                             ),
                             boxShadow: isSelected
@@ -1025,27 +1074,27 @@ class _SelectDateTimeScreenState extends State<SelectDateTimeScreen> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                _formatDay(d),
+                                _formatDay(d, l),
                                 style: TextStyle(
                                   fontSize: 11, fontWeight: FontWeight.w800,
-                                  color: isSelected ? Colors.white : const Color(0xFF667085),
-                                ),
+                                color: isSelected ? Colors.white : c.secondaryText,
                               ),
-                              const SizedBox(height: 4),
-                              Text(
-                                '${d.day}',
-                                style: TextStyle(
-                                  fontFamily: 'Outfit', fontSize: 20, fontWeight: FontWeight.w800,
-                                  color: isSelected ? Colors.white : const Color(0xFF1D2939),
-                                ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              '${d.day}',
+                              style: TextStyle(
+                                fontFamily: 'Outfit', fontSize: 20, fontWeight: FontWeight.w800,
+                                color: isSelected ? Colors.white : c.primaryText,
                               ),
-                              const SizedBox(height: 2),
-                              Text(
-                                _months[d.month - 1],
-                                style: TextStyle(
-                                  fontSize: 11, fontWeight: FontWeight.w600,
-                                  color: isSelected ? Colors.white70 : const Color(0xFF98A2B3),
-                                ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              months(l)[d.month - 1],
+                              style: TextStyle(
+                                fontSize: 11, fontWeight: FontWeight.w600,
+                                color: isSelected ? Colors.white70 : c.tertiaryText,
+                              ),
                               ),
                             ],
                           ),
@@ -1056,7 +1105,7 @@ class _SelectDateTimeScreenState extends State<SelectDateTimeScreen> {
                 ),
                 const SizedBox(height: 24),
                 // Time Slots Header
-                Text(AppLocalizations.of(context)!.selectTime, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF1D2939))),
+                Text(l.selectTime, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: c.primaryText)),
                 const SizedBox(height: 12),
                 // Time slots 3-column Grid
                 Column(
@@ -1080,10 +1129,10 @@ class _SelectDateTimeScreenState extends State<SelectDateTimeScreen> {
                                       padding: const EdgeInsets.symmetric(vertical: 14),
                                       alignment: Alignment.center,
                                       decoration: BoxDecoration(
-                                        color: _selectedTime == _timeSlots[row * 3 + col] ? const Color(0xFF7F56D9) : Colors.white,
+                                        color: _selectedTime == _timeSlots[row * 3 + col] ? const Color(0xFF7F56D9) : c.cardBg,
                                         borderRadius: BorderRadius.circular(14),
                                         border: Border.all(
-                                          color: _selectedTime == _timeSlots[row * 3 + col] ? const Color(0xFF7F56D9) : const Color(0xFFE2E8F0),
+                                          color: _selectedTime == _timeSlots[row * 3 + col] ? const Color(0xFF7F56D9) : c.divider,
                                           width: 1.5,
                                         ),
                                         boxShadow: _selectedTime == _timeSlots[row * 3 + col]
@@ -1094,7 +1143,7 @@ class _SelectDateTimeScreenState extends State<SelectDateTimeScreen> {
                                         _timeSlots[row * 3 + col],
                                         style: TextStyle(
                                           fontFamily: 'Outfit', fontSize: 14, fontWeight: FontWeight.w800,
-                                          color: _selectedTime == _timeSlots[row * 3 + col] ? Colors.white : const Color(0xFF1D2939),
+                                          color: _selectedTime == _timeSlots[row * 3 + col] ? Colors.white : c.primaryText,
                                         ),
                                       ),
                                     ),
@@ -1115,9 +1164,9 @@ class _SelectDateTimeScreenState extends State<SelectDateTimeScreen> {
                 Container(
                   padding: const EdgeInsets.all(18),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: c.cardBg,
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: const Color(0xFFF1F5F9), width: 1.5),
+                    border: Border.all(color: c.border, width: 1.5),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withValues(alpha: 0.02),
@@ -1146,11 +1195,11 @@ class _SelectDateTimeScreenState extends State<SelectDateTimeScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(AppLocalizations.of(context)!.clinicHours, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Color(0xFF667085))),
+                                  Text(l.clinicHours, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: c.secondaryText)),
                                   const SizedBox(height: 2),
-                                  Text(AppLocalizations.of(context)!.clinicDays, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: Color(0xFF1D2939))),
+                                  Text(l.clinicDays, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: c.primaryText)),
                                   const SizedBox(height: 1),
-                                  Text(AppLocalizations.of(context)!.clinicTiming, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500, color: Color(0xFF667085))),
+                                  Text(l.clinicTiming, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w500, color: c.secondaryText)),
                                 ],
                               ),
                             ),
@@ -1161,7 +1210,7 @@ class _SelectDateTimeScreenState extends State<SelectDateTimeScreen> {
                       Container(
                         height: 54,
                         width: 1.5,
-                        color: const Color(0xFFF1F5F9),
+                        color: c.border,
                       ),
                       const SizedBox(width: 16),
                       // Right Column: Consultation Fee
@@ -1182,7 +1231,7 @@ class _SelectDateTimeScreenState extends State<SelectDateTimeScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(AppLocalizations.of(context)!.consultationFee, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Color(0xFF667085))),
+                                  Text(l.consultationFee, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: c.secondaryText)),
                                   const SizedBox(height: 2),
                                   Text(widget.doctor.fee, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF7F56D9))),
                                 ],
@@ -1227,7 +1276,7 @@ class _SelectDateTimeScreenState extends State<SelectDateTimeScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(AppLocalizations.of(context)!.nextStep, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+                    Text(l.nextStep, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
                     const SizedBox(width: 8),
                     const Icon(Icons.arrow_forward_rounded, size: 20),
                   ],
@@ -1246,9 +1295,10 @@ class _SelectDateTimeScreenState extends State<SelectDateTimeScreen> {
 // ----------------------------------------------
 
 Widget _buildProcessStepper(BuildContext context, int activeStep) {
+  final c = context.appColors;
   return Container(
     padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-    color: Colors.white,
+    color: c.cardBg,
     child: Row(
       children: [
         _stepperNode(1, AppLocalizations.of(context)!.stepperDoctor, Icons.person_rounded, activeStep),
@@ -1336,13 +1386,28 @@ class PatientDetailsScreen extends StatefulWidget {
 }
 
 class _PatientDetailsScreenState extends State<PatientDetailsScreen> {
-  final _nameController = TextEditingController(text: 'राम शर्मा');
-  final _ageController = TextEditingController(text: '58 वर्ष');
-  final _phoneController = TextEditingController(text: '+91 98765 43210');
-  final _emailController = TextEditingController(text: 'ram.sharma@email.com');
-  final _symptomsController = TextEditingController(
-      text: 'छाती में दर्द, थकान और सांस लेने में दिक्कत हो रही है।');
-  String _gender = 'पुरुष';
+  late final TextEditingController _nameController;
+  late final TextEditingController _ageController;
+  late final TextEditingController _phoneController;
+  late final TextEditingController _emailController;
+  late final TextEditingController _symptomsController;
+  late String _gender;
+  bool _dataInitialized = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_dataInitialized) {
+      _dataInitialized = true;
+      final l = AppLocalizations.of(context)!;
+      _nameController = TextEditingController(text: l.patientName);
+      _ageController = TextEditingController(text: l.patientAge);
+      _phoneController = TextEditingController(text: l.patientPhone);
+      _emailController = TextEditingController(text: l.patientEmail);
+      _symptomsController = TextEditingController(text: l.patientSymptoms);
+      _gender = l.male;
+    }
+  }
 
   @override
   void dispose() {
@@ -1360,11 +1425,12 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> {
       _phoneController.text.trim().isNotEmpty;
 
   Widget _buildFormLabel(String text) {
+    final c = context.appColors;
     return Padding(
       padding: const EdgeInsets.only(bottom: 6, top: 14),
       child: Text(
         text,
-        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF475467)),
+        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: c.secondaryText),
       ),
     );
   }
@@ -1374,22 +1440,23 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> {
     required IconData prefixIcon,
     TextInputType keyboardType = TextInputType.text,
   }) {
+    final c = context.appColors;
     return TextField(
       controller: controller,
       keyboardType: keyboardType,
-      style: const TextStyle(fontFamily: 'Outfit', fontWeight: FontWeight.w700, fontSize: 15, color: Color(0xFF1D2939)),
+      style: TextStyle(fontFamily: 'Outfit', fontWeight: FontWeight.w700, fontSize: 15, color: c.primaryText),
       decoration: InputDecoration(
-        prefixIcon: Icon(prefixIcon, color: const Color(0xFF98A2B3), size: 20),
+        prefixIcon: Icon(prefixIcon, color: c.tertiaryText, size: 20),
         filled: true,
-        fillColor: Colors.white,
+        fillColor: c.cardBg,
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Color(0xFFE2E8F0), width: 1.5),
+          borderSide: BorderSide(color: c.divider, width: 1.5),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Color(0xFFE2E8F0), width: 1.5),
+          borderSide: BorderSide(color: c.divider, width: 1.5),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -1401,9 +1468,11 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    final c = context.appColors;
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
-      appBar: _buildAppBar(context, AppLocalizations.of(context)!.appointmentBooking),
+      backgroundColor: c.scaffoldBg,
+      appBar: _buildAppBar(context, l.appointmentBooking),
       body: Column(
         children: [
           _buildProcessStepper(context, 3),
@@ -1412,30 +1481,30 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> {
               padding: const EdgeInsets.all(16),
               children: [
                 Text(
-                  AppLocalizations.of(context)!.patientInfo,
-                  style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: Color(0xFF1D2939)),
+                  l.patientInfo,
+                  style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: c.primaryText),
                 ),
                 const SizedBox(height: 6),
                 
-                _buildFormLabel(AppLocalizations.of(context)!.fullName),
+                _buildFormLabel(l.fullName),
                 _buildInputField(controller: _nameController, prefixIcon: Icons.person_rounded),
 
-                _buildFormLabel(AppLocalizations.of(context)!.age),
+                _buildFormLabel(l.age),
                 _buildInputField(controller: _ageController, prefixIcon: Icons.calendar_today_rounded, keyboardType: TextInputType.text),
 
-                _buildFormLabel(AppLocalizations.of(context)!.gender),
+                _buildFormLabel(l.gender),
                 Row(
                   children: [
                     Expanded(
                         child: GestureDetector(
-                          onTap: () => setState(() => _gender = 'पुरुष'),
+                          onTap: () => setState(() => _gender = l.male),
                           child: Container(
                             padding: const EdgeInsets.symmetric(vertical: 14),
                             decoration: BoxDecoration(
-                              color: _gender == 'पुरुष' ? const Color(0xFF7F56D9) : Colors.white,
+                              color: _gender == l.male ? const Color(0xFF7F56D9) : c.cardBg,
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(
-                                color: _gender == 'पुरुष' ? const Color(0xFF7F56D9) : const Color(0xFFE2E8F0),
+                                color: _gender == l.male ? const Color(0xFF7F56D9) : c.divider,
                                 width: 1.5,
                               ),
                             ),
@@ -1444,15 +1513,15 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> {
                               children: [
                                 Icon(
                                   Icons.male_rounded,
-                                  color: _gender == 'पुरुष' ? Colors.white : const Color(0xFF667085),
+                                  color: _gender == l.male ? Colors.white : c.secondaryText,
                                   size: 18,
                                 ),
                                 const SizedBox(width: 6),
                                 Text(
-                                  AppLocalizations.of(context)!.male,
+                                  l.male,
                                   style: TextStyle(
                                     fontWeight: FontWeight.w800,
-                                    color: _gender == 'पुरुष' ? Colors.white : const Color(0xFF1D2939),
+                                    color: _gender == l.male ? Colors.white : c.primaryText,
                                   ),
                                 ),
                               ],
@@ -1463,14 +1532,14 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> {
                     const SizedBox(width: 12),
                     Expanded(
                         child: GestureDetector(
-                          onTap: () => setState(() => _gender = 'महिला'),
+                          onTap: () => setState(() => _gender = l.female),
                           child: Container(
                             padding: const EdgeInsets.symmetric(vertical: 14),
                             decoration: BoxDecoration(
-                              color: _gender == 'महिला' ? const Color(0xFF7F56D9) : Colors.white,
+                              color: _gender == l.female ? const Color(0xFF7F56D9) : c.cardBg,
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(
-                                color: _gender == 'महिला' ? const Color(0xFF7F56D9) : const Color(0xFFE2E8F0),
+                                color: _gender == l.female ? const Color(0xFF7F56D9) : c.divider,
                                 width: 1.5,
                               ),
                             ),
@@ -1479,15 +1548,15 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> {
                               children: [
                                 Icon(
                                   Icons.female_rounded,
-                                  color: _gender == 'महिला' ? Colors.white : const Color(0xFF667085),
+                                  color: _gender == l.female ? Colors.white : c.secondaryText,
                                   size: 18,
                                 ),
                                 const SizedBox(width: 6),
                                 Text(
-                                  AppLocalizations.of(context)!.female,
+                                  l.female,
                                   style: TextStyle(
                                     fontWeight: FontWeight.w800,
-                                    color: _gender == 'महिला' ? Colors.white : const Color(0xFF1D2939),
+                                    color: _gender == l.female ? Colors.white : c.primaryText,
                                   ),
                                 ),
                               ],
@@ -1498,28 +1567,28 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> {
                   ],
                 ),
 
-                _buildFormLabel(AppLocalizations.of(context)!.mobileNumber),
+                _buildFormLabel(l.mobileNumber),
                 _buildInputField(controller: _phoneController, prefixIcon: Icons.phone_rounded, keyboardType: TextInputType.phone),
 
-                _buildFormLabel(AppLocalizations.of(context)!.emailOptional),
+                _buildFormLabel(l.emailOptional),
                 _buildInputField(controller: _emailController, prefixIcon: Icons.email_rounded, keyboardType: TextInputType.emailAddress),
 
-                _buildFormLabel(AppLocalizations.of(context)!.symptomsLabel),
+                _buildFormLabel(l.symptomsLabel),
                 TextField(
                   controller: _symptomsController,
                   maxLines: 4,
-                  style: const TextStyle(fontFamily: 'Outfit', fontWeight: FontWeight.w700, fontSize: 14, color: Color(0xFF1D2939)),
+                  style: TextStyle(fontFamily: 'Outfit', fontWeight: FontWeight.w700, fontSize: 14, color: c.primaryText),
                   decoration: InputDecoration(
                     filled: true,
-                    fillColor: Colors.white,
+                    fillColor: c.cardBg,
                     contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Color(0xFFE2E8F0), width: 1.5),
+                      borderSide: BorderSide(color: c.divider, width: 1.5),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Color(0xFFE2E8F0), width: 1.5),
+                      borderSide: BorderSide(color: c.divider, width: 1.5),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -1566,7 +1635,7 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(AppLocalizations.of(context)!.nextStep, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+                    Text(l.nextStep, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
                     const SizedBox(width: 8),
                     const Icon(Icons.arrow_forward_rounded, size: 20),
                   ],
@@ -1610,11 +1679,14 @@ class ReviewAppointmentScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dateStr = 'मंगलवार, ${date.day} ${_months[date.month - 1]} ${date.year}';
+    final l = AppLocalizations.of(context)!;
+    final dayName = dayNames(l)[date.weekday - 1];
+    final dateStr = '$dayName, ${date.day} ${months(l)[date.month - 1]} ${date.year}';
 
+    final c = context.appColors;
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
-      appBar: _buildAppBar(context, AppLocalizations.of(context)!.reviewAppointment),
+      backgroundColor: c.scaffoldBg,
+      appBar: _buildAppBar(context, l.reviewAppointment),
       body: Column(
         children: [
           Expanded(
@@ -1624,8 +1696,8 @@ class ReviewAppointmentScreen extends StatelessWidget {
                 const SizedBox(height: 4),
                 Row(
                   children: [
-                    Text(AppLocalizations.of(context)!.appointmentDetails,
-                      style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: Color(0xFF1D2939))),
+                    Text(l.appointmentDetails,
+                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: c.primaryText)),
                     const Spacer(),
                     const Icon(Icons.calendar_month_rounded, color: Color(0xFF7F56D9), size: 18),
                   ],
@@ -1635,7 +1707,7 @@ class ReviewAppointmentScreen extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: c.cardBg,
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
@@ -1656,14 +1728,14 @@ class ReviewAppointmentScreen extends StatelessWidget {
                             Row(
                               children: [
                                 Text(doctor.name,
-                                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF1D2939))),
+                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: c.primaryText)),
                                 const SizedBox(width: 4),
                                 const Icon(Icons.verified_rounded, color: Color(0xFF2E90FA), size: 16),
                               ],
                             ),
                             const SizedBox(height: 3),
                             Text(doctor.specialization,
-                              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: Color(0xFF475467), height: 1.3)),
+                              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: c.secondaryText, height: 1.3)),
                           ],
                         ),
                       ),
@@ -1675,7 +1747,7 @@ class ReviewAppointmentScreen extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: c.cardBg,
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
@@ -1687,35 +1759,35 @@ class ReviewAppointmentScreen extends StatelessWidget {
                   ),
                   child: Column(
                     children: [
-                      _detailRow(Icons.calendar_month_rounded, AppLocalizations.of(context)!.date, dateStr, const Color(0xFF7F56D9)),
-                      const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 10),
-                        child: Divider(color: Color(0xFFF1F5F9), height: 1),
+                      _detailRow(Icons.calendar_month_rounded, l.date, dateStr, const Color(0xFF7F56D9), c),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        child: Divider(color: c.border, height: 1),
                       ),
-                      _detailRow(Icons.access_time_rounded, AppLocalizations.of(context)!.selectTime, time, const Color(0xFF12B76A)),
-                      const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 10),
-                        child: Divider(color: Color(0xFFF1F5F9), height: 1),
+                      _detailRow(Icons.access_time_rounded, l.selectTime, time, const Color(0xFF12B76A), c),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        child: Divider(color: c.border, height: 1),
                       ),
-                      _detailRow(Icons.location_on_rounded, AppLocalizations.of(context)!.location, doctor.location, const Color(0xFFE04F5F)),
-                      const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 10),
-                        child: Divider(color: Color(0xFFF1F5F9), height: 1),
+                      _detailRow(Icons.location_on_rounded, l.location, doctor.location, const Color(0xFFE04F5F), c),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        child: Divider(color: c.border, height: 1),
                       ),
-                      _detailRow(Icons.currency_rupee_rounded, AppLocalizations.of(context)!.consultationFee, doctor.fee, const Color(0xFF7F56D9)),
+                      _detailRow(Icons.currency_rupee_rounded, l.consultationFee, doctor.fee, const Color(0xFF7F56D9), c),
                     ],
                   ),
                 ),
                 const SizedBox(height: 20),
 
-                Text(AppLocalizations.of(context)!.patientInfo,
-                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: Color(0xFF1D2939))),
+                Text(l.patientInfo,
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: c.primaryText)),
                 const SizedBox(height: 12),
 
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: c.cardBg,
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
@@ -1730,32 +1802,32 @@ class ReviewAppointmentScreen extends StatelessWidget {
                     children: [
                       Text(
                         patientName,
-                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF1D2939)),
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: c.primaryText),
                       ),
                       const SizedBox(height: 6),
                       Row(
                         children: [
-                          const Icon(Icons.phone_rounded, size: 14, color: Color(0xFF667085)),
+                          Icon(Icons.phone_rounded, size: 14, color: c.secondaryText),
                           const SizedBox(width: 6),
-                          Text(patientPhone, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF475467))),
+                          Text(patientPhone, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: c.secondaryText)),
                         ],
                       ),
                       const SizedBox(height: 4),
                       Row(
                         children: [
-                          const Icon(Icons.wc_rounded, size: 14, color: Color(0xFF667085)),
+                          Icon(Icons.wc_rounded, size: 14, color: c.secondaryText),
                           const SizedBox(width: 6),
-                          Text('$patientAge, $patientGender', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF475467))),
+                          Text('$patientAge, $patientGender', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: c.secondaryText)),
                         ],
                       ),
                       if (symptoms.isNotEmpty) ...[
-                        const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 12),
-                          child: Divider(color: Color(0xFFF1F5F9), height: 1),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          child: Divider(color: c.border, height: 1),
                         ),
-                        Text(AppLocalizations.of(context)!.problemSymptoms, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF7F56D9))),
+                        Text(l.problemSymptoms, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF7F56D9))),
                         const SizedBox(height: 6),
-                        Text(symptoms, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: Color(0xFF475467), height: 1.4)),
+                        Text(symptoms, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: c.secondaryText, height: 1.4)),
                       ],
                     ],
                   ),
@@ -1766,13 +1838,13 @@ class ReviewAppointmentScreen extends StatelessWidget {
           ),
           Container(
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-            color: Colors.white,
+            color: c.cardBg,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  AppLocalizations.of(context)!.confirmNote,
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF667085)),
+                  l.confirmNote,
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: c.secondaryText),
                 ),
                 const SizedBox(height: 12),
                 SizedBox(
@@ -1796,7 +1868,7 @@ class ReviewAppointmentScreen extends StatelessWidget {
                       elevation: 0,
                     ),
                     child: Text(
-                      AppLocalizations.of(context)!.confirmAppointment,
+                      l.confirmAppointment,
                       style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
                     ),
                   ),
@@ -1809,7 +1881,7 @@ class ReviewAppointmentScreen extends StatelessWidget {
     );
   }
 
-  Widget _detailRow(IconData icon, String label, String value, Color color) {
+  Widget _detailRow(IconData icon, String label, String value, Color color, AppColors c) {
     return Row(
       children: [
         Container(
@@ -1822,9 +1894,9 @@ class ReviewAppointmentScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(label, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Color(0xFF98A2B3))),
+              Text(label, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: c.tertiaryText)),
               const SizedBox(height: 1),
-              Text(value, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF1D2939))),
+              Text(value, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: c.primaryText)),
             ],
           ),
         ),
@@ -1900,22 +1972,25 @@ class _BookingSuccessScreenState extends State<BookingSuccessScreen>
 
   @override
   Widget build(BuildContext context) {
-    final dateStr = 'मंगलवार, ${widget.date.day} ${_months[widget.date.month - 1]} ${widget.date.year}';
+    final l = AppLocalizations.of(context)!;
+    final dayName = dayNames(l)[widget.date.weekday - 1];
+    final dateStr = '$dayName, ${widget.date.day} ${months(l)[widget.date.month - 1]} ${widget.date.year}';
     final randomId = '#APT${math.Random().nextInt(9000) + 1000}';
 
+    final c = context.appColors;
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: c.scaffoldBg,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: c.cardBg,
         elevation: 0,
         scrolledUnderElevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF1D2939), size: 26),
+          icon: Icon(Icons.arrow_back_rounded, color: c.primaryText, size: 26),
           onPressed: () => Navigator.of(context).popUntil((route) => route.isFirst),
         ),
         title: Text(
-          AppLocalizations.of(context)!.confirmAppointment,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF1D2939)),
+          l.confirmAppointment,
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: c.primaryText),
         ),
         centerTitle: false,
       ),
@@ -1968,15 +2043,15 @@ class _BookingSuccessScreenState extends State<BookingSuccessScreen>
                     child: Column(
                       children: [
                         Text(
-                          AppLocalizations.of(context)!.appointmentSuccess,
+                          l.appointmentSuccess,
                           textAlign: TextAlign.center,
                           style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: Color(0xFF12B76A)),
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          AppLocalizations.of(context)!.appointmentInfoSent,
+                          l.appointmentInfoSent,
                           textAlign: TextAlign.center,
-                          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xFF667085)),
+                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: c.secondaryText),
                         ),
                       ],
                     ),
@@ -1989,7 +2064,7 @@ class _BookingSuccessScreenState extends State<BookingSuccessScreen>
                       width: double.infinity,
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: c.cardBg,
                         borderRadius: BorderRadius.circular(24),
                         boxShadow: [
                           BoxShadow(
@@ -2004,27 +2079,27 @@ class _BookingSuccessScreenState extends State<BookingSuccessScreen>
                           Row(
                             children: [
                               Text(
-                                AppLocalizations.of(context)!.appointmentDetails2,
-                                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: Color(0xFF1D2939)),
+                                l.appointmentDetails2,
+                              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: c.primaryText),
+                            ),
+                            const Spacer(),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFECFDF3),
+                                borderRadius: BorderRadius.circular(8),
                               ),
-                              const Spacer(),
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFECFDF3),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Text(
-                                  AppLocalizations.of(context)!.appointmentId(randomId),
-                                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: Color(0xFF027A48)),
-                                ),
+                              child: Text(
+                                l.appointmentId(randomId),
+                                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: Color(0xFF027A48)),
                               ),
-                            ],
-                          ),
-                          const Padding(
-                            padding: EdgeInsets.symmetric(vertical: 14),
-                            child: Divider(color: Color(0xFFF1F5F9), height: 1),
-                          ),
+                            ),
+                          ],
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          child: Divider(color: c.border, height: 1),
+                        ),
                           Row(
                             children: [
                               _DoctorAvatar(initials: widget.doctor.initials, imageUrl: widget.doctor.imageUrl, size: 52),
@@ -2036,22 +2111,22 @@ class _BookingSuccessScreenState extends State<BookingSuccessScreen>
                                     Row(
                                       children: [
                                         Text(widget.doctor.name,
-                                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF1D2939))),
+                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: c.primaryText)),
                                         const SizedBox(width: 4),
                                         const Icon(Icons.verified_rounded, color: Color(0xFF2E90FA), size: 16),
                                       ],
                                     ),
                                     const SizedBox(height: 3),
                                     Text(widget.doctor.specialization,
-                                      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: Color(0xFF475467), height: 1.3)),
+                                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: c.secondaryText, height: 1.3)),
                                   ],
                                 ),
                               ),
                             ],
                           ),
-                          const Padding(
-                            padding: EdgeInsets.symmetric(vertical: 14),
-                            child: Divider(color: Color(0xFFF1F5F9), height: 1),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            child: Divider(color: c.border, height: 1),
                           ),
                           _successRow(Icons.calendar_month_rounded, dateStr),
                           const SizedBox(height: 12),
@@ -2059,7 +2134,7 @@ class _BookingSuccessScreenState extends State<BookingSuccessScreen>
                           const SizedBox(height: 12),
                           _successRow(Icons.location_on_rounded, widget.doctor.location),
                           const SizedBox(height: 12),
-                          _successRow(Icons.currency_rupee_rounded, '${AppLocalizations.of(context)!.consultationFee}: ${widget.doctor.fee}'),
+                          _successRow(Icons.currency_rupee_rounded, '${l.consultationFee}: ${widget.doctor.fee}'),
                         ],
                       ),
                     ),
@@ -2084,7 +2159,7 @@ class _BookingSuccessScreenState extends State<BookingSuccessScreen>
                               elevation: 0,
                             ),
                             child: Text(
-                              AppLocalizations.of(context)!.myAppointments,
+                              l.myAppointments,
                               style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
                             ),
                           ),
@@ -2095,7 +2170,7 @@ class _BookingSuccessScreenState extends State<BookingSuccessScreen>
                           child: OutlinedButton.icon(
                             onPressed: () => Navigator.of(context).popUntil((route) => route.isFirst),
                             icon: const Icon(Icons.home_rounded, size: 22),
-                            label: Text(AppLocalizations.of(context)!.goHome),
+                            label: Text(l.goHome),
                             style: OutlinedButton.styleFrom(
                               foregroundColor: const Color(0xFF7F56D9),
                               side: const BorderSide(color: Color(0xFF7F56D9), width: 2),
@@ -2119,13 +2194,14 @@ class _BookingSuccessScreenState extends State<BookingSuccessScreen>
   }
 
   Widget _successRow(IconData icon, String text) {
+    final c = context.appColors;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Icon(icon, size: 18, color: const Color(0xFF12B76A)),
         const SizedBox(width: 10),
         Expanded(
-          child: Text(text, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF1D2939), height: 1.3)),
+          child: Text(text, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: c.primaryText, height: 1.3)),
         ),
       ],
     );

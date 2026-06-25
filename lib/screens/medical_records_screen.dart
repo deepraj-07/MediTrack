@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:meditrack/l10n/app_localizations.dart';
+import 'package:meditrack/theme/app_theme.dart';
 
 class MedicalRecordsScreen extends StatefulWidget {
   const MedicalRecordsScreen({super.key});
@@ -11,77 +12,82 @@ class MedicalRecordsScreen extends StatefulWidget {
 class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
   String _selectedFilter = 'all';
 
-  final List<_Record> _records = [
-    _Record(
-      title: 'स्वास्थ्य जांच रिपोर्ट',
-      doctor: 'डॉ. आर. के. गुप्ता',
-      date: '20 जून 2026',
-      type: 'ब्लड टेस्ट',
-      icon: Icons.science_rounded,
-      color: Color(0xFF7F56D9),
-      summary: 'BP 120/80, शुगर 98 mg/dL, कोलेस्ट्रॉल सामान्य',
-    ),
-    _Record(
-      title: 'हृदय जांच रिपोर्ट',
-      doctor: 'डॉ. राजत शर्मा',
-      date: '15 मई 2026',
-      type: 'ईसीजी',
-      icon: Icons.favorite_rounded,
-      color: Color(0xFFF43F5E),
-      summary: 'ईसीजी सामान्य, हृदय गति 72 bpm',
-    ),
-    _Record(
-      title: 'डायबिटीज जांच',
-      doctor: 'डॉ. नेहा वर्मा',
-      date: '10 मई 2026',
-      type: 'HbA1c',
-      icon: Icons.bloodtype_rounded,
-      color: Color(0xFF3B82F6),
-      summary: 'HbA1c 6.2% - सामान्य सीमा में',
-    ),
-    _Record(
-      title: 'एक्स-रे रिपोर्ट',
-      doctor: 'डॉ. अमित पटेल',
-      date: '2 अप्रैल 2026',
-      type: 'एक्स-रे',
-      icon: Icons.visibility_rounded,
-      color: Color(0xFF12B76A),
-      summary: 'छाती का एक्स-रे सामान्य, कोई असामान्यता नहीं',
-    ),
-    _Record(
-      title: 'वार्षिक स्वास्थ्य जांच',
-      doctor: 'डॉ. आर. के. गुप्ता',
-      date: '15 मार्च 2026',
-      type: 'फुल बॉडी चेकअप',
-      icon: Icons.assignment_rounded,
-      color: Color(0xFFF59E0B),
-      summary: 'सभी पैरामीटर सामान्य, विटामिन D3 थोड़ा कम',
-    ),
-  ];
+  List<_Record> get _records {
+    final l = AppLocalizations.of(context)!;
+    return [
+      _Record(
+        title: l.recordHealthCheckup,
+        doctor: l.recordDocGupta,
+        date: '20 ${l.monthJun} 2026',
+        type: l.recordTypeBlood,
+        icon: Icons.science_rounded,
+        color: const Color(0xFF7F56D9),
+        summary: l.recordSummaryHealthCheckup,
+      ),
+      _Record(
+        title: l.recordHeartCheckup,
+        doctor: l.recordDocSharma,
+        date: '15 ${l.monthMayLabel} 2026',
+        type: l.recordTypeECG,
+        icon: Icons.favorite_rounded,
+        color: const Color(0xFFF43F5E),
+        summary: l.recordSummaryHeartCheckup,
+      ),
+      _Record(
+        title: l.recordDiabetesCheckup,
+        doctor: l.recordDocVerma,
+        date: '10 ${l.monthMayLabel} 2026',
+        type: l.recordTypeHba1c,
+        icon: Icons.bloodtype_rounded,
+        color: const Color(0xFF3B82F6),
+        summary: l.recordSummaryDiabetesCheckup,
+      ),
+      _Record(
+        title: l.recordXray,
+        doctor: l.recordDocPatel,
+        date: '2 ${l.monthApr} 2026',
+        type: l.recordTypeXray,
+        icon: Icons.visibility_rounded,
+        color: const Color(0xFF12B76A),
+        summary: l.recordSummaryXray,
+      ),
+      _Record(
+        title: l.recordAnnualCheckup,
+        doctor: l.recordDocGupta,
+        date: '15 ${l.monthMar} 2026',
+        type: l.recordTypeFullBody,
+        icon: Icons.assignment_rounded,
+        color: const Color(0xFFF59E0B),
+        summary: l.recordSummaryAnnualCheckup,
+      ),
+    ];
+  }
 
   List<_Record> get _filteredRecords {
+    final l = AppLocalizations.of(context)!;
     if (_selectedFilter == 'reports') {
-      return _records.where((r) => r.type == 'ब्लड टेस्ट' || r.type == 'फुल बॉडी चेकअप' || r.type == 'HbA1c').toList();
+      return _records.where((r) => r.type == l.recordTypeBlood || r.type == l.recordTypeFullBody || r.type == l.recordTypeHba1c).toList();
     } else if (_selectedFilter == 'scans') {
-      return _records.where((r) => r.type == 'ईसीजी' || r.type == 'एक्स-रे').toList();
+      return _records.where((r) => r.type == l.recordTypeECG || r.type == l.recordTypeXray).toList();
     }
     return _records;
   }
 
   @override
   Widget build(BuildContext context) {
+    final c = context.appColors;
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: c.scaffoldBg,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF1D2939), size: 26),
+          icon: Icon(Icons.arrow_back_rounded, color: c.primaryText, size: 26),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           AppLocalizations.of(context)!.quickRecords.replaceAll('\n', ' '),
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: Color(0xFF1D2939)),
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: c.primaryText),
         ),
         centerTitle: false,
       ),
@@ -94,7 +100,7 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
               children: [
                 _buildSummaryCard(Icons.description_rounded, '${_records.length}', AppLocalizations.of(context)!.all, const Color(0xFF7F56D9)),
                 const SizedBox(width: 12),
-                _buildSummaryCard(Icons.calendar_today_rounded, '2026', 'यह वर्ष', const Color(0xFF12B76A)),
+                _buildSummaryCard(Icons.calendar_today_rounded, '2026', AppLocalizations.of(context)!.thisYear, const Color(0xFF12B76A)),
               ],
             ),
           ),
@@ -111,11 +117,11 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(Icons.folder_open_rounded, size: 56, color: Color(0xFFCBD5E1)),
+                        Icon(Icons.folder_open_rounded, size: 56, color: c.tertiaryText),
                         const SizedBox(height: 12),
                         Text(
                           AppLocalizations.of(context)!.noRecords,
-                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF475467)),
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: c.secondaryText),
                         ),
                       ],
                     ),
@@ -132,13 +138,14 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
   }
 
   Widget _buildSummaryCard(IconData icon, String value, String label, Color color) {
+    final c = context.appColors;
     return Expanded(
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: c.cardBg,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFFF1F5F9)),
+          border: Border.all(color: c.border),
         ),
         child: Row(
           children: [
@@ -151,8 +158,8 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(value, style: const TextStyle(fontFamily: 'Outfit', fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF1D2939))),
-                Text(label, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Color(0xFF667085))),
+                Text(value, style: TextStyle(fontFamily: 'Outfit', fontSize: 16, fontWeight: FontWeight.w800, color: c.primaryText)),
+                Text(label, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: c.secondaryText)),
               ],
             ),
           ],
@@ -162,9 +169,10 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
   }
 
   Widget _buildFilterTabs() {
+    final c = context.appColors;
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFFE2E8F0),
+        color: c.divider,
         borderRadius: BorderRadius.circular(14),
       ),
       padding: const EdgeInsets.all(4),
@@ -179,6 +187,7 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
   }
 
   Widget _buildFilterTab(String filter, String label) {
+    final c = context.appColors;
     bool isActive = _selectedFilter == filter;
     return Expanded(
       child: InkWell(
@@ -200,7 +209,7 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.bold,
-                color: isActive ? const Color(0xFF7F56D9) : const Color(0xFF475467),
+                color: isActive ? const Color(0xFF7F56D9) : c.secondaryText,
               ),
             ),
           ),
@@ -210,13 +219,14 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
   }
 
   Widget _buildRecordCard(_Record record) {
+    final c = context.appColors;
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: c.cardBg,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFF1F5F9)),
+        border: Border.all(color: c.border),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.02),
@@ -248,12 +258,12 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
                     children: [
                       Text(
                         record.title,
-                        style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: Color(0xFF1D2939)),
+                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: c.primaryText),
                       ),
                       const SizedBox(height: 2),
                       Text(
                         '${record.doctor} • ${record.date}',
-                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Color(0xFF667085)),
+                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: c.secondaryText),
                       ),
                     ],
                   ),
@@ -275,20 +285,20 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: const Color(0xFFF8FAFC),
+                color: c.scaffoldBg,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.summarize_rounded, size: 14, color: Color(0xFF475467)),
+                  Icon(Icons.summarize_rounded, size: 14, color: c.secondaryText),
                   const SizedBox(width: 6),
                   Expanded(
                     child: Text(
                       record.summary,
-                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Color(0xFF475467)),
+                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: c.secondaryText),
                     ),
                   ),
-                  const Icon(Icons.chevron_right_rounded, size: 18, color: Color(0xFF98A2B3)),
+                  Icon(Icons.chevron_right_rounded, size: 18, color: c.tertiaryText),
                 ],
               ),
             ),
@@ -299,6 +309,7 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
   }
 
   void _showRecordDetail(_Record record) {
+    final c = context.appColors;
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -315,7 +326,7 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
               child: Container(
                 width: 48, height: 5,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFE2E8F0),
+                  color: c.divider,
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
@@ -336,9 +347,9 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(record.title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF1D2939))),
+                      Text(record.title, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: c.primaryText)),
                       const SizedBox(height: 4),
-                      Text('${record.doctor} • ${record.date}', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: Color(0xFF667085))),
+                      Text('${record.doctor} • ${record.date}', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: c.secondaryText)),
                     ],
                   ),
                 ),
@@ -348,7 +359,7 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
                     Navigator.pop(ctx);
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: const Text('रिपोर्ट डाउनलोड हो रही है...'),
+                        content: Text(AppLocalizations.of(ctx)!.reportDownloading),
                         backgroundColor: const Color(0xFF7F56D9),
                         behavior: SnackBarBehavior.floating,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -359,18 +370,18 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
               ],
             ),
             const SizedBox(height: 20),
-            const Text('रिपोर्ट सारांश', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF475467))),
+            Text(AppLocalizations.of(ctx)!.reportSummary, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: c.secondaryText)),
             const SizedBox(height: 8),
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: const Color(0xFFF8FAFC),
+                color: c.scaffoldBg,
                 borderRadius: BorderRadius.circular(14),
               ),
               child: Text(
                 record.summary,
-                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xFF1D2939), height: 1.5),
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: c.primaryText, height: 1.5),
               ),
             ),
             const SizedBox(height: 16),
@@ -383,7 +394,7 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
-                child: const Text('बंद करें', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w800)),
+                child: Text(AppLocalizations.of(ctx)!.close, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w800)),
               ),
             ),
           ],

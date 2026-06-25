@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:meditrack/l10n/app_localizations.dart';
+import 'package:meditrack/theme/app_theme.dart';
 
 class NotificationsScreen extends StatelessWidget {
   final List<Map<String, dynamic>> notifications;
@@ -15,6 +16,7 @@ class NotificationsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = context.appColors;
     final unreadCount = notifications.where((n) => n['isRead'] == false).length;
 
     return Column(
@@ -31,10 +33,10 @@ class NotificationsScreen extends StatelessWidget {
                   const SizedBox(width: 10),
                   Text(
                     AppLocalizations.of(context)!.newNotifications('$unreadCount'),
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
-                      color: Color(0xFF667085),
+                      color: c.secondaryText,
                     ),
                   ),
                 ],
@@ -58,7 +60,7 @@ class NotificationsScreen extends StatelessWidget {
             ],
           ),
         ),
-        const Divider(height: 1, color: Color(0xFFF1F5F9)),
+        Divider(height: 1, color: c.border),
         // List
         Expanded(
           child: notifications.isEmpty
@@ -67,14 +69,14 @@ class NotificationsScreen extends StatelessWidget {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.notifications_off_rounded, size: 48, color: Color(0xFFCBD5E1)),
+                        Icon(Icons.notifications_off_rounded, size: 48, color: c.divider),
                         const SizedBox(height: 12),
                         Text(
                           AppLocalizations.of(context)!.noNotifications,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
-                            color: Color(0xFF98A2B3),
+                            color: c.tertiaryText,
                           ),
                         ),
                       ],
@@ -84,9 +86,9 @@ class NotificationsScreen extends StatelessWidget {
                     shrinkWrap: true,
                     padding: const EdgeInsets.symmetric(vertical: 8),
                     itemCount: notifications.length,
-                    separatorBuilder: (_, _) => const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 20),
-                      child: Divider(height: 1, color: Color(0xFFF1F5F9)),
+                    separatorBuilder: (_, _) => Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Divider(height: 1, color: c.border),
                     ),
                     itemBuilder: (context, index) {
                       final notif = notifications[index];
@@ -130,6 +132,7 @@ class _NotificationTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = context.appColors;
     return InkWell(
       onTap: onTap,
       child: Padding(
@@ -171,16 +174,16 @@ class _NotificationTile extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: isRead ? FontWeight.w600 : FontWeight.w800,
-                      color: const Color(0xFF1D2939),
+                      color: c.primaryText,
                     ),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     body,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
-                      color: Color(0xFF667085),
+                      color: c.secondaryText,
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
@@ -188,10 +191,10 @@ class _NotificationTile extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     time,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w500,
-                      color: Color(0xFF98A2B3),
+                      color: c.tertiaryText,
                     ),
                   ),
                 ],

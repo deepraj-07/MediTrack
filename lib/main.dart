@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
 import 'package:meditrack/l10n/app_localizations.dart';
+import 'providers/language_provider.dart';
+import 'providers/theme_provider.dart';
+import 'theme/app_theme.dart';
 import 'screens/home_screen.dart';
 import 'screens/vitals_screen.dart';
 import 'screens/medicines_screen.dart';
@@ -21,59 +24,35 @@ void main() {
     statusBarColor: Colors.transparent,
     statusBarIconBrightness: Brightness.dark,
   ));
-  runApp(const MediTrackApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => LanguageProvider()..loadLocale()),
+        ChangeNotifierProvider(create: (_) => ThemeProvider()..loadTheme()),
+      ],
+      child: const MediTrackApp(),
+    ),
+  );
 }
 
-class MediTrackApp extends StatefulWidget {
+class MediTrackApp extends StatelessWidget {
   const MediTrackApp({super.key});
 
   @override
-  State<MediTrackApp> createState() => _MediTrackAppState();
-}
-
-class _MediTrackAppState extends State<MediTrackApp> {
-  Locale _locale = const Locale('hi');
-
-  @override
-  void initState() {
-    super.initState();
-    _loadLocale();
-  }
-
-  Future<void> _loadLocale() async {
-    final prefs = await SharedPreferences.getInstance();
-    final code = prefs.getString('locale') ?? 'hi';
-    if (mounted) {
-      setState(() {
-        _locale = Locale(code);
-      });
-    }
-  }
-
-  void _setLocale(Locale locale) {
-    setState(() {
-      _locale = locale;
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final locale = context.watch<LanguageProvider>().locale;
+    final themeMode = context.watch<ThemeProvider>().themeMode;
     return MaterialApp(
       title: 'MediTrack',
       debugShowCheckedModeBanner: false,
-      locale: _locale,
+      locale: locale,
       supportedLocales: const [
         Locale('en'),
         Locale('hi'),
       ],
       localizationsDelegates: AppLocalizations.localizationsDelegates,
-      theme: ThemeData(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF7F56D9),
-          primary: const Color(0xFF7F56D9),
-          secondary: const Color(0xFF6366F1),
-        ),
+      themeMode: themeMode,
+      theme: buildLightTheme().copyWith(
         textTheme: GoogleFonts.notoSansDevanagariTextTheme(
           Theme.of(context).textTheme,
         ).copyWith(
@@ -87,23 +66,27 @@ class _MediTrackAppState extends State<MediTrackApp> {
           ),
         ),
       ),
-      home: MainShell(
-        locale: _locale,
-        onLocaleChanged: _setLocale,
+      darkTheme: buildDarkTheme().copyWith(
+        textTheme: GoogleFonts.notoSansDevanagariTextTheme(
+          Theme.of(context).textTheme,
+        ).copyWith(
+          titleLarge: GoogleFonts.notoSansDevanagari(
+            fontWeight: FontWeight.w800,
+            fontSize: 22,
+          ),
+          bodyMedium: GoogleFonts.notoSansDevanagari(
+            fontWeight: FontWeight.w500,
+            fontSize: 16,
+          ),
+        ),
       ),
+      home: const MainShell(),
     );
   }
 }
 
 class MainShell extends StatefulWidget {
-  final Locale locale;
-  final ValueChanged<Locale> onLocaleChanged;
-
-  const MainShell({
-    super.key,
-    required this.locale,
-    required this.onLocaleChanged,
-  });
+  const MainShell({super.key});
 
   @override
   State<MainShell> createState() => _MainShellState();
@@ -113,36 +96,7 @@ class _MainShellState extends State<MainShell> {
   int _currentIndex = 0;
 
   // Master Medicines List
-  final List<Map<String, dynamic>> _medicines = [
-    {
-      'name': 'Metformin 500mg',
-      'time': '08:00 AM',
-      'dose': '1 गोली',
-      'instruction': 'नाश्ते के बाद',
-      'isTaken': true,
-    },
-    {
-      'name': 'Telmisartan 40mg',
-      'time': '01:00 PM',
-      'dose': '1 गोली',
-      'instruction': 'दोपहर के भोजन के बाद',
-      'isTaken': false,
-    },
-    {
-      'name': 'Vitamin D3',
-      'time': '08:00 PM',
-      'dose': '1 गोली',
-      'instruction': 'रात के भोजन के बाद',
-      'isTaken': false,
-    },
-    {
-      'name': 'Atorvastatin 10mg',
-      'time': '10:00 PM',
-      'dose': '1 गोली',
-      'instruction': 'सोने से पहले',
-      'isTaken': false,
-    },
-  ];
+  List<Map<String, dynamic>> _medicines = [];
 
   // SOS Countdown state
   bool _isSosCountdownActive = false;
@@ -152,49 +106,63 @@ class _MainShellState extends State<MainShell> {
 
   // Voice overlay state
   bool _isVoiceAssistantActive = false;
-  String _voicePromptText = "सुन रहा हूँ...";
-  String _voiceSubText = "कृपया बोलिए (जैसे: 'दवा', 'बीपी', 'मदद', 'होम')";
-  String _voiceTranscript = "...";
+  String _voicePromptText = "";
+  String _voiceSubText = "";
+  String _voiceTranscript = "";
 
   // Notification state
-  final List<Map<String, dynamic>> _notifications = [
-    {
-      'id': '1',
-      'icon': Icons.check_circle_rounded,
-      'iconColor': const Color(0xFF12B76A),
-      'title': 'दवा ले ली गई',
-      'body': 'Metformin 500mg सुबह 8:00 बजे ले ली गई है।',
-      'time': 'आज, 8:05 AM',
-      'isRead': false,
-    },
-    {
-      'id': '2',
-      'icon': Icons.access_alarm_rounded,
-      'iconColor': const Color(0xFF7F56D9),
-      'title': 'दवा लेने का समय',
-      'body': 'Telmisartan 40mg दोपहर 1:00 बजे लेनी है। खाने के बाद लें।',
-      'time': 'आज, 12:30 PM',
-      'isRead': false,
-    },
-    {
-      'id': '3',
-      'icon': Icons.favorite_rounded,
-      'iconColor': const Color(0xFFF43F5E),
-      'title': 'BP रीडिंग: 130/85',
-      'body': 'आपका ब्लड प्रेशर सामान्य से थोड़ा ऊपर है। कृपया डॉक्टर से सलाह लें।',
-      'time': 'आज, 10:15 AM',
-      'isRead': false,
-    },
-    {
-      'id': '4',
-      'icon': Icons.calendar_today_rounded,
-      'iconColor': const Color(0xFF2E82FF),
-      'title': 'डॉक्टर अपॉइंटमेंट',
-      'body': 'डॉ. आर. के. गुप्ता से कल सुबह 10:00 बजे अपॉइंटमेंट है।',
-      'time': 'आज, 9:00 AM',
-      'isRead': false,
-    },
-  ];
+  List<Map<String, dynamic>> _notifications = [];
+  bool _dataInitialized = false;
+
+  void _initSampleData() {
+    if (_dataInitialized) return;
+    _dataInitialized = true;
+    final l = AppLocalizations.of(context)!;
+    _medicines = [
+      {'name': l.medMetformin, 'time': '08:00 AM', 'dose': l.dose1Pill, 'instruction': l.instAfterBreakfast, 'isTaken': true},
+      {'name': l.medTelmisartan, 'time': '01:00 PM', 'dose': l.dose1Pill, 'instruction': l.instAfterLunch, 'isTaken': false},
+      {'name': l.medVitaminD3, 'time': '08:00 PM', 'dose': l.dose1Pill, 'instruction': l.instAfterDinner, 'isTaken': false},
+      {'name': l.medAtorvastatin, 'time': '10:00 PM', 'dose': l.dose1Pill, 'instruction': l.instBeforeSleep, 'isTaken': false},
+    ];
+    _notifications = [
+      {
+        'id': '1',
+        'icon': Icons.check_circle_rounded,
+        'iconColor': const Color(0xFF12B76A),
+        'title': l.notifMedTaken,
+        'body': l.notifMedTakenBody(l.medMetformin, '8:00'),
+        'time': '${l.today}, 8:05 AM',
+        'isRead': false,
+      },
+      {
+        'id': '2',
+        'icon': Icons.access_alarm_rounded,
+        'iconColor': const Color(0xFF7F56D9),
+        'title': l.notifMedReminder,
+        'body': l.notifMedReminderBody(l.medTelmisartan, '1:00'),
+        'time': '${l.today}, 12:30 PM',
+        'isRead': false,
+      },
+      {
+        'id': '3',
+        'icon': Icons.favorite_rounded,
+        'iconColor': const Color(0xFFF43F5E),
+        'title': l.notifBpReading('130/85'),
+        'body': l.notifBpReadingBody,
+        'time': '${l.today}, 10:15 AM',
+        'isRead': false,
+      },
+      {
+        'id': '4',
+        'icon': Icons.calendar_today_rounded,
+        'iconColor': const Color(0xFF2E82FF),
+        'title': l.notifAppointment,
+        'body': l.notifAppointmentBody(l.recordDocGupta, '10:00'),
+        'time': '${l.today}, 9:00 AM',
+        'isRead': false,
+      },
+    ];
+  }
 
   int get _unreadCount => _notifications.where((n) => n['isRead'] == false).length;
 
@@ -226,9 +194,9 @@ class _MainShellState extends State<MainShell> {
               icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF1D2939)),
               onPressed: () => Navigator.pop(context),
             ),
-            title: const Text(
-              'सूचनाएँ',
-              style: TextStyle(
+            title: Text(
+              AppLocalizations.of(context)!.notifications,
+              style: const TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.w800,
                 color: Color(0xFF1D2939),
@@ -249,16 +217,16 @@ class _MainShellState extends State<MainShell> {
   void _openVoiceAssistant() {
     setState(() {
       _isVoiceAssistantActive = true;
-      _voicePromptText = "सुन रहा हूँ...";
-      _voiceSubText = "कृपया बोलिए (जैसे: 'दवा', 'बीपी', 'मदद', 'होम')";
-      _voiceTranscript = "...";
+      _voicePromptText = AppLocalizations.of(context)!.voiceListening;
+      _voiceSubText = AppLocalizations.of(context)!.voicePrompt;
+      _voiceTranscript = AppLocalizations.of(context)!.voiceTranscript;
     });
   }
 
   void _processVoiceCommand(String command) {
     setState(() {
       _voiceTranscript = '"$command"';
-      _voicePromptText = "प्रोसेस कर रहा हूँ...";
+      _voicePromptText = AppLocalizations.of(context)!.voiceProcessing;
     });
 
     Future.delayed(const Duration(milliseconds: 1200), () {
@@ -267,20 +235,20 @@ class _MainShellState extends State<MainShell> {
       String responseText = "";
       int targetIndex = _currentIndex;
 
-      if (command.contains("दवा") || command.contains("remind") || command.contains("medicine")) {
-        targetIndex = 3; // Medicines
-        responseText = "दवाइयाँ स्क्रीन खोल रहा हूँ";
-      } else if (command.contains("बीपी") || command.contains("शुगर") || command.contains("आंकड़े") || command.contains("vital") || command.contains("report")) {
-        targetIndex = 1; // Vitals
-        responseText = "आपके आंकड़े दिखा रहा हूँ";
-      } else if (command.contains("मदद") || command.contains("sos") || command.contains("help") || command.contains("आपातकाल")) {
-        responseText = "आपातकालीन अलर्ट शुरू किया जा रहा है!";
+      if (command.contains(AppLocalizations.of(context)!.voiceKeywordMedicine) || command.contains("remind") || command.contains("medicine")) {
+        targetIndex = 3;
+        responseText = AppLocalizations.of(context)!.voiceRespMedicine;
+      } else if (command.contains(AppLocalizations.of(context)!.voiceKeywordVital) || command.contains(AppLocalizations.of(context)!.voiceKeywordReport) || command.contains("vital") || command.contains("report")) {
+        targetIndex = 1;
+        responseText = AppLocalizations.of(context)!.voiceRespVitals;
+      } else if (command.contains(AppLocalizations.of(context)!.voiceKeywordSos) || command.contains("sos") || command.contains("help") || command.contains(AppLocalizations.of(context)!.voiceKeywordHelp)) {
+        responseText = AppLocalizations.of(context)!.voiceRespSos;
         _triggerSOSFlow();
-      } else if (command.contains("होम") || command.contains("home") || command.contains("डैशबोर्ड")) {
-        targetIndex = 0; // Home
-        responseText = "होम डैशबोर्ड खोल रहा हूँ";
+      } else if (command.contains(AppLocalizations.of(context)!.voiceKeywordHome) || command.contains("home") || command.contains(AppLocalizations.of(context)!.voiceKeywordDashboard)) {
+        targetIndex = 0;
+        responseText = AppLocalizations.of(context)!.voiceRespHome;
       } else {
-        responseText = "माफ़ कीजिये, समझ नहीं आया।";
+        responseText = AppLocalizations.of(context)!.voiceRespFallback;
       }
 
       setState(() {
@@ -381,6 +349,9 @@ class _MainShellState extends State<MainShell> {
 
   @override
   Widget build(BuildContext context) {
+    context.watch<ThemeProvider>();
+    final c = context.appColors;
+    _initSampleData();
     var nextMed = _medicines.isEmpty
         ? <String, dynamic>{}
         : _medicines.firstWhere((med) => med['isTaken'] == false, orElse: () => _medicines.first);
@@ -429,14 +400,11 @@ class _MainShellState extends State<MainShell> {
         notificationCount: _unreadCount,
         onOpenNotifications: _openNotifications,
       ),
-      ProfileScreen(
-        currentLocale: widget.locale,
-        onLocaleChanged: widget.onLocaleChanged,
-      ),
+      const ProfileScreen(),
     ];
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: c.scaffoldBg,
       resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
@@ -460,6 +428,7 @@ class _MainShellState extends State<MainShell> {
 
   // Custom Floating Bottom Navigation Bar
   Widget _buildFloatingBottomNav() {
+    final cnv = context.appColors;
     double bottomInset = MediaQuery.of(context).padding.bottom;
 
     return Padding(
@@ -476,7 +445,7 @@ class _MainShellState extends State<MainShell> {
           Container(
             height: 74,
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.95),
+              color: cnv.cardBg.withValues(alpha: 0.95),
               borderRadius: BorderRadius.circular(32),
               boxShadow: [
                 BoxShadow(
@@ -586,19 +555,20 @@ class _MainShellState extends State<MainShell> {
 
   // Voice Assistant Siri Overlay Dialog UI
   Widget _buildVoiceOverlay() {
+    final c = context.appColors;
     return Positioned.fill(
       child: Container(
         color: Colors.black45,
         alignment: Alignment.bottomCenter,
         child: Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+          decoration: BoxDecoration(
+            color: c.cardBg,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
             boxShadow: [
               BoxShadow(
                 color: Colors.black26,
                 blurRadius: 20,
-                offset: Offset(0, -5),
+                offset: const Offset(0, -5),
               )
             ],
           ),
@@ -609,17 +579,17 @@ class _MainShellState extends State<MainShell> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    'MediTrack Voice Assistant',
+                  Text(
+                    AppLocalizations.of(context)!.voiceAssistantTitle,
                     style: TextStyle(
                       fontFamily: 'Outfit',
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF475467),
+                      color: c.secondaryText,
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.close_rounded, color: Color(0xFF98A2B3)),
+                    icon: Icon(Icons.close_rounded, color: c.tertiaryText),
                     onPressed: () {
                       setState(() {
                         _isVoiceAssistantActive = false;
@@ -654,19 +624,19 @@ class _MainShellState extends State<MainShell> {
               const SizedBox(height: 20),
               Text(
                 _voicePromptText,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.w800,
-                  color: Color(0xFF1D2939),
+                  color: c.primaryText,
                 ),
               ),
               const SizedBox(height: 4),
               Text(
                 _voiceSubText,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: Color(0xFF475467),
+                  color: c.secondaryText,
                 ),
               ),
               const SizedBox(height: 16),
@@ -674,29 +644,29 @@ class _MainShellState extends State<MainShell> {
                 spacing: 10,
                 children: [
                   ActionChip(
-                    label: const Text('💊 दवाइयाँ'),
-                    onPressed: () => _processVoiceCommand('दवाइयाँ स्क्रीन खोलो'),
+                    label: Text(AppLocalizations.of(context)!.voiceMedicine),
+                    onPressed: () => _processVoiceCommand(AppLocalizations.of(context)!.voiceCmdMedicine),
                     backgroundColor: const Color(0xFFF3E8FF),
                     side: BorderSide.none,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                   ActionChip(
-                    label: const Text('📊 आंकड़े'),
-                    onPressed: () => _processVoiceCommand('रिपोर्ट दिखाओ'),
+                    label: Text(AppLocalizations.of(context)!.voiceVitals),
+                    onPressed: () => _processVoiceCommand(AppLocalizations.of(context)!.voiceCmdVitals),
                     backgroundColor: const Color(0xFFEBF5FF),
                     side: BorderSide.none,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                   ActionChip(
-                    label: const Text('🚨 मदद (SOS)'),
-                    onPressed: () => _processVoiceCommand('मदद चाहिए'),
+                    label: Text(AppLocalizations.of(context)!.voiceSos),
+                    onPressed: () => _processVoiceCommand(AppLocalizations.of(context)!.voiceCmdSos),
                     backgroundColor: const Color(0xFFFEF3F2),
                     side: BorderSide.none,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                   ActionChip(
-                    label: const Text('🏠 होम'),
-                    onPressed: () => _processVoiceCommand('होम जाओ'),
+                    label: Text(AppLocalizations.of(context)!.voiceHome),
+                    onPressed: () => _processVoiceCommand(AppLocalizations.of(context)!.voiceCmdHome),
                     backgroundColor: const Color(0xFFF2F4F7),
                     side: BorderSide.none,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -708,7 +678,7 @@ class _MainShellState extends State<MainShell> {
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF8FAFC),
+                  color: c.scaffoldBg,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
@@ -744,18 +714,18 @@ class _MainShellState extends State<MainShell> {
                 style: TextStyle(fontSize: 64),
               ),
               const SizedBox(height: 16),
-              const Text(
-                'आपातकालीन अलर्ट',
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context)!.emergencyAlert,
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 32,
                   fontWeight: FontWeight.w800,
                 ),
               ),
               const SizedBox(height: 6),
-              const Text(
-                'मदद के लिए संदेश भेजा जा रहा है...',
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context)!.sosSending,
+                style: const TextStyle(
                   color: Color(0xFF94A3B8),
                   fontSize: 16,
                 ),
@@ -791,11 +761,11 @@ class _MainShellState extends State<MainShell> {
                 ),
               ),
               const SizedBox(height: 40),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 40.0),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 40.0),
                 child: Text(
-                  'डॉक्टर और आपके परिवार को तुरंत सूचना दी जा रही है।',
-                  style: TextStyle(
+                  AppLocalizations.of(context)!.sosInforming,
+                  style: const TextStyle(
                     color: Color(0xFFE2E8F0),
                     fontSize: 15,
                     height: 1.4,
@@ -821,12 +791,12 @@ class _MainShellState extends State<MainShell> {
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
-                    children: const [
-                      Icon(Icons.close_rounded, color: Color(0xFFD92D20), size: 22),
-                      SizedBox(width: 8),
+                    children: [
+                      const Icon(Icons.close_rounded, color: Color(0xFFD92D20), size: 22),
+                      const SizedBox(width: 8),
                       Text(
-                        'रद्द करें (Cancel)',
-                        style: TextStyle(
+                        AppLocalizations.of(context)!.sosCancel,
+                        style: const TextStyle(
                           color: Color(0xFFD92D20),
                           fontSize: 18,
                           fontWeight: FontWeight.w800,
@@ -876,18 +846,18 @@ class _MainShellState extends State<MainShell> {
                 child: const Icon(Icons.check_rounded, color: Colors.white, size: 48),
               ),
               const SizedBox(height: 18),
-              const Text(
-                'अलर्ट भेज दिया गया!',
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context)!.sosSent,
+                style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.w800,
                   color: Color(0xFF12B76A),
                 ),
               ),
               const SizedBox(height: 4),
-              const Text(
-                'रमेश जी, घबराएं नहीं।',
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context)!.sosDontWorry,
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                   color: Color(0xFF475467),
@@ -902,11 +872,11 @@ class _MainShellState extends State<MainShell> {
                 ),
                 child: Column(
                   children: [
-                    _buildLogItem('💬 बेटे अमित को SMS भेज दिया गया है।'),
+                    _buildLogItem(AppLocalizations.of(context)!.sosSmsSent),
                     const SizedBox(height: 10),
-                    _buildLogItem('📞 डॉ. आर. के. गुप्ता को कॉल किया जा रहा है।'),
+                    _buildLogItem(AppLocalizations.of(context)!.sosCallingDoctor),
                     const SizedBox(height: 10),
-                    _buildLogItem('📍 आपकी लोकेशन (नई दिल्ली) शेयर कर दी गई है।'),
+                    _buildLogItem(AppLocalizations.of(context)!.sosLocationShared),
                   ],
                 ),
               ),
@@ -926,9 +896,9 @@ class _MainShellState extends State<MainShell> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: const Text(
-                    'ठीक है (Close)',
-                    style: TextStyle(
+                  child: Text(
+                    AppLocalizations.of(context)!.sosClose,
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 16,
                       fontWeight: FontWeight.bold,

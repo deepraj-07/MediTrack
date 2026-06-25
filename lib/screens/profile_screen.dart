@@ -1,48 +1,38 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
+import 'package:meditrack/l10n/app_localizations.dart';
+import 'package:meditrack/providers/language_provider.dart';
+import 'package:meditrack/providers/theme_provider.dart';
+import 'package:meditrack/theme/app_theme.dart';
 
-class ProfileScreen extends StatefulWidget {
-  final Locale currentLocale;
-  final ValueChanged<Locale> onLocaleChanged;
+class ProfileScreen extends StatelessWidget {
+  const ProfileScreen({super.key});
 
-  const ProfileScreen({
-    super.key,
-    required this.currentLocale,
-    required this.onLocaleChanged,
-  });
-
-  @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
-}
-
-class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    final c = context.appColors;
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: c.scaffoldBg,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'मेरा प्रोफाइल',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: Color(0xFF1D2939)),
-            ),
             Text(
-              'My Profile',
-              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: const Color(0xFF667085)),
+              l.myProfile,
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: c.primaryText),
             ),
           ],
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.settings_outlined, color: Color(0xFF475467)),
+            icon: Icon(Icons.settings_outlined, color: c.secondaryText),
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('सेटिंग्स जल्द आ रही हैं'),
+                SnackBar(
+                  content: Text(l.settingsComingSoon),
                   behavior: SnackBarBehavior.floating,
                 ),
               );
@@ -57,39 +47,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 1. Profile Home Header (Ref: Screen 1)
-            _buildProfileHeader(context),
+            _buildProfileHeader(context, l),
             const SizedBox(height: 20),
-            
-            // Stats Row
             Row(
               children: [
-                _buildStatItem('❤️', 'स्वास्थ्य स्कोर', 'Health Score', '85/100'),
+                _buildStatItem('❤️', l.statHealthScore, l.profileHealthScore, c),
                 const SizedBox(width: 12),
-                _buildStatItem('🗓️', 'अकाउंट उम्र', 'Member Since', 'Jan 2024'),
+                _buildStatItem('🗓️', l.statMemberSince, l.profileMemberSince, c),
                 const SizedBox(width: 12),
-                _buildStatItem('👥', 'परिवार सदस्य', 'Family Members', '2'),
+                _buildStatItem('👥', l.statFamilyMembers, l.profileFamilyCount, c),
               ],
             ),
-            
             const SizedBox(height: 30),
-            const Text(
-              'मेरे विकल्प',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF1D2939)),
-            ),
-            const Text(
-              'My Options',
-              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: Color(0xFF667085)),
+            Text(
+              l.myOptions,
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: c.primaryText),
             ),
             const SizedBox(height: 16),
-            
-            // Options List
-            _buildOptionItem(context, Icons.person_outline_rounded, 'व्यक्तिगत जानकारी', 'Personal Information', const Color(0xFF7F56D9), onTap: () => _navigateTo(context, const PersonalInfoSubScreen())),
-            _buildOptionItem(context, Icons.favorite_outline_rounded, 'स्वास्थ्य जानकारी', 'Health Information', const Color(0xFFF43F5E), onTap: () => _navigateTo(context, const HealthInfoSubScreen())),
-            _buildOptionItem(context, Icons.people_outline_rounded, 'आपातकालीन संपर्क', 'Emergency Contacts', const Color(0xFF2E90FA), onTap: () => _navigateTo(context, const EmergencyContactsSubScreen())),
-            _buildOptionItem(context, Icons.language_rounded, 'भाषा और प्रदर्शन', 'Language & Display', const Color(0xFFF79009), onTap: () => _navigateTo(context, LanguageDisplaySubScreen(currentLocale: widget.currentLocale, onLocaleChanged: widget.onLocaleChanged))),
-            _buildOptionItem(context, Icons.notifications_none_rounded, 'नोटिफिकेशन सेटिंग', 'Notification Settings', const Color(0xFF667085), onTap: () => _navigateTo(context, const NotificationSettingsSubScreen())),
-            _buildOptionItem(context, Icons.shield_outlined, 'गोपनीयता और सुरक्षा', 'Privacy & Security', const Color(0xFF12B76A), onTap: () => _navigateTo(context, const PrivacySecuritySubScreen())),
+            _buildOptionItem(context, Icons.person_outline_rounded, l.personalInfo, const Color(0xFF7F56D9), onTap: () => _navigateTo(context, const PersonalInfoSubScreen())),
+            _buildOptionItem(context, Icons.favorite_outline_rounded, l.healthInfo, const Color(0xFFF43F5E), onTap: () => _navigateTo(context, const HealthInfoSubScreen())),
+            _buildOptionItem(context, Icons.people_outline_rounded, l.emergencyContactsLabel, const Color(0xFF2E90FA), onTap: () => _navigateTo(context, const EmergencyContactsSubScreen())),
+            _buildOptionItem(context, Icons.language_rounded, l.languageDisplay, const Color(0xFFF79009), onTap: () => _navigateTo(context, const LanguageDisplaySubScreen())),
+            _buildOptionItem(context, Icons.notifications_none_rounded, l.notificationSettings, const Color(0xFF667085), onTap: () => _navigateTo(context, const NotificationSettingsSubScreen())),
+            _buildOptionItem(context, Icons.shield_outlined, l.privacySecurity, const Color(0xFF12B76A), onTap: () => _navigateTo(context, const PrivacySecuritySubScreen())),
             const SizedBox(height: 100),
           ],
         ),
@@ -101,7 +81,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     Navigator.push(context, MaterialPageRoute(builder: (_) => screen));
   }
 
-  Widget _buildProfileHeader(BuildContext context) {
+  Widget _buildProfileHeader(BuildContext context, AppLocalizations l) {
     return GestureDetector(
       onTap: () => _navigateTo(context, const EditProfileSubScreen()),
       child: Container(
@@ -140,8 +120,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('रमेश जी शर्मा', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: Colors.white), maxLines: 1, overflow: TextOverflow.ellipsis),
-                    const Text('Ramesh Ji Sharma', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.white70), maxLines: 1, overflow: TextOverflow.ellipsis),
+                    Text(l.profileNameHi, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: Colors.white), maxLines: 1, overflow: TextOverflow.ellipsis),
+                    Text(l.profileNameEn, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.white70), maxLines: 1, overflow: TextOverflow.ellipsis),
                     const SizedBox(height: 8),
                     Wrap(
                       crossAxisAlignment: WrapCrossAlignment.center,
@@ -151,9 +131,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                           decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(20)),
-                          child: const Text('ID: MT-2024-5687', style: TextStyle(fontSize: 11, color: Colors.white, fontWeight: FontWeight.w600)),
+                          child: Text(l.profileId, style: const TextStyle(fontSize: 11, color: Colors.white, fontWeight: FontWeight.w600)),
                         ),
-                        const Text('Primary Account', style: TextStyle(fontSize: 11, color: Colors.white, fontWeight: FontWeight.w700, decoration: TextDecoration.underline)),
+                        Text(l.primaryAccount, style: const TextStyle(fontSize: 11, color: Colors.white, fontWeight: FontWeight.w700, decoration: TextDecoration.underline)),
                       ],
                     ),
                 ],
@@ -166,27 +146,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildStatItem(String emoji, String titleHi, String titleEn, String value) {
+  Widget _buildStatItem(String emoji, String label, String value, AppColors c) {
     return Expanded(
       child: Container(
         padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), border: Border.all(color: const Color(0xFFF1F5F9))),
+        decoration: BoxDecoration(color: c.cardBg, borderRadius: BorderRadius.circular(16), border: Border.all(color: c.border)),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(emoji, style: const TextStyle(fontSize: 20)),
+            Text(emoji, style: TextStyle(fontSize: 20)),
             const SizedBox(height: 8),
-            Text(titleHi, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: Color(0xFF475467)), textAlign: TextAlign.center, maxLines: 1, overflow: TextOverflow.ellipsis),
-            Text(titleEn, style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w500, color: Color(0xFF98A2B3)), textAlign: TextAlign.center, maxLines: 1, overflow: TextOverflow.ellipsis),
+            Text(label, style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: c.secondaryText), textAlign: TextAlign.center, maxLines: 1, overflow: TextOverflow.ellipsis),
             const SizedBox(height: 6),
-            Text(value, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF1D2939)), maxLines: 1, overflow: TextOverflow.ellipsis),
+            Text(value, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: c.primaryText), maxLines: 1, overflow: TextOverflow.ellipsis),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildOptionItem(BuildContext context, IconData icon, String titleHi, String titleEn, Color color, {required VoidCallback onTap}) {
+  Widget _buildOptionItem(BuildContext context, IconData icon, String label, Color color, {required VoidCallback onTap}) {
+    final c = context.appColors;
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: InkWell(
@@ -194,7 +174,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         borderRadius: BorderRadius.circular(16),
         child: Container(
           padding: const EdgeInsets.all(14),
-          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), border: Border.all(color: const Color(0xFFF1F5F9))),
+          decoration: BoxDecoration(color: c.cardBg, borderRadius: BorderRadius.circular(16), border: Border.all(color: c.border)),
           child: Row(
             children: [
               Container(
@@ -208,12 +188,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 2),
-                    Text(titleHi, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: Color(0xFF1D2939)), maxLines: 1, overflow: TextOverflow.ellipsis),
-                    Text(titleEn, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Color(0xFF667085)), maxLines: 1, overflow: TextOverflow.ellipsis),
+                    Text(label, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: c.primaryText), maxLines: 1, overflow: TextOverflow.ellipsis),
                   ],
                 ),
               ),
-              const Icon(Icons.chevron_right_rounded, color: Color(0xFF98A2B3), size: 20),
+              Icon(Icons.chevron_right_rounded, color: c.tertiaryText, size: 20),
             ],
           ),
         ),
@@ -224,28 +203,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
 // --- SUB SCREENS ---
 
-// 2. Personal Information Screen
 class PersonalInfoSubScreen extends StatelessWidget {
   const PersonalInfoSubScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    final c = context.appColors;
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
-      appBar: _buildSubAppBar('व्यक्तिगत जानकारी', 'Personal Information', context),
+      backgroundColor: c.scaffoldBg,
+      appBar: _buildSubAppBar(l.personalInfoHeading, context),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            _buildInfoTile(Icons.person_outline, 'पूरा नाम', 'Full Name', 'रमेश जी शर्मा', 'Ramesh Ji Sharma'),
-            _buildInfoTile(Icons.calendar_today_outlined, 'जन्म तिथि', 'Date of Birth', '15 मार्च 1958', '15 Mar 1958'),
-            _buildInfoTile(Icons.transgender_rounded, 'लिंग', 'Gender', 'पुरुष', 'Male'),
-            _buildInfoTile(Icons.phone_outlined, 'मोबाइल नंबर', 'Mobile Number', '+91 98765 43210', ''),
-            _buildInfoTile(Icons.email_outlined, 'ईमेल आईडी', 'Email ID', 'ramesh.sharma@gmail.com', ''),
-            _buildInfoTile(Icons.location_on_outlined, 'पता', 'Address', '25, शांति नगर, जयपुर, राजस्थान - 302001', '25, Shanti Nagar, Jaipur...'),
-            _buildInfoTile(Icons.bloodtype_outlined, 'रक्त समूह', 'Blood Group', 'B+', ''),
+            _buildInfoTile(Icons.person_outline, l.fullNameLabel, l.profileNameHi, c),
+            _buildInfoTile(Icons.calendar_today_outlined, l.dobLabel, l.userDob, c),
+            _buildInfoTile(Icons.transgender_rounded, l.genderLabel, l.userGender, c),
+            _buildInfoTile(Icons.phone_outlined, l.mobileLabel, l.userMobile, c),
+            _buildInfoTile(Icons.email_outlined, l.emailLabel, l.userEmail, c),
+            _buildInfoTile(Icons.location_on_outlined, l.addressLabel, l.userAddress, c),
+            _buildInfoTile(Icons.bloodtype_outlined, l.bloodGroupLabel, l.userBloodGroup, c),
             const SizedBox(height: 24),
-            _buildMainButton('संपादित करें (Edit Information)', () {}),
+            _buildMainButton(l.editInfo, () {}),
           ],
         ),
       ),
@@ -253,47 +233,48 @@ class PersonalInfoSubScreen extends StatelessWidget {
   }
 }
 
-// 3. Health Information Screen
 class HealthInfoSubScreen extends StatelessWidget {
   const HealthInfoSubScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    final c = context.appColors;
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
-      appBar: _buildSubAppBar('स्वास्थ्य जानकारी', 'Health Information', context),
+      backgroundColor: c.scaffoldBg,
+      appBar: _buildSubAppBar(l.healthInfoHeading, context),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildSectionHeader('प्राथमिक स्वास्थ्य स्थितियाँ', 'Primary Conditions'),
+            _buildSectionHeader(l.primaryConditions, c),
             const SizedBox(height: 12),
             Wrap(
               spacing: 12, runSpacing: 12,
               children: [
-                _buildConditionChip('हाइपरटेंशन', 'Hypertension', Colors.red, Icons.favorite),
-                _buildConditionChip('डायबिटीज टाइप 2', 'Diabetes Type 2', Colors.blue, Icons.water_drop),
-                _buildConditionChip('अर्थराइटिस', 'Arthritis', Colors.purple, Icons.accessibility_new),
-                _buildAddChip('नई स्थिति जोड़ें', 'Add New Condition'),
+                _buildConditionChip(l.condHypertension, Colors.red, Icons.favorite),
+                _buildConditionChip(l.condDiabetes, Colors.blue, Icons.water_drop),
+                _buildConditionChip(l.condArthritis, Colors.purple, Icons.accessibility_new),
+                _buildAddChip(l.addNewCondition, c),
               ],
             ),
             const SizedBox(height: 30),
-            _buildSectionHeader('एलर्जी', 'Allergies'),
+            _buildSectionHeader(l.allergiesLabel, c),
             const SizedBox(height: 12),
             Wrap(
               spacing: 12, runSpacing: 12,
               children: [
-                _buildAllergyChip('धूल से एलर्जी', 'Dust Allergy', Colors.green),
-                _buildAllergyChip('पेनिसिलिन', 'Penicillin', Colors.orange),
-                _buildAddChip('नई एलर्जी जोड़ें', 'Add New Allergy'),
+                _buildAllergyChip(l.allergyDust, Colors.green),
+                _buildAllergyChip(l.allergyPenicillin, Colors.orange),
+                _buildAddChip(l.addNewAllergy, c),
               ],
             ),
             const SizedBox(height: 30),
-            _buildSectionHeader('नियमित दवाएं', 'Regular Medicines'),
+            _buildSectionHeader(l.regularMedicines, c),
             const SizedBox(height: 12),
-            _buildMedInfoTile('Amlodipine 5mg', 'सुबह - 1 गोली'),
-            _buildMedInfoTile('Metformin 500mg', 'सुबह और शाम - 1 गोली'),
+            _buildMedInfoTile(l.medAmlodipine, l.medAmlodipineDose, c),
+            _buildMedInfoTile(l.medMetformin, l.dose1Pill, c),
           ],
         ),
       ),
@@ -301,15 +282,16 @@ class HealthInfoSubScreen extends StatelessWidget {
   }
 }
 
-// 4. Emergency Contacts Screen
 class EmergencyContactsSubScreen extends StatelessWidget {
   const EmergencyContactsSubScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    final c = context.appColors;
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
-      appBar: _buildSubAppBar('आपातकालीन संपर्क', 'Emergency Contacts', context),
+      backgroundColor: c.scaffoldBg,
+      appBar: _buildSubAppBar(l.emergencyContactsLabel, context),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -317,35 +299,35 @@ class EmergencyContactsSubScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(color: const Color(0xFFEEF2FF), borderRadius: BorderRadius.circular(16)),
-              child: const Row(
+              child: Row(
                 children: [
-                  Icon(Icons.verified_user_rounded, color: Color(0xFF6366F1)),
-                  SizedBox(width: 12),
+                  const Icon(Icons.verified_user_rounded, color: Color(0xFF6366F1)),
+                  const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      'आपातकालीन स्थिति में हम इन संपर्कों को सूचित करेंगे।\nWe will notify these contacts in emergency situations.',
-                      style: TextStyle(fontSize: 12, color: Color(0xFF475467), fontWeight: FontWeight.w500),
+                      l.emergencyInfo,
+                      style: TextStyle(fontSize: 12, color: c.secondaryText, fontWeight: FontWeight.w500),
                     ),
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 24),
-            _buildContactTile('सीता शर्मा (पत्नी)', 'Seeta Sharma (Wife)', '+91 98765 12345', 'Primary', 'assets/images/avatar.png'),
-            _buildContactTile('अमित शर्मा (पुत्र)', 'Amit Sharma (Son)', '+91 87654 32109', 'Secondary', 'assets/images/avatar.png'),
-            _buildContactTile('नेहा शर्मा (पुत्री)', 'Neha Sharma (Daughter)', '+91 76543 21098', 'Secondary', 'assets/images/avatar.png'),
+            _buildContactTile(context, l.contactWife, l.contactWifePhone, l.tagPrimary, 'assets/images/avatar.png'),
+            _buildContactTile(context, l.contactSon, l.contactSonPhone, l.tagSecondary, 'assets/images/avatar.png'),
+            _buildContactTile(context, l.contactDaughter, l.contactDaughterPhone, l.tagSecondary, 'assets/images/avatar.png'),
             const SizedBox(height: 16),
             OutlinedButton.icon(
               onPressed: () {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('नया संपर्क जोड़ने की सुविधा जल्द आ रही है'),
+                  SnackBar(
+                    content: Text(l.addContactComingSoon),
                     behavior: SnackBarBehavior.floating,
                   ),
                 );
               },
               icon: const Icon(Icons.add, size: 18),
-              label: const Text('नया संपर्क जोड़ें (Add New Contact)'),
+              label: Text(l.addNewContact),
               style: OutlinedButton.styleFrom(
                 minimumSize: const Size(double.infinity, 50),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -360,97 +342,86 @@ class EmergencyContactsSubScreen extends StatelessWidget {
   }
 }
 
-// 5. Language & Display Screen
 class LanguageDisplaySubScreen extends StatefulWidget {
-  final Locale currentLocale;
-  final ValueChanged<Locale> onLocaleChanged;
-
-  const LanguageDisplaySubScreen({
-    super.key,
-    required this.currentLocale,
-    required this.onLocaleChanged,
-  });
+  const LanguageDisplaySubScreen({super.key});
 
   @override
   State<LanguageDisplaySubScreen> createState() => _LanguageDisplaySubScreenState();
 }
 
-class _LanguageDisplaySubScreenState extends State<LanguageDisplaySubScreen> {
-  String _selectedSize = 'Medium';
-  bool _darkMode = false;
-  bool _highContrast = false;
+enum _TextSize { small, medium, large }
 
-  Future<void> _changeLocale(String languageCode) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('locale', languageCode);
-    widget.onLocaleChanged(Locale(languageCode));
-  }
+class _LanguageDisplaySubScreenState extends State<LanguageDisplaySubScreen> {
+  _TextSize _selectedSize = _TextSize.medium;
+  bool _highContrast = false;
 
   @override
   Widget build(BuildContext context) {
-    bool isHindi = widget.currentLocale.languageCode == 'hi';
+    final l = AppLocalizations.of(context)!;
+    final c = context.appColors;
+    final locale = context.watch<LanguageProvider>().locale;
+    final langProvider = context.read<LanguageProvider>();
+    final themeProvider = context.watch<ThemeProvider>();
+    bool isHindi = locale.languageCode == 'hi';
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
-      appBar: _buildSubAppBar('भाषा और प्रदर्शन', 'Language & Display', context),
+      backgroundColor: c.scaffoldBg,
+      appBar: _buildSubAppBar(l.languageDisplay, context),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildSectionHeader('भाषा चुनें', 'Choose Language'),
+            _buildSectionHeader(l.selectLanguage, c),
             const SizedBox(height: 12),
-            _buildRadioOption('English', !isHindi, () => _changeLocale('en')),
-            _buildRadioOption('हिन्दी (Hindi)', isHindi, () => _changeLocale('hi')),
+            _buildRadioOption(l.languageEnglish, !isHindi, () => langProvider.setLocale(const Locale('en')), c),
+            _buildRadioOption(l.languageHindi, isHindi, () => langProvider.setLocale(const Locale('hi')), c),
             
             const SizedBox(height: 30),
-            _buildSectionHeader('टेक्स्ट आकार', 'Text Size'),
+            _buildSectionHeader(l.textSize, c),
             const SizedBox(height: 12),
             Row(
               children: [
-                _buildSizeOption('A छोटा', 'Small', _selectedSize == 'Small'),
+                _buildSizeOption(l.sizeSmall, _TextSize.small, _selectedSize == _TextSize.small, c),
                 const SizedBox(width: 10),
-                _buildSizeOption('A मध्यम', 'Medium', _selectedSize == 'Medium'),
+                _buildSizeOption(l.sizeMedium, _TextSize.medium, _selectedSize == _TextSize.medium, c),
                 const SizedBox(width: 10),
-                _buildSizeOption('A बड़ा', 'Large', _selectedSize == 'Large'),
+                _buildSizeOption(l.sizeLarge, _TextSize.large, _selectedSize == _TextSize.large, c),
               ],
             ),
             
             const SizedBox(height: 30),
-            _buildSwitchTile(Icons.dark_mode_outlined, 'डार्क मोड', 'Dark Mode', _darkMode, (v) => setState(() => _darkMode = v)),
-            _buildSwitchTile(Icons.contrast_rounded, 'हाई कंट्रास्ट मोड', 'High Contrast Mode', _highContrast, (v) => setState(() => _highContrast = v)),
+            _buildSwitchTile(Icons.dark_mode_outlined, l.darkMode, themeProvider.isDarkMode, (v) => themeProvider.setDarkMode(v), c),
+            _buildSwitchTile(Icons.contrast_rounded, l.highContrast, _highContrast, (v) => setState(() => _highContrast = v), c),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildSizeOption(String hi, String en, bool isSelected) {
+  Widget _buildSizeOption(String label, _TextSize size, bool isSelected, AppColors c) {
     return Expanded(
       child: GestureDetector(
-        onTap: () => setState(() => _selectedSize = en),
+        onTap: () => setState(() => _selectedSize = size),
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
-            color: isSelected ? const Color(0xFFEEF2FF) : Colors.white,
+            color: isSelected ? const Color(0xFFEEF2FF) : c.cardBg,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: isSelected ? const Color(0xFF7F56D9) : const Color(0xFFF1F5F9)),
+            border: Border.all(color: isSelected ? const Color(0xFF7F56D9) : c.border),
           ),
-          child: Column(
-            children: [
-              Text(hi, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: isSelected ? const Color(0xFF7F56D9) : const Color(0xFF475467))),
-              Text(en, style: TextStyle(fontSize: 10, color: isSelected ? const Color(0xFF7F56D9) : const Color(0xFF98A2B3))),
-            ],
+          child: Center(
+            child: Text(label, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: isSelected ? const Color(0xFF7F56D9) : c.secondaryText)),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildRadioOption(String text, bool isSelected, VoidCallback onChange) {
+  Widget _buildRadioOption(String text, bool isSelected, VoidCallback onChange, AppColors c) {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: isSelected ? const Color(0xFF7F56D9) : const Color(0xFFF1F5F9))),
+      decoration: BoxDecoration(color: c.cardBg, borderRadius: BorderRadius.circular(12), border: Border.all(color: isSelected ? const Color(0xFF7F56D9) : c.border)),
       child: InkWell(
         onTap: onChange,
         borderRadius: BorderRadius.circular(12),
@@ -459,13 +430,13 @@ class _LanguageDisplaySubScreenState extends State<LanguageDisplaySubScreen> {
           child: Row(
             children: [
               Expanded(
-                child: Text(text, style: TextStyle(fontSize: 15, fontWeight: isSelected ? FontWeight.bold : FontWeight.w500)),
+                child: Text(text, style: TextStyle(fontSize: 15, fontWeight: isSelected ? FontWeight.bold : FontWeight.w500, color: c.primaryText)),
               ),
               Container(
                 width: 20, height: 20,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  border: Border.all(color: isSelected ? const Color(0xFF7F56D9) : const Color(0xFF98A2B3), width: 2),
+                  border: Border.all(color: isSelected ? const Color(0xFF7F56D9) : c.tertiaryText, width: 2),
                 ),
                 child: isSelected
                     ? Center(
@@ -484,7 +455,6 @@ class _LanguageDisplaySubScreenState extends State<LanguageDisplaySubScreen> {
   }
 }
 
-// 6. Notification Settings Screen
 class NotificationSettingsSubScreen extends StatefulWidget {
   const NotificationSettingsSubScreen({super.key});
 
@@ -499,68 +469,65 @@ class _NotificationSettingsSubScreenState extends State<NotificationSettingsSubS
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    final c = context.appColors;
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
-      appBar: _buildSubAppBar('नोटिफिकेशन सेटिंग', 'Notification Settings', context),
+      backgroundColor: c.scaffoldBg,
+      appBar: _buildSubAppBar(l.notificationSettings, context),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
-          _buildSwitchTile(Icons.notifications_active_outlined, 'सभी नोटिफिकेशन', 'All Notifications', _settings['All']!, (v) => setState(() => _settings['All'] = v)),
-          const Divider(height: 32),
-          _buildSwitchTile(Icons.medication_rounded, 'दवा रिमाइंडर', 'Medicine Reminders', _settings['Meds']!, (v) => setState(() => _settings['Meds'] = v)),
-          _buildSwitchTile(Icons.calendar_month_rounded, 'अपॉइंटमेंट रिमाइंडर', 'Appointment Reminders', _settings['Appts']!, (v) => setState(() => _settings['Appts'] = v)),
-          _buildSwitchTile(Icons.favorite_rounded, 'स्वास्थ्य अलर्ट', 'Health Alerts', _settings['Alerts']!, (v) => setState(() => _settings['Alerts'] = v)),
-          _buildSwitchTile(Icons.people_alt_rounded, 'परिवार अपडेट', 'Family Updates', _settings['Family']!, (v) => setState(() => _settings['Family'] = v)),
-          _buildSwitchTile(Icons.lightbulb_outline_rounded, 'प्रचार और सुझाव', 'Promotions & Tips', _settings['Tips']!, (v) => setState(() => _settings['Tips'] = v)),
+          _buildSwitchTile(Icons.notifications_active_outlined, l.allNotifications, _settings['All']!, (v) => setState(() => _settings['All'] = v), c),
+          Divider(height: 32, color: c.divider),
+          _buildSwitchTile(Icons.medication_rounded, l.medicineReminders, _settings['Meds']!, (v) => setState(() => _settings['Meds'] = v), c),
+          _buildSwitchTile(Icons.calendar_month_rounded, l.appointmentReminders, _settings['Appts']!, (v) => setState(() => _settings['Appts'] = v), c),
+          _buildSwitchTile(Icons.favorite_rounded, l.healthAlerts, _settings['Alerts']!, (v) => setState(() => _settings['Alerts'] = v), c),
+          _buildSwitchTile(Icons.people_alt_rounded, l.familyUpdates, _settings['Family']!, (v) => setState(() => _settings['Family'] = v), c),
+          _buildSwitchTile(Icons.lightbulb_outline_rounded, l.promotionsTips, _settings['Tips']!, (v) => setState(() => _settings['Tips'] = v), c),
         ],
       ),
     );
   }
 }
 
-// 7. Privacy & Security Screen
 class PrivacySecuritySubScreen extends StatelessWidget {
   const PrivacySecuritySubScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    final c = context.appColors;
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
-      appBar: _buildSubAppBar('गोपनीयता और सुरक्षा', 'Privacy & Security', context),
+      backgroundColor: c.scaffoldBg,
+      appBar: _buildSubAppBar(l.privacySecurity, context),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            _buildSecurityTile(Icons.lock_outline_rounded, 'पासकोड / बायोमेट्रिक लॉक', 'Passcode / Biometric Lock', 'सक्षम', Colors.green),
-            _buildSecurityTile(Icons.password_rounded, 'पासकोड बदलें', 'Change Passcode', '', null),
-            _buildSecurityTile(Icons.security_rounded, '2-फैक्टर ऑथेंटिकेशन', 'Two-Factor Authentication', 'बंद', Colors.grey),
-            _buildSecurityTile(Icons.data_usage_rounded, 'डेटा शेयरिंग प्रेफरेंस', 'Data Sharing Preference', '', null),
-            _buildSecurityTile(Icons.description_outlined, 'प्राइवेसी पॉलिसी', 'Privacy Policy', '', null),
+            _buildSecurityTile(Icons.lock_outline_rounded, l.passcodeBiometric, l.passcodeEnabled, Colors.green, c),
+            _buildSecurityTile(Icons.password_rounded, l.changePasscode, '', null, c),
+            _buildSecurityTile(Icons.security_rounded, l.twoFactorAuth, l.twoFactorDisabled, Colors.grey, c),
+            _buildSecurityTile(Icons.data_usage_rounded, l.dataSharing, '', null, c),
+            _buildSecurityTile(Icons.description_outlined, l.privacyPolicy, '', null, c),
             const SizedBox(height: 40),
-            _buildLogoutButton(context),
+            _buildLogoutButton(context, l),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildSecurityTile(IconData icon, String hi, String en, String status, Color? statusColor) {
+  Widget _buildSecurityTile(IconData icon, String label, String status, Color? statusColor, AppColors c) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), border: Border.all(color: const Color(0xFFF1F5F9))),
+      decoration: BoxDecoration(color: c.cardBg, borderRadius: BorderRadius.circular(16), border: Border.all(color: c.border)),
       child: Row(
         children: [
-          Icon(icon, color: const Color(0xFF667085), size: 22),
+          Icon(icon, color: c.secondaryText, size: 22),
           const SizedBox(width: 16),
           Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(hi, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700), maxLines: 1, overflow: TextOverflow.ellipsis),
-                  Text(en, style: const TextStyle(fontSize: 11, color: Color(0xFF98A2B3)), maxLines: 1, overflow: TextOverflow.ellipsis),
-                ],
-              ),
+              child: Text(label, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: c.primaryText), maxLines: 1, overflow: TextOverflow.ellipsis),
           ),
           if (status.isNotEmpty)
             Container(
@@ -569,50 +536,51 @@ class PrivacySecuritySubScreen extends StatelessWidget {
               child: Text(status, style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: statusColor)),
             ),
           const SizedBox(width: 8),
-          const Icon(Icons.chevron_right_rounded, color: Color(0xFF98A2B3), size: 20),
+          Icon(Icons.chevron_right_rounded, color: c.tertiaryText, size: 20),
         ],
       ),
     );
   }
 
-  Widget _buildLogoutButton(BuildContext context) {
+  Widget _buildLogoutButton(BuildContext context, AppLocalizations l) {
     return TextButton.icon(
       onPressed: () {
         showDialog(
           context: context,
           builder: (ctx) => AlertDialog(
-            title: const Text('लॉगआउट (Logout)'),
-            content: const Text('क्या आप लॉगआउट करना चाहते हैं?'),
+            title: Text(l.logoutTitle),
+            content: Text(l.logoutQuestion),
             actions: [
-              TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('रद्द करें')),
+              TextButton(onPressed: () => Navigator.pop(ctx), child: Text(l.logoutCancel)),
               TextButton(
                 onPressed: () {
                   Navigator.pop(ctx);
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('लॉगआउट किया गया'), behavior: SnackBarBehavior.floating),
+                    SnackBar(content: Text(l.logoutSnackbar), behavior: SnackBarBehavior.floating),
                   );
                 },
-                child: const Text('लॉगआउट', style: TextStyle(color: Colors.red)),
+                child: Text(l.logoutConfirm, style: const TextStyle(color: Colors.red)),
               ),
             ],
           ),
         );
       },
       icon: const Icon(Icons.logout_rounded, color: Color(0xFFD92D20), size: 20),
-      label: const Text('लॉगआउट करें (Logout)', style: TextStyle(color: Color(0xFFD92D20), fontWeight: FontWeight.bold, fontSize: 16)),
+      label: Text(l.logoutButton, style: const TextStyle(color: Color(0xFFD92D20), fontWeight: FontWeight.bold, fontSize: 16)),
     );
   }
 }
 
-// 8. Edit Profile Screen
 class EditProfileSubScreen extends StatelessWidget {
   const EditProfileSubScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    final c = context.appColors;
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
-      appBar: _buildSubAppBar('प्रोफाइल संपादित करें', 'Edit Profile', context),
+      backgroundColor: c.scaffoldBg,
+      appBar: _buildSubAppBar(l.editProfile, context),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -629,33 +597,34 @@ class EditProfileSubScreen extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 30),
-            _buildTextField('पूरा नाम', 'Full Name', 'रमेश जी शर्मा'),
-            _buildTextField('मोबाइल नंबर', 'Mobile Number', '+91 98765 43210'),
-            _buildTextField('ईमेल आईडी', 'Email ID', 'ramesh.sharma@gmail.com'),
-            _buildTextField('पता', 'Address', '25, शांति नगर, जयपुर, राजस्थान - 302001'),
+            _buildTextField(l.fullNameLabel, l.userName, c),
+            _buildTextField(l.mobileLabel, l.userMobile, c),
+            _buildTextField(l.emailLabel, l.userEmail, c),
+            _buildTextField(l.addressLabel, l.userAddress, c),
             const SizedBox(height: 40),
-            _buildMainButton('सेव करें (Save Changes)', () {}),
+            _buildMainButton(l.saveChanges, () {}),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildTextField(String hi, String en, String initialVal) {
+  Widget _buildTextField(String label, String initialVal, AppColors c) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('$hi ($en)', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF475467))),
+          Text(label, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: c.secondaryText)),
           const SizedBox(height: 8),
           TextFormField(
             initialValue: initialVal,
+            style: TextStyle(color: c.primaryText),
             decoration: InputDecoration(
-              filled: true, fillColor: Colors.white,
+              filled: true, fillColor: c.cardBg,
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFF1F5F9))),
-              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFF1F5F9))),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: c.border)),
+              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: c.border)),
             ),
           ),
         ],
@@ -666,38 +635,33 @@ class EditProfileSubScreen extends StatelessWidget {
 
 // --- GLOBAL HELPER WIDGETS ---
 
-PreferredSizeWidget _buildSubAppBar(String hi, String en, BuildContext context) {
+PreferredSizeWidget _buildSubAppBar(String title, BuildContext context) {
+  final c = context.appColors;
   return AppBar(
     backgroundColor: Colors.transparent,
     elevation: 0,
-    leading: IconButton(icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20, color: Color(0xFF1D2939)), onPressed: () => Navigator.pop(context)),
-    title: Column(
-      children: [
-        Text(hi, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF1D2939)), maxLines: 1, overflow: TextOverflow.ellipsis),
-        Text(en, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Color(0xFF667085)), maxLines: 1, overflow: TextOverflow.ellipsis),
-      ],
-    ),
+    leading: IconButton(icon: Icon(Icons.arrow_back_ios_new_rounded, size: 20, color: c.primaryText), onPressed: () => Navigator.pop(context)),
+    title: Text(title, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: c.primaryText), maxLines: 1, overflow: TextOverflow.ellipsis),
     centerTitle: true,
   );
 }
 
-Widget _buildInfoTile(IconData icon, String hi, String en, String val1, String val2) {
+Widget _buildInfoTile(IconData icon, String label, String value, AppColors c) {
   return Container(
     margin: const EdgeInsets.only(bottom: 16),
     padding: const EdgeInsets.all(16),
-    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), border: Border.all(color: const Color(0xFFF1F5F9))),
+    decoration: BoxDecoration(color: c.cardBg, borderRadius: BorderRadius.circular(16), border: Border.all(color: c.border)),
     child: Row(
       children: [
-        Container(padding: const EdgeInsets.all(10), decoration: BoxDecoration(color: const Color(0xFFF8FAFC), borderRadius: BorderRadius.circular(10)), child: Icon(icon, color: const Color(0xFF7F56D9), size: 20)),
+        Container(padding: const EdgeInsets.all(10), decoration: BoxDecoration(color: c.scaffoldBg, borderRadius: BorderRadius.circular(10)), child: Icon(icon, color: const Color(0xFF7F56D9), size: 20)),
         const SizedBox(width: 16),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('$hi ($en)', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF98A2B3)), maxLines: 1, overflow: TextOverflow.ellipsis),
+              Text(label, style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: c.tertiaryText), maxLines: 1, overflow: TextOverflow.ellipsis),
               const SizedBox(height: 4),
-              Text(val1, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF1D2939)), maxLines: 2, overflow: TextOverflow.ellipsis),
-              if (val2.isNotEmpty) Text(val2, style: const TextStyle(fontSize: 12, color: Color(0xFF667085)), maxLines: 1, overflow: TextOverflow.ellipsis),
+              Text(value, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: c.primaryText), maxLines: 2, overflow: TextOverflow.ellipsis),
             ],
           ),
         ),
@@ -706,82 +670,81 @@ Widget _buildInfoTile(IconData icon, String hi, String en, String val1, String v
   );
 }
 
-Widget _buildSectionHeader(String hi, String en) {
+Widget _buildSectionHeader(String title, AppColors c) {
   return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-    Text(hi, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
-    Text(en, style: const TextStyle(fontSize: 12, color: Color(0xFF667085))),
+    Text(title, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: c.primaryText)),
   ]);
 }
 
-Widget _buildConditionChip(String hi, String en, Color color, IconData icon) {
+Widget _buildConditionChip(String label, Color color, IconData icon) {
   return Container(
     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
     decoration: BoxDecoration(color: color.withValues(alpha: 0.05), borderRadius: BorderRadius.circular(10), border: Border.all(color: color.withValues(alpha: 0.2))),
     child: Row(mainAxisSize: MainAxisSize.min, children: [
       Icon(icon, color: color, size: 14),
       const SizedBox(width: 8),
-      Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(hi, style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: color)),
-        Text(en, style: TextStyle(fontSize: 9, color: color.withValues(alpha: 0.7))),
-      ]),
+      Text(label, style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: color)),
     ]),
   );
 }
 
-Widget _buildAllergyChip(String hi, String en, Color color) {
+Widget _buildAllergyChip(String label, Color color) {
   return Container(
     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10), border: Border.all(color: const Color(0xFFF1F5F9))),
+    decoration: BoxDecoration(
+      color: Colors.transparent,
+      borderRadius: BorderRadius.circular(10),
+      border: Border.all(color: const Color(0xFFF1F5F9)),
+    ),
     child: Row(mainAxisSize: MainAxisSize.min, children: [
       Icon(Icons.warning_amber_rounded, color: color, size: 16),
       const SizedBox(width: 8),
-      Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(hi, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
-        Text(en, style: const TextStyle(fontSize: 9, color: Color(0xFF667085))),
-      ]),
+      Text(label, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
     ]),
   );
 }
 
-Widget _buildAddChip(String hi, String en) {
+Widget _buildAddChip(String label, AppColors c) {
   return Container(
     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10), border: Border.all(color: const Color(0xFF7F56D9), style: BorderStyle.solid)),
+    decoration: BoxDecoration(
+      color: c.cardBg,
+      borderRadius: BorderRadius.circular(10),
+      border: Border.all(color: const Color(0xFF7F56D9), style: BorderStyle.solid),
+    ),
     child: Row(mainAxisSize: MainAxisSize.min, children: [
       const Icon(Icons.add, size: 14, color: Color(0xFF7F56D9)),
       const SizedBox(width: 6),
-      Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(hi, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Color(0xFF7F56D9))),
-        Text(en, style: const TextStyle(fontSize: 8, color: Color(0xFF7F56D9))),
-      ]),
+      Text(label, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Color(0xFF7F56D9))),
     ]),
   );
 }
 
-Widget _buildMedInfoTile(String name, String desc) {
+Widget _buildMedInfoTile(String name, String desc, AppColors c) {
   return Container(
     margin: const EdgeInsets.only(bottom: 12),
     padding: const EdgeInsets.all(12),
-    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: const Color(0xFFF1F5F9))),
+    decoration: BoxDecoration(color: c.cardBg, borderRadius: BorderRadius.circular(12), border: Border.all(color: c.border)),
     child: Row(children: [
       const Icon(Icons.medication_outlined, color: Color(0xFF7F56D9)),
       const SizedBox(width: 12),
       Expanded(
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(name, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold), maxLines: 1, overflow: TextOverflow.ellipsis),
-          Text(desc, style: const TextStyle(fontSize: 12, color: Color(0xFF667085)), maxLines: 1, overflow: TextOverflow.ellipsis),
+          Text(name, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: c.primaryText), maxLines: 1, overflow: TextOverflow.ellipsis),
+          Text(desc, style: TextStyle(fontSize: 12, color: c.secondaryText), maxLines: 1, overflow: TextOverflow.ellipsis),
         ]),
       ),
     ]),
   );
 }
 
-Widget _buildContactTile(String hi, String en, String phone, String tag, String img) {
+Widget _buildContactTile(BuildContext context, String name, String phone, String tag, String img) {
+  final c = context.appColors;
   bool isPrimary = tag == 'Primary';
   return Container(
     margin: const EdgeInsets.only(bottom: 12),
     padding: const EdgeInsets.all(12),
-    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), border: Border.all(color: const Color(0xFFF1F5F9))),
+    decoration: BoxDecoration(color: c.cardBg, borderRadius: BorderRadius.circular(16), border: Border.all(color: c.border)),
     child: Row(
       children: [
         CircleAvatar(radius: 24, backgroundImage: AssetImage(img)),
@@ -790,10 +753,9 @@ Widget _buildContactTile(String hi, String en, String phone, String tag, String 
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(hi, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800), maxLines: 1, overflow: TextOverflow.ellipsis),
-              Text(en, style: const TextStyle(fontSize: 11, color: Color(0xFF667085)), maxLines: 1, overflow: TextOverflow.ellipsis),
+              Text(name, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: c.primaryText), maxLines: 1, overflow: TextOverflow.ellipsis),
               const SizedBox(height: 4),
-              Text(phone, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF475467)), maxLines: 1, overflow: TextOverflow.ellipsis),
+              Text(phone, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: c.secondaryText), maxLines: 1, overflow: TextOverflow.ellipsis),
             ],
           ),
         ),
@@ -803,29 +765,23 @@ Widget _buildContactTile(String hi, String en, String phone, String tag, String 
           child: Text(tag, style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: isPrimary ? const Color(0xFF027A48) : const Color(0xFF344054)), maxLines: 1, overflow: TextOverflow.ellipsis),
         ),
         const SizedBox(width: 8),
-        const Icon(Icons.more_vert, size: 18, color: Color(0xFF98A2B3)),
+        Icon(Icons.more_vert, size: 18, color: c.tertiaryText),
       ],
     ),
   );
 }
 
-Widget _buildSwitchTile(IconData icon, String hi, String en, bool val, Function(bool) onChange) {
+Widget _buildSwitchTile(IconData icon, String label, bool val, Function(bool) onChange, AppColors c) {
   return Container(
     margin: const EdgeInsets.only(bottom: 10),
     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: const Color(0xFFF1F5F9))),
+    decoration: BoxDecoration(color: c.cardBg, borderRadius: BorderRadius.circular(12), border: Border.all(color: c.border)),
     child: Row(
       children: [
-        Icon(icon, color: const Color(0xFF667085), size: 20),
+        Icon(icon, color: c.secondaryText, size: 20),
         const SizedBox(width: 16),
         Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(hi, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700), maxLines: 1, overflow: TextOverflow.ellipsis),
-              Text(en, style: const TextStyle(fontSize: 11, color: Color(0xFF98A2B3)), maxLines: 1, overflow: TextOverflow.ellipsis),
-            ],
-          ),
+          child: Text(label, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: c.primaryText), maxLines: 1, overflow: TextOverflow.ellipsis),
         ),
         Switch(value: val, onChanged: onChange, activeTrackColor: const Color(0xFF7F56D9), activeThumbColor: Colors.white),
       ],

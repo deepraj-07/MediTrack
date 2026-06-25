@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:meditrack/l10n/app_localizations.dart';
+import 'package:meditrack/theme/app_theme.dart';
 
 class VitalsScreen extends StatefulWidget {
   final VoidCallback onBack;
@@ -13,13 +14,15 @@ class VitalsScreen extends StatefulWidget {
 class _VitalsScreenState extends State<VitalsScreen> {
   String _selectedPeriod = 'week'; // 'day', 'week', 'month', 'year'
 
-  // Labels based on time period
-  final Map<String, List<String>> _labelsMap = {
-    'day': ['08:00', '11:00', '02:00', '05:00', '08:00', '11:00'],
-    'week': ['15 मई', '16 मई', '17 मई', '18 मई', '19 मई', '20 मई', '21 मई'],
-    'month': ['1-5', '6-10', '11-15', '16-20', '21-25', '26-31'],
-    'year': ['जनवरी', 'मार्च', 'मई', 'जुलाई', 'सितंबर', 'नवंबर'],
-  };
+  Map<String, List<String>> get _labelsMap {
+    final l = AppLocalizations.of(context)!;
+    return {
+      'day': ['08:00', '11:00', '02:00', '05:00', '08:00', '11:00'],
+      'week': ['15 ${l.monthMayLabel}', '16 ${l.monthMayLabel}', '17 ${l.monthMayLabel}', '18 ${l.monthMayLabel}', '19 ${l.monthMayLabel}', '20 ${l.monthMayLabel}', '21 ${l.monthMayLabel}'],
+      'month': ['1-5', '6-10', '11-15', '16-20', '21-25', '26-31'],
+      'year': [l.monthJan, l.monthMar, l.monthMayLabel, l.monthJul, l.monthSep, l.monthNov],
+    };
+  }
 
   // Data sets for Custom Painters
   final Map<String, List<double>> _bpData = {
@@ -52,15 +55,16 @@ class _VitalsScreenState extends State<VitalsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final c = context.appColors;
     List<String> xLabels = _labelsMap[_selectedPeriod]!;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: c.scaffoldBg,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF1D2939), size: 28),
+          icon: Icon(Icons.arrow_back_rounded, color: c.primaryText, size: 28),
           onPressed: widget.onBack,
         ),
         title: Text(
@@ -68,7 +72,7 @@ class _VitalsScreenState extends State<VitalsScreen> {
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w800,
-            color: Color(0xFF1D2939),
+            color: c.primaryText,
           ),
         ),
         actions: [
@@ -156,9 +160,10 @@ class _VitalsScreenState extends State<VitalsScreen> {
 
   // Styled Segmented Tab bar
   Widget _buildSegmentedControl() {
+    final c = context.appColors;
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFFE2E8F0),
+        color: c.divider,
         borderRadius: BorderRadius.circular(14),
       ),
       padding: const EdgeInsets.all(4),
@@ -174,6 +179,7 @@ class _VitalsScreenState extends State<VitalsScreen> {
   }
 
   Widget _buildSegmentTab(String period, String label) {
+    final c = context.appColors;
     bool isActive = _selectedPeriod == period;
     return Expanded(
       child: InkWell(
@@ -187,7 +193,7 @@ class _VitalsScreenState extends State<VitalsScreen> {
           duration: const Duration(milliseconds: 200),
           padding: const EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(
-            color: isActive ? Colors.white : Colors.transparent,
+            color: isActive ? c.cardBg : Colors.transparent,
             borderRadius: BorderRadius.circular(10),
             boxShadow: isActive
                 ? [
@@ -205,7 +211,7 @@ class _VitalsScreenState extends State<VitalsScreen> {
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.bold,
-                color: isActive ? const Color(0xFF7F56D9) : const Color(0xFF475467),
+                color: isActive ? const Color(0xFF7F56D9) : c.secondaryText,
               ),
             ),
           ),
@@ -227,12 +233,13 @@ class _VitalsScreenState extends State<VitalsScreen> {
     required double yMin,
     required double yMax,
   }) {
+    final c = context.appColors;
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: c.cardBg,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFF1F5F9)),
+        border: Border.all(color: c.border),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.02),
@@ -265,10 +272,10 @@ class _VitalsScreenState extends State<VitalsScreen> {
                     children: [
                       Text(
                         title,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF475467),
+                          color: c.secondaryText,
                         ),
                       ),
                       Row(
@@ -277,22 +284,22 @@ class _VitalsScreenState extends State<VitalsScreen> {
                         children: [
                           Text(
                             value,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontFamily: 'Outfit',
                               fontSize: 24,
                               fontWeight: FontWeight.w800,
-                              color: Color(0xFF1D2939),
+                              color: c.primaryText,
                             ),
                           ),
                           if (unit.isNotEmpty) ...[
                             const SizedBox(width: 4),
                             Text(
                               unit,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontFamily: 'Outfit',
                                 fontSize: 13,
                                 fontWeight: FontWeight.w500,
-                                color: Color(0xFF475467),
+                                color: c.secondaryText,
                               ),
                             ),
                           ],
@@ -346,10 +353,10 @@ class _VitalsScreenState extends State<VitalsScreen> {
               children: xLabels
                   .map((label) => Text(
                         label,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF475467),
+                          color: c.secondaryText,
                         ),
                       ))
                   .toList(),

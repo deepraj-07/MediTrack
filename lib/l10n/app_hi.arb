@@ -23,6 +23,8 @@
   "add": "जोड़ें",
   "back": "वापस",
   "confirm": "पुष्टि करें",
+  "close": "बंद करें",
+  "search": "खोजें",
 
   "@_HomeScreen": "होम स्क्रीन",
   "greeting": "नमस्ते रमेश जी",
@@ -142,6 +144,13 @@
     }
   },
   "overallStatus": "समग्र स्थिति: सामान्य",
+  "statusNormal": "सामान्य",
+  "statusNormalFasting": "सामान्य (उपवास)",
+  "statusNormalPostMeal": "सामान्य (भोजनोपरांत)",
+  "vitalBp": "ब्लड प्रेशर",
+  "vitalSugar": "शुगर (रक्त शर्करा)",
+  "vitalOxygen": "ऑक्सीजन (SpO₂)",
+  "vitalTemp": "तापमान",
 
   "@_Medicines": "दवाइयाँ",
   "medicinesTitle": "दवाइयाँ और रिमाइंडर",
@@ -223,6 +232,35 @@
   "stepperInfo": "जानकारी",
   "stepperConfirm": "पुष्टि",
 
+  "monthJan": "जनवरी",
+  "monthFeb": "फरवरी",
+  "monthMar": "मार्च",
+  "monthApr": "अप्रैल",
+  "monthMayLabel": "मई",
+  "monthJun": "जून",
+  "monthJul": "जुलाई",
+  "monthAug": "अगस्त",
+  "monthSep": "सितंबर",
+  "monthOct": "अक्टूबर",
+  "monthNov": "नवंबर",
+  "monthDec": "दिसंबर",
+
+  "dayShortMon": "सोम",
+  "dayShortTue": "मंगल",
+  "dayShortWed": "बुध",
+  "dayShortThu": "गुरु",
+  "dayShortFri": "शुक्र",
+  "dayShortSat": "शनि",
+  "dayShortSun": "रवि",
+
+  "dayMonday": "सोमवार",
+  "dayTuesday": "मंगलवार",
+  "dayWednesday": "बुधवार",
+  "dayThursday": "गुरुवार",
+  "dayFriday": "शुक्रवार",
+  "daySaturday": "शनिवार",
+  "daySunday": "रविवार",
+
   "@_Specialties": "विशेषज्ञताएँ",
   "specCardiology": "हृदय रोग",
   "specCardiologyFull": "हृदय रोग\n(कार्डियोलॉजिस्ट)",
@@ -243,6 +281,37 @@
   },
   "markAllRead": "सभी पढ़ें",
   "noNotifications": "कोई सूचना नहीं",
+  "notifMedTaken": "दवा ले ली गई",
+  "notifMedTakenBody": "{name} {time} बजे ले ली गई है।",
+  "@notifMedTakenBody": {
+    "placeholders": {
+      "name": {},
+      "time": {}
+    }
+  },
+  "notifMedReminder": "दवा लेने का समय",
+  "notifMedReminderBody": "{name} {time} बजे लेनी है। खाने के बाद लें।",
+  "@notifMedReminderBody": {
+    "placeholders": {
+      "name": {},
+      "time": {}
+    }
+  },
+  "notifBpReading": "BP रीडिंग: {value}",
+  "@notifBpReading": {
+    "placeholders": {
+      "value": {}
+    }
+  },
+  "notifBpReadingBody": "आपका ब्लड प्रेशर सामान्य से थोड़ा ऊपर है। कृपया डॉक्टर से सलाह लें।",
+  "notifAppointment": "डॉक्टर अपॉइंटमेंट",
+  "notifAppointmentBody": "डॉ. {name} से कल {time} बजे अपॉइंटमेंट है।",
+  "@notifAppointmentBody": {
+    "placeholders": {
+      "name": {},
+      "time": {}
+    }
+  },
 
   "@_SOS": "आपातकालीन SOS",
   "emergencyAlert": "आपातकालीन अलर्ट",
@@ -271,6 +340,190 @@
   "heightVal": "170 cm",
   "weightVal": "72 kg",
   "cityVal": "नई दिल्ली",
+  "myOptions": "मेरे विकल्प",
+  "personalInfo": "व्यक्तिगत जानकारी",
+  "healthInfo": "स्वास्थ्य जानकारी",
+  "emergencyContactsLabel": "आपातकालीन संपर्क",
+  "languageDisplay": "भाषा और प्रदर्शन",
+  "notificationSettings": "नोटिफिकेशन सेटिंग",
+  "privacySecurity": "गोपनीयता और सुरक्षा",
+  "editProfile": "प्रोफाइल संपादित करें",
+  "statHealthScore": "स्वास्थ्य स्कोर",
+  "statMemberSince": "अकाउंट उम्र",
+  "statFamilyMembers": "परिवार सदस्य",
+  "userId": "ID: {id}",
+  "@userId": {
+    "placeholders": {
+      "id": {}
+    }
+  },
+  "primaryAccount": "Primary Account",
+  "settingsComingSoon": "सेटिंग्स जल्द आ रही हैं",
+  "personalInfoHeading": "व्यक्तिगत जानकारी",
+  "fullNameLabel": "पूरा नाम",
+  "dobLabel": "जन्म तिथि",
+  "genderLabel": "लिंग",
+  "mobileLabel": "मोबाइल नंबर",
+  "emailLabel": "ईमेल आईडी",
+  "addressLabel": "पता",
+  "bloodGroupLabel": "रक्त समूह",
+  "editInfo": "संपादित करें (Edit Information)",
+  "healthInfoHeading": "स्वास्थ्य जानकारी",
+  "primaryConditions": "प्राथमिक स्वास्थ्य स्थितियाँ",
+  "addNewCondition": "नई स्थिति जोड़ें",
+  "allergiesLabel": "एलर्जी",
+  "addNewAllergy": "नई एलर्जी जोड़ें",
+  "regularMedicines": "नियमित दवाएं",
+  "emergencyInfo": "आपातकालीन स्थिति में हम इन संपर्कों को सूचित करेंगे।\nWe will notify these contacts in emergency situations.",
+  "addNewContact": "नया संपर्क जोड़ें (Add New Contact)",
+  "languageSection": "भाषा",
+  "chooseLanguage": "भाषा चुनें",
+  "textSize": "टेक्स्ट आकार",
+  "sizeSmall": "छोटा",
+  "sizeMedium": "मध्यम",
+  "sizeLarge": "बड़ा",
+  "darkMode": "डार्क मोड",
+  "highContrast": "हाई कंट्रास्ट मोड",
+  "allNotifications": "सभी नोटिफिकेशन",
+  "medicineReminders": "दवा रिमाइंडर",
+  "appointmentReminders": "अपॉइंटमेंट रिमाइंडर",
+  "healthAlerts": "स्वास्थ्य अलर्ट",
+  "familyUpdates": "परिवार अपडेट",
+  "promotionsTips": "प्रचार और सुझाव",
+  "passcodeBiometric": "पासकोड / बायोमेट्रिक लॉक",
+  "changePasscode": "पासकोड बदलें",
+  "twoFactorAuth": "2-फैक्टर ऑथेंटिकेशन",
+  "dataSharing": "डेटा शेयरिंग प्रेफरेंस",
+  "privacyPolicy": "प्राइवेसी पॉलिसी",
+  "logoutTitle": "लॉगआउट (Logout)",
+  "logoutQuestion": "क्या आप लॉगआउट करना चाहते हैं?",
+  "logoutCancel": "रद्द करें",
+  "logoutConfirm": "लॉगआउट",
+  "logoutSnackbar": "लॉगआउट किया गया",
+  "logoutButton": "लॉगआउट करें (Logout)",
+  "saveChanges": "सेव करें (Save Changes)",
+  "passcodeEnabled": "सक्षम",
+  "twoFactorDisabled": "बंद",
+  "userDob": "15 मार्च 1958",
+  "userGender": "पुरुष",
+  "userMobile": "+91 98765 43210",
+  "userEmail": "ramesh.sharma@gmail.com",
+  "userAddress": "25, शांति नगर, जयपुर, राजस्थान - 302001",
+  "userBloodGroup": "B+",
+  "condHypertension": "हाइपरटेंशन",
+  "condDiabetes": "डायबिटीज टाइप 2",
+  "condArthritis": "अर्थराइटिस",
+  "allergyDust": "धूल से एलर्जी",
+  "allergyPenicillin": "पेनिसिलिन",
+  "medAmlodipine": "Amlodipine 5mg",
+  "medAmlodipineDose": "सुबह - 1 गोली",
+  "contactWife": "सीता शर्मा (पत्नी)",
+  "contactSon": "अमित शर्मा (पुत्र)",
+  "contactDaughter": "नेहा शर्मा (पुत्री)",
+  "contactWifePhone": "+91 98765 12345",
+  "contactSonPhone": "+91 87654 32109",
+  "contactDaughterPhone": "+91 76543 21098",
+  "tagPrimary": "Primary",
+  "tagSecondary": "Secondary",
+  "addContactComingSoon": "नया संपर्क जोड़ने की सुविधा जल्द आ रही है",
+
+  "@_Family": "परिवार कनेक्ट",
+  "addMember": "+ जोड़ें",
+  "familyMembersTitle": "परिवार के सदस्य",
+  "members": "सदस्य",
+  "self": "आप",
+  "medicinesCount": "{count} दवाएँ",
+  "@medicinesCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "memberStatus": "{count} सदस्य • सभी स्वस्थ",
+  "@memberStatus": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "addMemberSnackbar": "परिवार का सदस्य जोड़ें",
+  "memberCount": "{count} सदस्य",
+  "@memberCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+
+  "@_MedicalRecords": "मेडिकल रिकॉर्ड",
+  "recordsTitle": "मेडिकल रिकॉर्ड",
+  "thisYear": "यह वर्ष",
+  "reportSummary": "रिपोर्ट सारांश",
+  "reportDownloading": "रिपोर्ट डाउनलोड हो रही है...",
+
+  "@_HealthReport": "स्वास्थ्य रिपोर्ट",
+  "healthReport": "मेरी सेहत रिपोर्ट",
+  "yourHealthReport": "आपकी स्वास्थ्य रिपोर्ट",
+  "healthy": "स्वस्थ",
+  "allVitalsNormal": "सभी महत्वपूर्ण आंकड़े सामान्य सीमा में हैं",
+  "healthParameters": "स्वास्थ्य पैरामीटर",
+  "recommendations": "सुझाव",
+  "recVitaminD": "विटामिन D3 थोड़ा कम",
+  "recVitaminDDesc": "धूप में बैठें और विटामिन D3 सप्लीमेंट लें",
+  "recExercise": "रोजाना व्यायाम",
+  "recExerciseDesc": "30 मिनट टहलना या हल्का व्यायाम करें",
+  "recWater": "पानी पिएं",
+  "recWaterDesc": "दिन में 8-10 गिलास पानी पिएं",
+  "reportShared": "रिपोर्ट शेयर की जा रही है...",
+
+  "@_HealthTips": "स्वास्थ्य सुझाव",
+  "healthTipsTitle": "स्वास्थ्य सुझाव",
+  "healthyLivingTips": "स्वस्थ रहने के टिप्स",
+  "categories": "श्रेणियाँ",
+  "tipsCount": "{count} टिप्स",
+  "@tipsCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "catDiabetes": "डायबिटीज",
+  "catHeart": "हृदय स्वास्थ्य",
+  "catNutrition": "पोषण",
+  "catMedicine": "दवा प्रबंधन",
+  "tipRegularCheckup": "नियमित जांच",
+  "tipRegularCheckupDesc": "हर 3 महीने में HbA1c जांच कराएं",
+  "tipDiet": "डाइट",
+  "tipDietDesc": "मीठे से परहेज करें और फाइबर लें",
+  "tipExercise": "व्यायाम",
+  "tipExerciseDesc": "रोज 30 मिनट टहलें",
+  "tipBpControl": "बीपी नियंत्रण",
+  "tipBpControlDesc": "नमक कम खाएं, बीपी नियमित जांचें",
+  "tipCholesterol": "कोलेस्ट्रॉल",
+  "tipCholesterolDesc": "तेल-घी कम लें, हरी सब्जी खाएं",
+  "tipStressFree": "तनाव मुक्त",
+  "tipStressFreeDesc": "ध्यान और योग करें, तनाव कम लें",
+  "tipBalancedDiet": "संतुलित आहार",
+  "tipBalancedDietDesc": "प्रोटीन, विटामिन और मिनरल्स लें",
+  "tipDrinkWater": "पानी पिएं",
+  "tipDrinkWaterDesc": "दिन में 8-10 गिलास पानी पिएं",
+  "tipEatOnTime": "समय पर खाएं",
+  "tipEatOnTimeDesc": "नाश्ता, दोपहर और रात का भोजन समय पर करें",
+  "tipMedicineOnTime": "समय पर दवा",
+  "tipMedicineOnTimeDesc": "दवा समय पर लें, अलार्म लगाएं",
+  "tipConsultDoctor": "डॉक्टर से सलाह",
+  "tipConsultDoctorDesc": "बिना डॉक्टर की सलाह दवा न बदलें",
+  "tipMedicineList": "दवा सूची",
+  "tipMedicineListDesc": "सभी दवाओं की सूची अपने पास रखें",
+  "tipsHeroSubtitle": "{categories} श्रेणियाँ • {tips} टिप्स",
+  "@tipsHeroSubtitle": {
+    "placeholders": {
+      "categories": {},
+      "tips": {}
+    }
+  },
+  "tipCount": "{count} टिप्स",
+  "@tipCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
 
   "@_VoiceAssistant": "वॉइस असिस्टेंट",
   "voiceListening": "सुन रहा हूँ...",
@@ -343,5 +596,54 @@
   "patientAge": "58 वर्ष",
   "patientPhone": "+91 98765 43210",
   "patientEmail": "ram.sharma@email.com",
-  "patientSymptoms": "छाती में दर्द, थकान और सांस लेने में दिक्कत हो रही है।"
+  "patientSymptoms": "छाती में दर्द, थकान और सांस लेने में दिक्कत हो रही है।",
+
+  "@_RecordData": "रिकॉर्ड डेटा",
+  "recordHealthCheckup": "स्वास्थ्य जांच रिपोर्ट",
+  "recordHeartCheckup": "हृदय जांच रिपोर्ट",
+  "recordDiabetesCheckup": "डायबिटीज जांच",
+  "recordXray": "एक्स-रे रिपोर्ट",
+  "recordAnnualCheckup": "वार्षिक स्वास्थ्य जांच",
+  "recordDocGupta": "डॉ. आर. के. गुप्ता",
+  "recordDocSharma": "डॉ. राजत शर्मा",
+  "recordDocVerma": "डॉ. नेहा वर्मा",
+  "recordDocPatel": "डॉ. अमित पटेल",
+  "recordTypeBlood": "ब्लड टेस्ट",
+  "recordTypeECG": "ईसीजी",
+  "recordTypeHba1c": "HbA1c",
+  "recordTypeXray": "एक्स-रे",
+  "recordTypeFullBody": "फुल बॉडी चेकअप",
+  "recordSummaryHealthCheckup": "BP 120/80, शुगर 98 mg/dL, कोलेस्ट्रॉल सामान्य",
+  "recordSummaryHeartCheckup": "ईसीजी सामान्य, हृदय गति 72 bpm",
+  "recordSummaryDiabetesCheckup": "HbA1c 6.2% - सामान्य सीमा में",
+  "recordSummaryXray": "छाती का एक्स-रे सामान्य, कोई असामान्यता नहीं",
+  "recordSummaryAnnualCheckup": "सभी पैरामीटर सामान्य, विटामिन D3 थोड़ा कम",
+
+  "@_FamilyData": "परिवार डेटा",
+  "familyNameWife": "सुनीता देवी",
+  "familyRelationWife": "पत्नी",
+  "familyAgeWife": "62 वर्ष",
+  "familyNameSon": "अमित शर्मा",
+  "familyRelationSon": "बेटा",
+  "familyAgeSon": "35 वर्ष",
+  "familyNameDaughterInLaw": "प्रिया शर्मा",
+  "familyRelationDaughterInLaw": "बहू",
+  "familyAgeDaughterInLaw": "30 वर्ष",
+  "familyNameGrandson": "आरव शर्मा",
+  "familyRelationGrandson": "पोता",
+  "familyAgeGrandson": "5 वर्ष",
+  "familyMedsWife": "बीपी की दवा, थायरॉइड",
+  "familyMedsGrandson": "विटामिन D3",
+
+  "@_ProfileData": "प्रोफाइल डेटा",
+  "profileNameHi": "रमेश जी शर्मा",
+  "profileNameEn": "Ramesh Ji Sharma",
+  "profileId": "ID: MT-2024-5687",
+  "profilePrimaryAccount": "Primary Account",
+  "profileHealthScore": "85/100",
+  "profileMemberSince": "Jan 2024",
+  "profileFamilyCount": "2",
+  "statHealthScore": "स्वास्थ्य स्कोर",
+  "statMemberSince": "अकाउंट उम्र",
+  "statFamilyMembers": "परिवार सदस्य"
 }
