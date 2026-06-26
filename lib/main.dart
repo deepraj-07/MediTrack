@@ -244,8 +244,10 @@ class _MainShellState extends State<MainShell> {
       });
       final available = await _speech.initialize(
         onStatus: (status) {
-          if (status == 'done' && _isVoiceAssistantActive && mounted) {
-            _stopListeningAndProcess();
+          if (status == 'notListening' && _isListening && mounted) {
+            if (_voiceTranscript.trim().isNotEmpty) {
+              _stopListeningAndProcess();
+            }
           }
         },
         onError: (error) {
@@ -277,6 +279,9 @@ class _MainShellState extends State<MainShell> {
       onResult: (result) {
         setState(() {
           _voiceTranscript = result.recognizedWords;
+          if (_voiceTranscript.isNotEmpty) {
+            _voiceSubText = '';
+          }
         });
       },
       onSoundLevelChange: (level) {
@@ -286,9 +291,8 @@ class _MainShellState extends State<MainShell> {
       },
       listenOptions: stt.SpeechListenOptions(
         listenFor: const Duration(seconds: 30),
-        pauseFor: const Duration(seconds: 2),
-        localeId: 'en_US',
-        cancelOnError: true,
+        pauseFor: const Duration(seconds: 3),
+        partialResults: true,
       ),
     );
     setState(() {
