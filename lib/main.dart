@@ -121,22 +121,6 @@ class _MainShellState extends State<MainShell> {
   String _voiceSavedMessage = '';
   double _soundLevel = 0.0;
 
-  void _initSpeech() {
-    _speech.initialize(
-      onStatus: (status) {
-        if (status == 'done' && _isVoiceAssistantActive && mounted) {
-          _stopListeningAndProcess();
-        }
-      },
-    ).then((available) {
-      if (mounted) {
-        setState(() {
-          _speechAvailable = available;
-        });
-      }
-    });
-  }
-
   // Notification state
   List<Map<String, dynamic>> _notifications = [];
   bool _dataInitialized = false;
@@ -248,18 +232,47 @@ class _MainShellState extends State<MainShell> {
       _voiceSubText = AppLocalizations.of(context)!.voicePrompt;
       _voiceTranscript = '';
       _voiceSavedMessage = '';
+      _soundLevel = 0.0;
     });
+    _initAndListen();
+  }
+
+  Future<void> _initAndListen() async {
+    if (!_speechAvailable) {
+      setState(() {
+        _voiceSubText = 'Requesting microphone permission...';
+      });
+      final available = await _speech.initialize(
+        onStatus: (status) {
+          if (status == 'done' && _isVoiceAssistantActive && mounted) {
+            _stopListeningAndProcess();
+          }
+        },
+        onError: (error) {
+          if (mounted) {
+            setState(() {
+              _speechAvailable = false;
+              _voicePromptText = 'Error: ${error.errorMsg}';
+            });
+          }
+        },
+      );
+      if (!mounted) return;
+      if (!available) {
+        setState(() {
+          _speechAvailable = false;
+          _voicePromptText = 'Permission denied. Allow mic access in settings.';
+        });
+        return;
+      }
+      setState(() {
+        _speechAvailable = true;
+      });
+    }
     _startListening();
   }
 
   void _startListening() {
-    if (!_speechAvailable) {
-      _initSpeech();
-      setState(() {
-        _voiceSubText = 'Initializing speech...';
-      });
-      return;
-    }
     _speech.listen(
       onResult: (result) {
         setState(() {
