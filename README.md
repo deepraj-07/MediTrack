@@ -98,19 +98,6 @@ India has over **140 million elderly citizens** aged 60+. Most of them:
 
 ---
 
-## 📸 Screenshots
-
-> The app features a premium purple-gradient design system with clean cards, smooth animations, and accessibility-first UI.
-
-| Home Dashboard | Vitals Charts | Voice Assistant |
-|---|---|---|
-| Health status card, vitals grid, medicine tracker, SOS button | BP/Sugar/SpO₂/Temp with Bezier curves | AI chat with sound level animation |
-
-| Doctor Booking | QR Card | Medicine Tracker |
-|---|---|---|
-| Search, specialty filter, 4-step booking | Shareable patient QR with profile | Time-based schedule with filters |
-
----
 
 ## 🛠️ Tech Stack
 
