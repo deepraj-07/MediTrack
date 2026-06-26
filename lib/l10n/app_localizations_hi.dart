@@ -1231,6 +1231,12 @@ class AppLocalizationsHi extends AppLocalizations {
   String get voiceKeywordDashboard => 'डैशबोर्ड';
 
   @override
+  String get tapToStop => 'रोकने के लिए टैप करें';
+
+  @override
+  String get readingSavedLabel => 'सेव हुआ!';
+
+  @override
   String get selectLanguage => 'भाषा चुनें';
 
   @override

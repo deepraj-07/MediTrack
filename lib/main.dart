@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import 'package:meditrack/l10n/app_localizations.dart';
 import 'providers/language_provider.dart';
 import 'providers/theme_provider.dart';
+import 'providers/vitals_provider.dart';
+import 'models/vital_reading.dart';
 import 'theme/app_theme.dart';
 import 'screens/home_screen.dart';
 import 'screens/vitals_screen.dart';
@@ -14,6 +16,7 @@ import 'screens/profile_screen.dart';
 import 'dart:async';
 import 'dart:math' as math;
 import 'package:flutter/services.dart';
+import 'package:speech_to_text/speech_to_text.dart' as stt;
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,6 +32,7 @@ void main() {
       providers: [
         ChangeNotifierProvider(create: (_) => LanguageProvider()..loadLocale()),
         ChangeNotifierProvider(create: (_) => ThemeProvider()..loadTheme()),
+        ChangeNotifierProvider(create: (_) => VitalsProvider()),
       ],
       child: const MediTrackApp(),
     ),
@@ -109,6 +113,28 @@ class _MainShellState extends State<MainShell> {
   String _voicePromptText = "";
   String _voiceSubText = "";
   String _voiceTranscript = "";
+
+  // Speech-to-text
+  final stt.SpeechToText _speech = stt.SpeechToText();
+  bool _isListening = false;
+  bool _speechAvailable = false;
+  String _voiceSavedMessage = '';
+
+  void _initSpeech() {
+    _speech.initialize(
+      onStatus: (status) {
+        if (status == 'done' && _isVoiceAssistantActive && mounted) {
+          _stopListeningAndProcess();
+        }
+      },
+    ).then((available) {
+      if (mounted) {
+        setState(() {
+          _speechAvailable = available;
+        });
+      }
+    });
+  }
 
   // Notification state
   List<Map<String, dynamic>> _notifications = [];
@@ -219,19 +245,156 @@ class _MainShellState extends State<MainShell> {
       _isVoiceAssistantActive = true;
       _voicePromptText = AppLocalizations.of(context)!.voiceListening;
       _voiceSubText = AppLocalizations.of(context)!.voicePrompt;
-      _voiceTranscript = AppLocalizations.of(context)!.voiceTranscript;
+      _voiceTranscript = '';
+      _voiceSavedMessage = '';
+    });
+    _startListening();
+  }
+
+  void _startListening() {
+    if (!_speechAvailable) {
+      _initSpeech();
+      setState(() {
+        _voiceSubText = 'Initializing speech...';
+      });
+      return;
+    }
+    _speech.listen(
+      onResult: (result) {
+        setState(() {
+          _voiceTranscript = result.recognizedWords;
+        });
+      },
+      onSoundLevelChange: (level) {},
+      listenOptions: stt.SpeechListenOptions(
+        listenFor: const Duration(seconds: 30),
+        pauseFor: const Duration(seconds: 2),
+        localeId: 'en_US',
+        cancelOnError: true,
+      ),
+    );
+    setState(() {
+      _isListening = true;
+      _voicePromptText = AppLocalizations.of(context)!.voiceListening;
+    });
+  }
+
+  void _stopListeningAndProcess() async {
+    await _speech.stop();
+    setState(() {
+      _isListening = false;
+    });
+    if (_voiceTranscript.trim().isNotEmpty) {
+      _processVoiceCommand(_voiceTranscript);
+    } else {
+      setState(() {
+        _voicePromptText = AppLocalizations.of(context)!.voiceRespFallback;
+      });
+      _closeVoiceAfterDelay();
+    }
+  }
+
+  Map<String, String>? _parseVitalFromText(String text) {
+    final lower = text.toLowerCase();
+
+    RegExp bpRegex = RegExp(r'(\d{2,3})\s*(?:/|over|by|upon|par)\s*(\d{2,3})');
+    var bpMatch = bpRegex.firstMatch(lower);
+    if (bpMatch != null &&
+        (lower.contains('bp') ||
+            lower.contains('blood') ||
+            lower.contains('बीपी') ||
+            lower.contains('ब्लड') ||
+            lower.contains('press'))) {
+      return {'type': 'bp', 'value': '${bpMatch.group(1)}/${bpMatch.group(2)}'};
+    }
+
+    RegExp numRegex = RegExp(r'(\d{2,3}(?:\.\d)?)');
+    var numMatch = numRegex.firstMatch(lower);
+    if (numMatch == null) return null;
+
+    var num = numMatch.group(1)!;
+
+    if (lower.contains('sugar') || lower.contains('शुगर') || lower.contains('glucose') || lower.contains('ग्लूकोज')) {
+      return {'type': 'sugar', 'value': num};
+    }
+    if (lower.contains('oxygen') || lower.contains('ऑक्सीजन') || lower.contains('spo2') || lower.contains('saturat')) {
+      return {'type': 'oxygen', 'value': '$num%'};
+    }
+    if (lower.contains('temperature') || lower.contains('तापमान') || lower.contains('temp')) {
+      return {'type': 'temperature', 'value': '$num°F'};
+    }
+
+    if (bpMatch != null) {
+      return {'type': 'bp', 'value': '${bpMatch.group(1)}/${bpMatch.group(2)}'};
+    }
+
+    return null;
+  }
+
+  String _vitalTypeLabel(String type) {
+    final l = AppLocalizations.of(context)!;
+    switch (type) {
+      case 'bp': return l.vitalBp;
+      case 'sugar': return l.vitalSugar;
+      case 'oxygen': return l.vitalOxygen;
+      case 'temperature': return l.vitalTemp;
+      default: return type;
+    }
+  }
+
+  void _saveVitalReading(String type, String value) {
+    final now = DateTime.now();
+    final hour = now.hour > 12 ? now.hour - 12 : (now.hour == 0 ? 12 : now.hour);
+    final minute = now.minute.toString().padLeft(2, '0');
+    final period = now.hour >= 12 ? 'PM' : 'AM';
+    final timeStr = '${hour.toString().padLeft(2, '0')}:$minute $period';
+    final dateStr = '${now.day}/${now.month}/${now.year}';
+
+    final reading = VitalReading(
+      type: type,
+      value: value,
+      time: timeStr,
+      date: dateStr,
+      timestamp: now,
+    );
+
+    context.read<VitalsProvider>().addReading(reading);
+
+    setState(() {
+      _voiceSavedMessage = '${_vitalTypeLabel(type)}: $value ${AppLocalizations.of(context)!.readingSavedLabel}';
+      _currentIndex = 1;
+    });
+  }
+
+  void _closeVoiceAfterDelay() {
+    Future.delayed(const Duration(milliseconds: 2000), () {
+      if (mounted) {
+        setState(() {
+          _isVoiceAssistantActive = false;
+        });
+      }
     });
   }
 
   void _processVoiceCommand(String command) {
     setState(() {
-      _voiceTranscript = '"$command"';
       _voicePromptText = AppLocalizations.of(context)!.voiceProcessing;
     });
 
-    Future.delayed(const Duration(milliseconds: 1200), () {
+    Future.delayed(const Duration(milliseconds: 800), () {
       if (!mounted) return;
-      
+
+      var vital = _parseVitalFromText(command);
+      if (vital != null) {
+        _saveVitalReading(vital['type']!, vital['value']!);
+        setState(() {
+          _voicePromptText = '${_vitalTypeLabel(vital['type']!)}: ${vital['value']} ${AppLocalizations.of(context)!.readingSavedLabel}';
+          _voiceTranscript = '"$command"';
+        });
+        _closeVoiceAfterDelay();
+        return;
+      }
+
       String responseText = "";
       int targetIndex = _currentIndex;
 
@@ -253,16 +416,11 @@ class _MainShellState extends State<MainShell> {
 
       setState(() {
         _voicePromptText = responseText;
+        _voiceTranscript = '"$command"';
         _currentIndex = targetIndex;
       });
 
-      Future.delayed(const Duration(milliseconds: 1500), () {
-        if (mounted) {
-          setState(() {
-            _isVoiceAssistantActive = false;
-          });
-        }
-      });
+      _closeVoiceAfterDelay();
     });
   }
 
@@ -591,6 +749,7 @@ class _MainShellState extends State<MainShell> {
                   IconButton(
                     icon: Icon(Icons.close_rounded, color: c.tertiaryText),
                     onPressed: () {
+                      if (_isListening) _speech.stop();
                       setState(() {
                         _isVoiceAssistantActive = false;
                       });
@@ -599,28 +758,62 @@ class _MainShellState extends State<MainShell> {
                 ],
               ),
               const SizedBox(height: 16),
-              Stack(
-                alignment: Alignment.center,
-                children: [
-                  Container(
-                    width: 76,
-                    height: 76,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF7F56D9).withValues(alpha: 0.1),
-                      shape: BoxShape.circle,
+              GestureDetector(
+                onTap: _isListening ? _stopListeningAndProcess : null,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 800),
+                      width: _isListening ? 80 : 76,
+                      height: _isListening ? 80 : 76,
+                      decoration: BoxDecoration(
+                        color: _isListening
+                            ? const Color(0xFFF43F5E).withValues(alpha: 0.15)
+                            : const Color(0xFF7F56D9).withValues(alpha: 0.1),
+                        shape: BoxShape.circle,
+                      ),
                     ),
-                  ),
-                  Container(
-                    width: 64,
-                    height: 64,
-                    decoration: const BoxDecoration(
-                      color: Color(0xFF7F56D9),
-                      shape: BoxShape.circle,
+                    Container(
+                      width: 64,
+                      height: 64,
+                      decoration: BoxDecoration(
+                        color: _isListening ? const Color(0xFFF43F5E) : const Color(0xFF7F56D9),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        _isListening ? Icons.mic_rounded : Icons.mic_none_rounded,
+                        color: Colors.white,
+                        size: 30,
+                      ),
                     ),
-                    child: const Icon(Icons.mic_rounded, color: Colors.white, size: 30),
-                  ),
-                ],
+                    if (_isListening)
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: const BoxDecoration(
+                            color: Color(0xFF12B76A),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(Icons.check_rounded, color: Colors.white, size: 14),
+                        ),
+                      ),
+                  ],
+                ),
               ),
+              if (_isListening)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Text(
+                    AppLocalizations.of(context)!.tapToStop,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: c.tertiaryText,
+                    ),
+                  ),
+                ),
               const SizedBox(height: 20),
               Text(
                 _voicePromptText,
@@ -645,28 +838,40 @@ class _MainShellState extends State<MainShell> {
                 children: [
                   ActionChip(
                     label: Text(AppLocalizations.of(context)!.voiceMedicine),
-                    onPressed: () => _processVoiceCommand(AppLocalizations.of(context)!.voiceCmdMedicine),
+                    onPressed: () {
+                      if (_isListening) _speech.stop();
+                      _processVoiceCommand(AppLocalizations.of(context)!.voiceCmdMedicine);
+                    },
                     backgroundColor: const Color(0xFFF3E8FF),
                     side: BorderSide.none,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                   ActionChip(
                     label: Text(AppLocalizations.of(context)!.voiceVitals),
-                    onPressed: () => _processVoiceCommand(AppLocalizations.of(context)!.voiceCmdVitals),
+                    onPressed: () {
+                      if (_isListening) _speech.stop();
+                      _processVoiceCommand(AppLocalizations.of(context)!.voiceCmdVitals);
+                    },
                     backgroundColor: const Color(0xFFEBF5FF),
                     side: BorderSide.none,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                   ActionChip(
                     label: Text(AppLocalizations.of(context)!.voiceSos),
-                    onPressed: () => _processVoiceCommand(AppLocalizations.of(context)!.voiceCmdSos),
+                    onPressed: () {
+                      if (_isListening) _speech.stop();
+                      _processVoiceCommand(AppLocalizations.of(context)!.voiceCmdSos);
+                    },
                     backgroundColor: const Color(0xFFFEF3F2),
                     side: BorderSide.none,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                   ActionChip(
                     label: Text(AppLocalizations.of(context)!.voiceHome),
-                    onPressed: () => _processVoiceCommand(AppLocalizations.of(context)!.voiceCmdHome),
+                    onPressed: () {
+                      if (_isListening) _speech.stop();
+                      _processVoiceCommand(AppLocalizations.of(context)!.voiceCmdHome);
+                    },
                     backgroundColor: const Color(0xFFF2F4F7),
                     side: BorderSide.none,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -678,14 +883,22 @@ class _MainShellState extends State<MainShell> {
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 decoration: BoxDecoration(
-                  color: c.scaffoldBg,
+                  color: _voiceSavedMessage.isNotEmpty
+                      ? const Color(0xFFDCFCE7)
+                      : c.scaffoldBg,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
-                  _voiceTranscript,
-                  style: const TextStyle(
+                  _voiceSavedMessage.isNotEmpty
+                      ? '$_voiceSavedMessage $_voiceTranscript'
+                      : (_voiceTranscript.isNotEmpty
+                          ? _voiceTranscript
+                          : AppLocalizations.of(context)!.voiceTranscript),
+                  style: TextStyle(
                     fontSize: 15,
-                    color: Color(0xFF7F56D9),
+                    color: _voiceSavedMessage.isNotEmpty
+                        ? const Color(0xFF16A34A)
+                        : const Color(0xFF7F56D9),
                     fontWeight: FontWeight.w600,
                     fontStyle: FontStyle.italic,
                   ),

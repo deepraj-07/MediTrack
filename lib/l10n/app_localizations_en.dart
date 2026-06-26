@@ -1231,6 +1231,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get voiceKeywordDashboard => 'dashboard';
 
   @override
+  String get tapToStop => 'Tap to stop';
+
+  @override
+  String get readingSavedLabel => 'saved!';
+
+  @override
   String get selectLanguage => 'Select Language';
 
   @override

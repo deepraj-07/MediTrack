@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:meditrack/l10n/app_localizations.dart';
+import 'package:meditrack/providers/vitals_provider.dart';
 import 'package:meditrack/theme/app_theme.dart';
 
 class VitalsScreen extends StatefulWidget {
@@ -89,6 +91,9 @@ class _VitalsScreenState extends State<VitalsScreen> {
             // Segmented Period Selector
             _buildSegmentedControl(),
             
+            // Voice-saved readings section
+            _buildVoiceReadingsSection(),
+            
             const SizedBox(height: 20),
             
             // Vital Graph Card 1: BP
@@ -154,6 +159,80 @@ class _VitalsScreenState extends State<VitalsScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  String _vitalTypeLabel(String type) {
+    final l = AppLocalizations.of(context)!;
+    switch (type) {
+      case 'bp': return l.vitalBp;
+      case 'sugar': return l.vitalSugar;
+      case 'oxygen': return l.vitalOxygen;
+      case 'temperature': return l.vitalTemp;
+      default: return type;
+    }
+  }
+
+  Widget _buildVoiceReadingsSection() {
+    final vitalsProvider = context.watch<VitalsProvider>();
+    final readings = vitalsProvider.readings;
+    if (readings.isEmpty) return const SizedBox.shrink();
+
+    final latest = readings.last;
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      decoration: BoxDecoration(
+        color: const Color(0xFFDCFCE7),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFF86EFAC)),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.mic_rounded, color: Color(0xFF16A34A), size: 22),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '${_vitalTypeLabel(latest.type)}: ${latest.value}',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                    color: Color(0xFF166534),
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  '${latest.date} • ${latest.time}',
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF22C55E),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            decoration: BoxDecoration(
+              color: const Color(0xFF86EFAC).withValues(alpha: 0.5),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Text(
+              '${readings.length}',
+              style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w800,
+                color: Color(0xFF166534),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

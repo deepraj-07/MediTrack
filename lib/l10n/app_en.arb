@@ -552,6 +552,8 @@
   "voiceKeywordHelp": "help",
   "voiceKeywordHome": "home",
   "voiceKeywordDashboard": "dashboard",
+  "tapToStop": "Tap to stop",
+  "readingSavedLabel": "saved!",
 
   "@_Language": "Language",
   "selectLanguage": "Select Language",

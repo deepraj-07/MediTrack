@@ -551,6 +551,8 @@
   "voiceKeywordHelp": "आपातकाल",
   "voiceKeywordHome": "होम",
   "voiceKeywordDashboard": "डैशबोर्ड",
+  "tapToStop": "रोकने के लिए टैप करें",
+  "readingSavedLabel": "सेव हुआ!",
 
   "@_Language": "भाषा",
   "selectLanguage": "भाषा चुनें",

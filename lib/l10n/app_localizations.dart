@@ -2432,6 +2432,18 @@ abstract class AppLocalizations {
   /// **'dashboard'**
   String get voiceKeywordDashboard;
 
+  /// No description provided for @tapToStop.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to stop'**
+  String get tapToStop;
+
+  /// No description provided for @readingSavedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'saved!'**
+  String get readingSavedLabel;
+
   /// No description provided for @selectLanguage.
   ///
   /// In en, this message translates to:
