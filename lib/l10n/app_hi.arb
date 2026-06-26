@@ -144,6 +144,12 @@
     }
   },
   "overallStatus": "समग्र स्थिति: सामान्य",
+  "averageLabel": "औसत (Average): {value}",
+  "@averageLabel": {
+    "placeholders": {
+      "value": {}
+    }
+  },
   "statusNormal": "सामान्य",
   "statusNormalFasting": "सामान्य (उपवास)",
   "statusNormalPostMeal": "सामान्य (भोजनोपरांत)",
@@ -325,6 +331,7 @@
   "sosLocationShared": "📍 आपकी लोकेशन (नई दिल्ली) शेयर कर दी गई है।",
   "sosClose": "ठीक है (Close)",
   "sosCancelled": "आपातकालीन अलर्ट रद्द कर दिया गया है।",
+  "sosMessage": "मुझे तत्काल चिकित्सा सहायता चाहिए! यह MediTrack से भेजा गया एक आपातकालीन संदेश है।",
   "sosAlertTitle": "SOS अलर्ट भेजा गया",
   "emergencyContacts": "🚨 आपातकालीन संपर्क (Caretakers)",
 
@@ -429,6 +436,7 @@
 
   "@_Family": "परिवार कनेक्ट",
   "addMember": "+ जोड़ें",
+  "relation": "संबंध",
   "familyMembersTitle": "परिवार के सदस्य",
   "members": "सदस्य",
   "self": "आप",
@@ -647,5 +655,18 @@
   "profileFamilyCount": "2",
   "statHealthScore": "स्वास्थ्य स्कोर",
   "statMemberSince": "अकाउंट उम्र",
-  "statFamilyMembers": "परिवार सदस्य"
+  "statFamilyMembers": "परिवार सदस्य",
+
+  "@_QR": "QR कोड",
+  "myQrCode": "मेरा QR कोड",
+  "scanQrCode": "QR कोड स्कैन करें",
+  "scanToView": "मरीज की जानकारी देखने के लिए यह QR स्कैन करें",
+  "qrValidMessage": "इस QR कोड में आपातकालीन उपयोग के लिए चिकित्सा जानकारी है।",
+  "shareQr": "QR शेयर करें",
+  "shareComingSoon": "शेयर फीचर जल्द आ रहा है",
+  "patientDetails": "मरीज की जानकारी",
+  "invalidQrCode": "अमान्य QR कोड",
+  "pointCameraAtQr": "कैमरे को QR कोड पर रखें",
+  "switchCamera": "कैमरा बदलें",
+  "scanQrOption": "QR कोड स्कैन करें"
 }

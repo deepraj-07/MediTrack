@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:meditrack/l10n/app_localizations.dart';
 import 'providers/language_provider.dart';
 import 'providers/theme_provider.dart';
 import 'providers/vitals_provider.dart';
+import 'providers/profile_provider.dart';
 import 'models/vital_reading.dart';
 import 'services/openrouter_service.dart';
 import 'theme/app_theme.dart';
@@ -14,13 +16,21 @@ import 'screens/medicines_screen.dart';
 import 'screens/vital_detail_screen.dart';
 import 'screens/notifications_screen.dart';
 import 'screens/profile_screen.dart';
+import 'screens/doctor_appointment_screen.dart';
+import 'screens/medical_records_screen.dart';
+import 'screens/family_screen.dart';
+import 'screens/health_report_screen.dart';
+import 'screens/health_tips_screen.dart';
 import 'dart:async';
 import 'dart:math' as math;
 import 'package:flutter/services.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
+import 'package:flutter_tts/flutter_tts.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: '.env');
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     systemNavigationBarColor: Colors.transparent,
     systemNavigationBarDividerColor: Colors.transparent,
@@ -34,6 +44,7 @@ void main() {
         ChangeNotifierProvider(create: (_) => LanguageProvider()..loadLocale()),
         ChangeNotifierProvider(create: (_) => ThemeProvider()..loadTheme()),
         ChangeNotifierProvider(create: (_) => VitalsProvider()),
+        ChangeNotifierProvider(create: (_) => ProfileProvider()..loadProfile()),
       ],
       child: const MediTrackApp(),
     ),
@@ -47,6 +58,8 @@ class MediTrackApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final locale = context.watch<LanguageProvider>().locale;
     final themeMode = context.watch<ThemeProvider>().themeMode;
+    final textScale = context.watch<ThemeProvider>().textScaleFactor;
+    final highContrast = context.watch<ThemeProvider>().highContrast;
     return MaterialApp(
       title: 'MediTrack',
       debugShowCheckedModeBanner: false,
@@ -57,6 +70,17 @@ class MediTrackApp extends StatelessWidget {
       ],
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       themeMode: themeMode,
+      builder: (context, child) {
+        var data = MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(textScale));
+        child = MediaQuery(data: data, child: child!);
+        if (highContrast) {
+          child = DefaultTextStyle(
+            style: const TextStyle(color: Colors.black),
+            child: child,
+          );
+        }
+        return child;
+      },
       theme: buildLightTheme().copyWith(
         textTheme: GoogleFonts.notoSansDevanagariTextTheme(
           Theme.of(context).textTheme,
@@ -108,9 +132,13 @@ class _MainShellState extends State<MainShell> {
   int _sosCountdownVal = 3;
   Timer? _sosTimer;
   bool _isSosAlertSent = false;
+  // Emergency contacts
+  List<Map<String, String>> _emergencyContacts = [];
+  int _sosSmsSentCount = 0;
 
   // Voice overlay state
   bool _isVoiceAssistantActive = false;
+  String _assistantState = 'none';
   String _voicePromptText = "";
   String _voiceSubText = "";
   String _voiceTranscript = "";
@@ -122,6 +150,60 @@ class _MainShellState extends State<MainShell> {
   String _voiceSavedMessage = '';
   double _soundLevel = 0.0;
 
+  // Chat + TTS
+  final FlutterTts _tts = FlutterTts();
+  final List<Map<String, String>> _chatHistory = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _tts.setStartHandler(() {
+      if (mounted) {
+        setState(() {
+          _isListening = false;
+          _soundLevel = 0.0;
+          _voiceSubText = _getLangCode() == 'hi' ? 'सहायक बोल रहा है...' : 'Assistant is speaking...';
+        });
+      }
+    });
+
+    _tts.setCompletionHandler(() {
+      if (mounted && _isVoiceAssistantActive && _assistantState != 'closing') {
+        setState(() {
+          _voiceTranscript = '';
+          _voiceSubText = _getLangCode() == 'hi' ? 'आपकी बात सुन रहा हूँ...' : 'Listening to you...';
+        });
+        _initAndListen();
+      }
+    });
+
+    _tts.setErrorHandler((msg) {
+      debugPrint("TTS Error: $msg");
+    });
+  }
+
+  String _getLangCode() => context.read<LanguageProvider>().locale.languageCode;
+
+  String _sanitizeForTts(String text) {
+    return text
+        .replaceAll(RegExp(r'\*+'), '')
+        .replaceAll(RegExp(r'#+\s?'), '')
+        .replaceAll(RegExp(r'_+'), '')
+        .replaceAll(RegExp(r'~~'), '')
+        .replaceAll(RegExp(r'`+'), '')
+        .replaceAll(RegExp(r'\[.*?\]'), '')
+        .replaceAll(RegExp(r'\(.*?\)'), '')
+        .replaceAll(RegExp(r'>\s?'), '')
+        .replaceAll(RegExp(r'-\s'), '')
+        .trim();
+  }
+
+  Future<void> _safeSpeak(String text) async {
+    final code = _getLangCode();
+    await _tts.setLanguage(code == 'hi' ? 'hi-IN' : 'en-US');
+    await _tts.speak(_sanitizeForTts(text));
+  }
+
   // Notification state
   List<Map<String, dynamic>> _notifications = [];
   bool _dataInitialized = false;
@@ -130,12 +212,65 @@ class _MainShellState extends State<MainShell> {
     if (_dataInitialized) return;
     _dataInitialized = true;
     final l = AppLocalizations.of(context)!;
+    context.read<ProfileProvider>().setDefaults(
+      name: l.userName,
+      mobile: l.userMobile,
+      email: l.userEmail,
+      address: l.userAddress,
+    );
     _medicines = [
       {'name': l.medMetformin, 'time': '08:00 AM', 'dose': l.dose1Pill, 'instruction': l.instAfterBreakfast, 'isTaken': true},
       {'name': l.medTelmisartan, 'time': '01:00 PM', 'dose': l.dose1Pill, 'instruction': l.instAfterLunch, 'isTaken': false},
       {'name': l.medVitaminD3, 'time': '08:00 PM', 'dose': l.dose1Pill, 'instruction': l.instAfterDinner, 'isTaken': false},
       {'name': l.medAtorvastatin, 'time': '10:00 PM', 'dose': l.dose1Pill, 'instruction': l.instBeforeSleep, 'isTaken': false},
     ];
+    _emergencyContacts = [
+      {'name': l.contactWife, 'phone': l.contactWifePhone},
+      {'name': l.contactSon, 'phone': l.contactSonPhone},
+      {'name': l.contactDaughter, 'phone': l.contactDaughterPhone},
+    ];
+
+    final vitals = context.read<VitalsProvider>();
+    if (vitals.readings.isEmpty) {
+      final now = DateTime.now();
+      final todayTimes = ['08:00 AM', '10:30 AM', '01:30 PM', '04:00 PM', '08:00 PM'];
+      final todayBpValues = ['120/80', '122/82', '125/85', '118/78', '121/80'];
+      final todaySugarValues = ['98', '110', '105', '95', '108'];
+      final todayOxygenValues = ['98%', '97%', '99%', '98%', '97%'];
+      final todayTempValues = ['98.4°F', '98.6°F', '98.5°F', '98.2°F', '98.6°F'];
+
+      for (int i = 0; i < todayTimes.length; i++) {
+        final parts = todayTimes[i].split(' ');
+        final hm = parts[0].split(':');
+        int hour = int.parse(hm[0]);
+        final minute = int.parse(hm[1]);
+        if (parts[1] == 'PM' && hour != 12) hour += 12;
+        if (parts[1] == 'AM' && hour == 12) hour = 0;
+        final ts = DateTime(now.year, now.month, now.day, hour, minute);
+        final ds = '${now.day}/${now.month}/${now.year}';
+        vitals.addReading(VitalReading(type: 'bp', value: todayBpValues[i], time: todayTimes[i], date: ds, timestamp: ts));
+        vitals.addReading(VitalReading(type: 'sugar', value: todaySugarValues[i], time: todayTimes[i], date: ds, timestamp: ts));
+        vitals.addReading(VitalReading(type: 'oxygen', value: todayOxygenValues[i], time: todayTimes[i], date: ds, timestamp: ts));
+        vitals.addReading(VitalReading(type: 'temperature', value: todayTempValues[i], time: todayTimes[i], date: ds, timestamp: ts));
+      }
+
+      final weekBp = [120.0, 118.0, 124.0, 120.0, 122.0, 119.0];
+      final weekSugar = [98.0, 95.0, 105.0, 96.0, 99.0, 94.0];
+      final weekOxygen = [98.0, 98.0, 99.0, 98.0, 97.0, 98.0];
+      final weekTemp = [98.5, 98.2, 98.8, 98.4, 98.6, 98.3];
+
+      for (int i = 0; i < 6; i++) {
+        final dayDiff = 6 - i;
+        final targetDate = now.subtract(Duration(days: dayDiff));
+        final ds = '${targetDate.day}/${targetDate.month}/${targetDate.year}';
+        final ts = DateTime(targetDate.year, targetDate.month, targetDate.day, 12, 0);
+        vitals.addReading(VitalReading(type: 'bp', value: '${weekBp[i].toInt()}/80', time: '12:00 PM', date: ds, timestamp: ts));
+        vitals.addReading(VitalReading(type: 'sugar', value: weekSugar[i].toInt().toString(), time: '12:00 PM', date: ds, timestamp: ts));
+        vitals.addReading(VitalReading(type: 'oxygen', value: '${weekOxygen[i].toInt()}%', time: '12:00 PM', date: ds, timestamp: ts));
+        vitals.addReading(VitalReading(type: 'temperature', value: '${weekTemp[i]}°F', time: '12:00 PM', date: ds, timestamp: ts));
+      }
+    }
+
     _notifications = [
       {
         'id': '1',
@@ -227,15 +362,82 @@ class _MainShellState extends State<MainShell> {
   }
 
   void _openVoiceAssistant() {
+    _chatHistory.clear();
+    if (_isListening) {
+      _speech.stop();
+    }
+    _tts.stop();
+
+    final profile = context.read<ProfileProvider>();
+    final name = (profile.name.isNotEmpty ? profile.name : AppLocalizations.of(context)!.userName).split(' ')[0];
+    final greetingText = _getLangCode() == 'hi'
+        ? 'नमस्ते $name, आज आप कैसे हैं? आपकी तबीयत कैसी है?'
+        : 'Hello $name, how are you today? How is your health?';
+
     setState(() {
       _isVoiceAssistantActive = true;
-      _voicePromptText = AppLocalizations.of(context)!.voiceListening;
-      _voiceSubText = AppLocalizations.of(context)!.voicePrompt;
+      _assistantState = 'waitingForHealthStatus';
+      _voicePromptText = greetingText;
+      _voiceSubText = _getLangCode() == 'hi' ? 'आपकी बात सुन रहा हूँ...' : 'Listening to you...';
       _voiceTranscript = '';
       _voiceSavedMessage = '';
       _soundLevel = 0.0;
+      _chatHistory.add({'role': 'ai', 'text': greetingText});
     });
-    _initAndListen();
+
+    _speakAndListen(greetingText, 'waitingForHealthStatus');
+  }
+
+  Future<void> _speakAndListen(String text, String nextState) async {
+    if (_isListening) {
+      await _speech.stop();
+      if (mounted) {
+        setState(() {
+          _isListening = false;
+          _soundLevel = 0.0;
+        });
+      }
+    }
+
+    if (mounted && _isVoiceAssistantActive) {
+      setState(() {
+        _assistantState = nextState;
+        _voiceSubText = _getLangCode() == 'hi'
+            ? 'सहायक बोल रहा है...'
+            : 'Assistant is speaking...';
+      });
+    }
+
+    _safeSpeak(text);
+  }
+
+  bool _isRestarting = false;
+
+  void _restartListening() {
+    if (!mounted || !_isVoiceAssistantActive || _isRestarting) return;
+    
+    if (_speech.isListening) {
+      setState(() {
+        _isListening = true;
+      });
+      return;
+    }
+
+    _isRestarting = true;
+    
+    setState(() {
+      _isListening = false;
+      _soundLevel = 0.0;
+    });
+
+    _speech.stop().then((_) {
+      Future.delayed(const Duration(milliseconds: 400), () {
+        _isRestarting = false;
+        if (mounted && _isVoiceAssistantActive && !_speech.isListening) {
+          _startListening();
+        }
+      });
+    });
   }
 
   Future<void> _initAndListen() async {
@@ -248,13 +450,26 @@ class _MainShellState extends State<MainShell> {
           if (status == 'notListening' && _isListening && mounted) {
             if (_voiceTranscript.trim().isNotEmpty) {
               _stopListeningAndProcess();
+            } else {
+              if (_isVoiceAssistantActive) {
+                _restartListening();
+              }
             }
           }
         },
         onError: (error) {
+          final errMsg = error.errorMsg.toLowerCase();
+          if (errMsg.contains('timeout') || errMsg.contains('no_match') || errMsg.contains('client') || errMsg.contains('busy')) {
+            if (_isVoiceAssistantActive) {
+              _restartListening();
+            }
+            return;
+          }
           if (mounted) {
             setState(() {
               _speechAvailable = false;
+              _isListening = false;
+              _soundLevel = 0.0;
               _voicePromptText = 'Error: ${error.errorMsg}';
             });
           }
@@ -292,13 +507,15 @@ class _MainShellState extends State<MainShell> {
       },
       listenOptions: stt.SpeechListenOptions(
         listenFor: const Duration(seconds: 30),
-        pauseFor: const Duration(seconds: 3),
+        pauseFor: const Duration(seconds: 6),
         partialResults: true,
       ),
     );
     setState(() {
       _isListening = true;
-      _voicePromptText = AppLocalizations.of(context)!.voiceListening;
+      if (_voicePromptText.isEmpty) {
+        _voicePromptText = AppLocalizations.of(context)!.voiceListening;
+      }
     });
   }
 
@@ -311,10 +528,16 @@ class _MainShellState extends State<MainShell> {
     if (_voiceTranscript.trim().isNotEmpty) {
       _processVoiceCommand(_voiceTranscript);
     } else {
-      setState(() {
-        _voicePromptText = AppLocalizations.of(context)!.voiceRespFallback;
-      });
-      _closeVoiceAfterDelay();
+      if (_assistantState == 'waitingForHealthStatus') {
+        setState(() {
+          _voiceSubText = _getLangCode() == 'hi' ? 'बोलने के लिए माइक दबाएं' : 'Tap mic to speak';
+        });
+      } else {
+        setState(() {
+          _voicePromptText = AppLocalizations.of(context)!.voiceRespFallback;
+        });
+        _closeVoiceAfterDelay();
+      }
     }
   }
 
@@ -390,6 +613,76 @@ class _MainShellState extends State<MainShell> {
     });
   }
 
+  String _buildHealthContext() {
+    final l = AppLocalizations.of(context)!;
+    final vitals = context.read<VitalsProvider>();
+    final buffer = StringBuffer();
+
+    // 1. Current timestamp context (essential for relative questions like "agli dawai" or "dophar me")
+    final now = DateTime.now();
+    final weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    final weekdayName = weekdays[now.weekday % 7];
+    buffer.writeln('Current Date and Time: ${now.day}/${now.month}/${now.year} ($weekdayName) | ${now.hour}:${now.minute.toString().padLeft(2, '0')}');
+    final profile = context.read<ProfileProvider>();
+    buffer.writeln('Patient Profile:');
+    buffer.writeln('- Name: ${profile.name}');
+    buffer.writeln('- Age/DOB: ${l.userDob}');
+    buffer.writeln('- Gender: ${l.userGender}');
+    buffer.writeln('- Blood Group: ${l.userBloodGroup}');
+
+    buffer.writeln('Medical Conditions: ${l.condHypertension}, ${l.condDiabetes}, ${l.condArthritis}');
+    buffer.writeln('Allergies: ${l.allergyDust}, ${l.allergyPenicillin}');
+
+    buffer.writeln('Current Medicines Schedule:');
+    for (final med in _medicines) {
+      buffer.writeln('- ${med['name']} | Dose: ${med['dose']} at ${med['time']} | ${med['instruction']} | Already Taken: ${med['isTaken']}');
+    }
+
+    // 2. Vitals readings (recent first)
+    final bpReadings = vitals.getReadingsByType('bp');
+    final sugarReadings = vitals.getReadingsByType('sugar');
+    final oxygenReadings = vitals.getReadingsByType('oxygen');
+    final tempReadings = vitals.getReadingsByType('temperature');
+
+    if (bpReadings.isNotEmpty) {
+      buffer.writeln('Recent BP Readings (most recent first):');
+      for (final r in bpReadings.reversed.take(5)) {
+        buffer.writeln('- ${r.value} mmHg (recorded at ${r.time} on ${r.date})');
+      }
+    }
+    if (sugarReadings.isNotEmpty) {
+      buffer.writeln('Recent Sugar Readings (most recent first):');
+      for (final r in sugarReadings.reversed.take(5)) {
+        buffer.writeln('- ${r.value} mg/dL (recorded at ${r.time} on ${r.date})');
+      }
+    }
+    if (oxygenReadings.isNotEmpty) {
+      buffer.writeln('Recent Oxygen Readings (most recent first):');
+      for (final r in oxygenReadings.reversed.take(5)) {
+        buffer.writeln('- ${r.value} (recorded at ${r.time} on ${r.date})');
+      }
+    }
+    if (tempReadings.isNotEmpty) {
+      buffer.writeln('Recent Temperature Readings (most recent first):');
+      for (final r in tempReadings.reversed.take(5)) {
+        buffer.writeln('- ${r.value} (recorded at ${r.time} on ${r.date})');
+      }
+    }
+
+    // 3. Appointments
+    buffer.writeln('Doctor Appointments:');
+    buffer.writeln('- Dr. R. K. Gupta (Family Doctor) | Today at 10:00 AM');
+
+    if (_emergencyContacts.isNotEmpty) {
+      buffer.writeln('Emergency Contacts:');
+      for (final c in _emergencyContacts) {
+        buffer.writeln('- ${c['name']}: ${c['phone']}');
+      }
+    }
+
+    return buffer.toString();
+  }
+
   void _closeVoiceAfterDelay() {
     Future.delayed(const Duration(milliseconds: 2000), () {
       if (mounted) {
@@ -404,57 +697,227 @@ class _MainShellState extends State<MainShell> {
   void _processVoiceCommand(String command) async {
     setState(() {
       _voicePromptText = AppLocalizations.of(context)!.voiceProcessing;
+      _chatHistory.add({'role': 'user', 'text': command});
     });
 
     await Future.delayed(const Duration(milliseconds: 300));
 
     if (!mounted) return;
 
-    var vital = _parseVitalFromText(command);
-    if (vital == null) {
-      setState(() {
-        _voiceSubText = 'Asking AI...';
-      });
-      vital = await OpenRouterService.parseVitalFromSpeech(command);
-    }
+    final l = AppLocalizations.of(context)!;
+    final lowerCmd = command.toLowerCase();
 
-    if (vital != null) {
-      final v = vital;
-      _saveVitalReading(v['type']!, v['value']!);
+    // 1. Check for manual close/stop/bye intent
+    bool isCloseIntent = lowerCmd.contains('close') || lowerCmd.contains('exit') || lowerCmd.contains('stop') ||
+                        lowerCmd.contains('bye') || lowerCmd.contains('thank you') || lowerCmd.contains('dhanyawad') ||
+                        lowerCmd.contains('shukriya') || lowerCmd.contains('बंद करो') || lowerCmd.contains('बाय') ||
+                        lowerCmd.contains('टाटा') || lowerCmd.contains('धन्यवाद') || lowerCmd.contains('शुक्रिया');
+    if (isCloseIntent) {
+      final closeReply = _getLangCode() == 'hi'
+          ? 'आपका स्वागत है। सहायक बंद कर रहा हूँ।'
+          : 'You are welcome! Closing assistant.';
       setState(() {
-        _voicePromptText = '${_vitalTypeLabel(v['type']!)}: ${v['value']} ${AppLocalizations.of(context)!.readingSavedLabel}';
-        _voiceTranscript = '"$command"';
+        _assistantState = 'closing';
+        _voicePromptText = closeReply;
+        _voiceTranscript = command;
       });
+      await _safeSpeak(closeReply);
       _closeVoiceAfterDelay();
       return;
     }
 
-    String responseText = "";
-    int targetIndex = _currentIndex;
+    // 2. Try to extract vitals (global capability)
+    var vital = _parseVitalFromText(command) ??
+        await OpenRouterService.parseVitalFromSpeech(command);
 
-    if (command.contains(AppLocalizations.of(context)!.voiceKeywordMedicine) || command.contains("remind") || command.contains("medicine")) {
-      targetIndex = 3;
-      responseText = AppLocalizations.of(context)!.voiceRespMedicine;
-    } else if (command.contains(AppLocalizations.of(context)!.voiceKeywordVital) || command.contains(AppLocalizations.of(context)!.voiceKeywordReport) || command.contains("vital") || command.contains("report")) {
-      targetIndex = 1;
-      responseText = AppLocalizations.of(context)!.voiceRespVitals;
-    } else if (command.contains(AppLocalizations.of(context)!.voiceKeywordSos) || command.contains("sos") || command.contains("help") || command.contains(AppLocalizations.of(context)!.voiceKeywordHelp)) {
-      responseText = AppLocalizations.of(context)!.voiceRespSos;
-      _triggerSOSFlow();
-    } else if (command.contains(AppLocalizations.of(context)!.voiceKeywordHome) || command.contains("home") || command.contains(AppLocalizations.of(context)!.voiceKeywordDashboard)) {
-      targetIndex = 0;
-      responseText = AppLocalizations.of(context)!.voiceRespHome;
-    } else {
-      responseText = AppLocalizations.of(context)!.voiceRespFallback;
+    if (vital != null) {
+      final v = vital;
+      _saveVitalReading(v['type']!, v['value']!);
+      String label = _vitalTypeLabel(v['type']!);
+      setState(() {
+        _voiceSavedMessage = '$label: ${v['value']} ${l.readingSavedLabel}';
+        _voiceTranscript = command;
+      });
+      // Get AI comment on the vital
+      String? aiComment = await OpenRouterService.chat(
+        'Mera ${v['type']} ${v['value']} hai. Kya ye normal hai?',
+        healthContext: _buildHealthContext(),
+        languageCode: _getLangCode(),
+      );
+      if (aiComment != null && mounted) {
+        setState(() {
+          _assistantState = 'closing';
+          _chatHistory.add({'role': 'ai', 'text': aiComment});
+        });
+        await _safeSpeak(aiComment);
+      } else {
+        setState(() {
+          _assistantState = 'closing';
+        });
+      }
+      _closeVoiceAfterDelay();
+      return;
     }
 
+    // 3. Turn-Based Flow Check
+    if (_assistantState == 'greeting' || _assistantState == 'waitingForHealthStatus') {
+      // User is responding to how their health is
+      bool isFeelingBad = lowerCmd.contains('pain') || lowerCmd.contains('bad') || lowerCmd.contains('not well') || 
+                          lowerCmd.contains('sick') || lowerCmd.contains('fever') || lowerCmd.contains('unwell') ||
+                          lowerCmd.contains('ill') || lowerCmd.contains('headache') || lowerCmd.contains('ache') ||
+                          lowerCmd.contains('hurt') || lowerCmd.contains('दर्द') || lowerCmd.contains('ठीक नहीं') ||
+                          lowerCmd.contains('तबीयत खराब') || lowerCmd.contains('बुखार') || lowerCmd.contains('परेशानी') ||
+                          lowerCmd.contains('तकलीफ') || lowerCmd.contains('अस्वस्थ') || lowerCmd.contains('बीमार') ||
+                          lowerCmd.contains('खराब');
+
+      String reply = "";
+      if (_getLangCode() == 'hi') {
+        reply = isFeelingBad
+            ? "मुझे सुनकर बहुत दुख हुआ। तो आपको आज किस प्रकार की सहायता चाहिए? क्या मैं डॉक्टर बुक करूँ या कोई और सहायता?"
+            : "यह सुनकर अच्छा लगा। तो आपको आज किस प्रकार की सहायता चाहिए?";
+      } else {
+        reply = isFeelingBad
+            ? "I'm very sorry to hear that. What kind of assistance do you need today? Should I book a doctor or help with something else?"
+            : "Glad to hear that! So what kind of assistance do you need today?";
+      }
+
+      setState(() {
+        _assistantState = 'waitingForAssistanceRequest';
+        _voicePromptText = reply;
+        _voiceTranscript = command;
+        _chatHistory.add({'role': 'ai', 'text': reply});
+      });
+
+      _speakAndListen(reply, 'waitingForAssistanceRequest');
+      return;
+    }
+
+    // 4. Assistance Request handling (waitingForAssistanceRequest or general chat turns)
+    // Check for emergency/SOS
+    if (lowerCmd.contains('sos') || lowerCmd.contains('emergency') || lowerCmd.contains('एसओएस') || lowerCmd.contains('आपातकाल') || lowerCmd.contains('आपातकालीन')) {
+      final sosReply = _getLangCode() == 'hi'
+          ? 'एसओएस आपातकालीन चेतावनी सक्रिय कर रहा हूँ। कृपया घबराएं नहीं।'
+          : 'Activating SOS emergency alert. Please do not panic.';
+      setState(() {
+        _assistantState = 'closing';
+        _voicePromptText = sosReply;
+        _voiceTranscript = command;
+      });
+      await _safeSpeak(sosReply);
+      _triggerSOSFlow();
+      return;
+    }
+
+    // Check for App Navigation / Access Commands
+    bool isNavAction = false;
+    String actionReply = "";
+    int targetIndex = _currentIndex;
+    Widget? screenToPush;
+
+    if (lowerCmd.contains('medicine') || lowerCmd.contains('dawai') || lowerCmd.contains('दवाई') || lowerCmd.contains('मेडिसिन') || lowerCmd.contains('दवा')) {
+      targetIndex = 3;
+      actionReply = _getLangCode() == 'hi'
+          ? 'दवाइयों की स्क्रीन पर जा रहा हूँ।'
+          : 'Navigating to your medicines screen.';
+      isNavAction = true;
+    } else if (lowerCmd.contains('vital') || lowerCmd.contains('विटल') || lowerCmd.contains('बीपी') || lowerCmd.contains('शुगर') || lowerCmd.contains('blood pressure') || lowerCmd.contains('sugar')) {
+      targetIndex = 1;
+      actionReply = _getLangCode() == 'hi'
+          ? 'स्वास्थ्य माप और रिपोर्ट की स्क्रीन पर जा रहा हूँ।'
+          : 'Navigating to your vitals and reports screen.';
+      isNavAction = true;
+    } else if (lowerCmd.contains('home') || lowerCmd.contains('dashboard') || lowerCmd.contains('मुख्य स्क्रीन') || lowerCmd.contains('होम') || lowerCmd.contains('डैशबोर्ड')) {
+      targetIndex = 0;
+      actionReply = _getLangCode() == 'hi'
+          ? 'मुख्य डैशबोर्ड पर वापस जा रहा हूँ।'
+          : 'Going back to the main dashboard.';
+      isNavAction = true;
+    } else if (lowerCmd.contains('doctor') || lowerCmd.contains('appointment') || lowerCmd.contains('डॉक्टर') || lowerCmd.contains('अपॉइंटमेंट')) {
+      actionReply = _getLangCode() == 'hi'
+          ? 'डॉक्टर अपॉइंटमेंट बुक करने की स्क्रीन खोल रहा हूँ।'
+          : 'Opening the doctor appointment booking screen.';
+      screenToPush = const ChooseDoctorScreen();
+      isNavAction = true;
+    } else if (lowerCmd.contains('record') || lowerCmd.contains('prescription') || lowerCmd.contains('medical record') || lowerCmd.contains('दस्तावेज़') || lowerCmd.contains('पर्चा') || lowerCmd.contains('प्रिस्क्रिप्शन')) {
+      actionReply = _getLangCode() == 'hi'
+          ? 'मेडिकल रिकॉर्ड्स और पर्चे खोल रहा हूँ।'
+          : 'Opening your medical records and prescriptions.';
+      screenToPush = const MedicalRecordsScreen();
+      isNavAction = true;
+    } else if (lowerCmd.contains('family') || lowerCmd.contains('member') || lowerCmd.contains('परिवार') || lowerCmd.contains('सदस्य')) {
+      actionReply = _getLangCode() == 'hi'
+          ? 'परिवार के सदस्यों की स्क्रीन खोल रहा हूँ।'
+          : 'Opening your family members screen.';
+      screenToPush = const FamilyScreen();
+      isNavAction = true;
+    } else if (lowerCmd.contains('report') || lowerCmd.contains('analyt') || lowerCmd.contains('स्वास्थ्य रिपोर्ट') || lowerCmd.contains('रिपोर्ट')) {
+      actionReply = _getLangCode() == 'hi'
+          ? 'स्वास्थ्य विश्लेषण रिपोर्ट खोल रहा हूँ।'
+          : 'Opening your health analysis report.';
+      screenToPush = const HealthReportScreen();
+      isNavAction = true;
+    } else if (lowerCmd.contains('tips') || lowerCmd.contains('सलाह') || lowerCmd.contains('सुझाव') || lowerCmd.contains('tip')) {
+      actionReply = _getLangCode() == 'hi'
+          ? 'स्वास्थ्य संबंधी टिप्स और सलाह खोल रहा हूँ।'
+          : 'Opening health tips and recommendations.';
+      screenToPush = const HealthTipsScreen();
+      isNavAction = true;
+    } else if (lowerCmd.contains('profile') || lowerCmd.contains('प्रोफाइल') || lowerCmd.contains('मेरी प्रोफाइल')) {
+      targetIndex = 4;
+      actionReply = _getLangCode() == 'hi'
+          ? 'आपकी प्रोफाइल स्क्रीन पर जा रहा हूँ।'
+          : 'Navigating to your profile screen.';
+      isNavAction = true;
+    }
+
+    if (isNavAction) {
+      setState(() {
+        _assistantState = 'closing';
+        _voicePromptText = actionReply;
+        _voiceTranscript = command;
+      });
+      await _safeSpeak(actionReply);
+      if (mounted) {
+        setState(() {
+          _currentIndex = targetIndex;
+        });
+        if (screenToPush != null) {
+          Navigator.of(context).push(MaterialPageRoute(builder: (_) => screenToPush!));
+        }
+      }
+      _closeVoiceAfterDelay();
+      return;
+    }
+
+    // 5. Fallback - General conversational reply using Gemini AI
     setState(() {
-      _voicePromptText = responseText;
-      _voiceTranscript = '"$command"';
-      _currentIndex = targetIndex;
+      _voiceSubText = _getLangCode() == 'hi' ? 'सोच रहा हूँ...' : 'Thinking...';
     });
 
-    _closeVoiceAfterDelay();
+    String? aiReply = await OpenRouterService.chat(
+      command,
+      healthContext: _buildHealthContext(),
+      languageCode: _getLangCode(),
+    );
+
+    if (!mounted) return;
+
+    if (aiReply != null) {
+      setState(() {
+        _voicePromptText = aiReply;
+        _voiceSubText = '';
+        _voiceTranscript = command;
+        _chatHistory.add({'role': 'ai', 'text': aiReply});
+      });
+      _speakAndListen(aiReply, 'waitingForAssistanceRequest');
+    } else {
+      final fallbackText = l.voiceRespFallback;
+      setState(() {
+        _voicePromptText = fallbackText;
+        _voiceTranscript = command;
+      });
+      _speakAndListen(fallbackText, 'waitingForAssistanceRequest');
+    }
   }
 
   void _triggerSOSFlow() {
@@ -476,10 +939,35 @@ class _MainShellState extends State<MainShell> {
         timer.cancel();
         setState(() {
           _isSosCountdownActive = false;
-          _isSosAlertSent = true;
         });
+        _sendSosAlerts();
       }
     });
+  }
+
+  Future<void> _sendSosAlerts() async {
+    final l = AppLocalizations.of(context)!;
+    final message = l.sosMessage;
+    int sentCount = 0;
+    for (final contact in _emergencyContacts) {
+      final phone = contact['phone'] ?? '';
+      if (phone.isNotEmpty) {
+        final cleaned = phone.replaceAll(RegExp(r'\s+'), '');
+        final uri = Uri.parse('sms:$cleaned?body=${Uri.encodeComponent(message)}');
+        try {
+          if (await canLaunchUrl(uri)) {
+            await launchUrl(uri);
+            sentCount++;
+          }
+        } catch (_) {}
+      }
+    }
+    if (mounted) {
+      setState(() {
+        _isSosAlertSent = true;
+        _sosSmsSentCount = sentCount;
+      });
+    }
   }
 
   void _cancelSOS() {
@@ -511,6 +999,18 @@ class _MainShellState extends State<MainShell> {
     });
   }
 
+  void _addEmergencyContact(String name, String phone) {
+    setState(() {
+      _emergencyContacts.add({'name': name, 'phone': phone});
+    });
+  }
+
+  void _removeEmergencyContact(int index) {
+    setState(() {
+      _emergencyContacts.removeAt(index);
+    });
+  }
+
   void _addNewMedicine(String name, String time, String dose, String instruction) {
     setState(() {
       _medicines.add({
@@ -536,6 +1036,7 @@ class _MainShellState extends State<MainShell> {
   @override
   void dispose() {
     _sosTimer?.cancel();
+    _tts.stop();
     super.dispose();
   }
 
@@ -544,6 +1045,19 @@ class _MainShellState extends State<MainShell> {
     context.watch<ThemeProvider>();
     final c = context.appColors;
     _initSampleData();
+
+    // Watch VitalsProvider for dynamic updates
+    final vitals = context.watch<VitalsProvider>();
+    final bpReadings = vitals.getReadingsByType('bp');
+    final sugarReadings = vitals.getReadingsByType('sugar');
+    final oxygenReadings = vitals.getReadingsByType('oxygen');
+    final tempReadings = vitals.getReadingsByType('temperature');
+
+    final String latestBp = bpReadings.isNotEmpty ? bpReadings.last.value : '120/80';
+    final String latestSugar = sugarReadings.isNotEmpty ? sugarReadings.last.value : '98';
+    final String latestOxygen = oxygenReadings.isNotEmpty ? oxygenReadings.last.value : '98%';
+    final String latestTemp = tempReadings.isNotEmpty ? tempReadings.last.value : '98.6°F';
+
     var nextMed = _medicines.isEmpty
         ? <String, dynamic>{}
         : _medicines.firstWhere((med) => med['isTaken'] == false, orElse: () => _medicines.first);
@@ -569,15 +1083,20 @@ class _MainShellState extends State<MainShell> {
           });
         },
         onOpenVitalDetail: (index) {
+          final types = [VitalType.bloodPressure, VitalType.bloodSugar, VitalType.oxygen, VitalType.temperature];
           Navigator.push(
             context,
             MaterialPageRoute(
               builder: (_) => VitalDetailScreen(
-                vitalType: VitalType.values[index],
+                vitalType: types[index],
               ),
             ),
           );
         },
+        latestBp: latestBp,
+        latestSugar: latestSugar,
+        latestOxygen: latestOxygen,
+        latestTemp: latestTemp,
       ),
       VitalsScreen(onBack: () {
         setState(() {
@@ -592,7 +1111,11 @@ class _MainShellState extends State<MainShell> {
         notificationCount: _unreadCount,
         onOpenNotifications: _openNotifications,
       ),
-      const ProfileScreen(),
+      ProfileScreen(
+        emergencyContacts: _emergencyContacts,
+        onAddContact: _addEmergencyContact,
+        onRemoveContact: _removeEmergencyContact,
+      ),
     ];
 
     return Scaffold(
@@ -635,7 +1158,7 @@ class _MainShellState extends State<MainShell> {
         children: [
           // Nav bar
           Container(
-            height: 74,
+            height: 82,
             decoration: BoxDecoration(
               color: cnv.cardBg.withValues(alpha: 0.95),
               borderRadius: BorderRadius.circular(32),
@@ -653,7 +1176,7 @@ class _MainShellState extends State<MainShell> {
               children: [
                 _buildNavItem(0, AppLocalizations.of(context)!.navHome, icon: Icons.home_rounded),
                 _buildNavItem(1, AppLocalizations.of(context)!.navVitals, icon: Icons.favorite_rounded),
-                const SizedBox(width: 68),
+                const SizedBox(width: 52),
                 _buildNavItem(
                   3,
                   AppLocalizations.of(context)!.navMedicines,
@@ -687,8 +1210,8 @@ class _MainShellState extends State<MainShell> {
       },
       borderRadius: BorderRadius.circular(12),
       child: SizedBox(
-        width: 52,
-        height: 60,
+        width: 60,
+        height: 64,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -700,6 +1223,7 @@ class _MainShellState extends State<MainShell> {
             const SizedBox(height: 4),
             Text(
               label,
+              overflow: TextOverflow.clip,
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w500,
@@ -776,7 +1300,7 @@ class _MainShellState extends State<MainShell> {
                       AppLocalizations.of(context)!.voiceAssistantTitle,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        fontFamily: 'Outfit',
+                        
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
                         color: c.secondaryText,
@@ -786,8 +1310,10 @@ class _MainShellState extends State<MainShell> {
                   IconButton(
                     icon: Icon(Icons.close_rounded, color: c.tertiaryText),
                     onPressed: () {
-                      if (_isListening) _speech.stop();
+                      _speech.stop();
+                      _tts.stop();
                       setState(() {
+                        _isListening = false;
                         _isVoiceAssistantActive = false;
                         _soundLevel = 0.0;
                       });
@@ -797,7 +1323,18 @@ class _MainShellState extends State<MainShell> {
               ),
               const SizedBox(height: 16),
               GestureDetector(
-                onTap: _isListening ? _stopListeningAndProcess : null,
+                onTap: _isListening
+                    ? _stopListeningAndProcess
+                    : () {
+                        _tts.stop();
+                        setState(() {
+                          _voiceSubText = _getLangCode() == 'hi'
+                              ? 'आपकी बात सुन रहा हूँ...'
+                              : 'Listening to you...';
+                          _voiceTranscript = '';
+                        });
+                        _initAndListen();
+                      },
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
@@ -944,34 +1481,102 @@ class _MainShellState extends State<MainShell> {
                 ],
               ),
               const SizedBox(height: 16),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                decoration: BoxDecoration(
-                  color: _voiceSavedMessage.isNotEmpty
-                      ? const Color(0xFFDCFCE7)
-                      : c.scaffoldBg,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  _voiceSavedMessage.isNotEmpty
-                      ? '$_voiceSavedMessage $_voiceTranscript'
-                      : (_voiceTranscript.isNotEmpty
-                          ? _voiceTranscript
-                          : AppLocalizations.of(context)!.voiceTranscript),
-                  maxLines: 3,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 15,
-                    color: _voiceSavedMessage.isNotEmpty
-                        ? const Color(0xFF16A34A)
-                        : const Color(0xFF7F56D9),
-                    fontWeight: FontWeight.w600,
-                    fontStyle: FontStyle.italic,
+              if (_chatHistory.isNotEmpty)
+                SizedBox(
+                  width: double.infinity,
+                  height: 120,
+                  child: ListView.builder(
+                    itemCount: _chatHistory.length,
+                    shrinkWrap: true,
+                    itemBuilder: (context, i) {
+                      final msg = _chatHistory[i];
+                      final isUser = msg['role'] == 'user';
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 6),
+                        child: Row(
+                          mainAxisAlignment: isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (!isUser) ...[
+                              Container(
+                                width: 22, height: 22,
+                                decoration: const BoxDecoration(
+                                  color: Color(0xFF7F56D9),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(Icons.auto_awesome_rounded, color: Colors.white, size: 12),
+                              ),
+                              const SizedBox(width: 6),
+                            ],
+                            Flexible(
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                decoration: BoxDecoration(
+                                  color: isUser ? const Color(0xFF7F56D9) : const Color(0xFFF2F4F7),
+                                  borderRadius: BorderRadius.only(
+                                    topLeft: const Radius.circular(12),
+                                    topRight: const Radius.circular(12),
+                                    bottomLeft: Radius.circular(isUser ? 12 : 4),
+                                    bottomRight: Radius.circular(isUser ? 4 : 12),
+                                  ),
+                                ),
+                                child: Text(
+                                  msg['text'] ?? '',
+                                  maxLines: 3,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: isUser ? Colors.white : const Color(0xFF344054),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            if (isUser) ...[
+                              const SizedBox(width: 6),
+                              Container(
+                                width: 22, height: 22,
+                                decoration: const BoxDecoration(
+                                  color: Color(0xFF9CA3AF),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(Icons.person_rounded, color: Colors.white, size: 14),
+                              ),
+                            ],
+                          ],
+                        ),
+                      );
+                    },
                   ),
-                  textAlign: TextAlign.center,
+                )
+              else
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: _voiceSavedMessage.isNotEmpty
+                        ? const Color(0xFFDCFCE7)
+                        : c.scaffoldBg,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    _voiceSavedMessage.isNotEmpty
+                        ? '$_voiceSavedMessage $_voiceTranscript'
+                        : (_voiceTranscript.isNotEmpty
+                            ? _voiceTranscript
+                            : AppLocalizations.of(context)!.voiceTranscript),
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: _voiceSavedMessage.isNotEmpty
+                          ? const Color(0xFF16A34A)
+                          : const Color(0xFF7F56D9),
+                      fontWeight: FontWeight.w600,
+                      fontStyle: FontStyle.italic,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
                 ),
-              ),
               const SizedBox(height: 10),
             ],
           ),
@@ -1032,7 +1637,7 @@ class _MainShellState extends State<MainShell> {
                   child: Text(
                     '$_sosCountdownVal',
                     style: const TextStyle(
-                      fontFamily: 'Outfit',
+                      
                       color: Colors.white,
                       fontSize: 64,
                       fontWeight: FontWeight.w800,
@@ -1152,11 +1757,24 @@ class _MainShellState extends State<MainShell> {
                 ),
                 child: Column(
                   children: [
-                    _buildLogItem(AppLocalizations.of(context)!.sosSmsSent),
-                    const SizedBox(height: 10),
-                    _buildLogItem(AppLocalizations.of(context)!.sosCallingDoctor),
-                    const SizedBox(height: 10),
-                    _buildLogItem(AppLocalizations.of(context)!.sosLocationShared),
+                    _buildLogItem('SMS sent to $_sosSmsSentCount contact(s)'),
+                    if (_emergencyContacts.isNotEmpty)
+                      ..._emergencyContacts.map((c) => Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Row(
+                          children: [
+                            const SizedBox(width: 16),
+                            Icon(Icons.check_circle_outline, size: 14, color: const Color(0xFF12B76A)),
+                            const SizedBox(width: 6),
+                            Expanded(
+                              child: Text(
+                                '${c['name']} (${c['phone']})',
+                                style: const TextStyle(fontSize: 12, color: Color(0xFF475467)),
+                              ),
+                            ),
+                          ],
+                        ),
+                      )),
                   ],
                 ),
               ),

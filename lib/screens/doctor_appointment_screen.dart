@@ -561,6 +561,7 @@ class ChooseDoctorScreen extends StatefulWidget {
 
 class _ChooseDoctorScreenState extends State<ChooseDoctorScreen> {
   final _searchController = TextEditingController();
+  final _searchFocusNode = FocusNode();
   late List<Doctor> _allDoctors;
   late List<Specialty> _specialties;
   late List<Doctor> _filteredDoctors;
@@ -579,9 +580,41 @@ class _ChooseDoctorScreenState extends State<ChooseDoctorScreen> {
     }
   }
 
+  void _showAllSpecialties(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text(AppLocalizations.of(context)!.bySpecialty),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: ListView.builder(
+            shrinkWrap: true,
+            itemCount: _specialties.length,
+            itemBuilder: (_, i) => ListTile(
+              leading: Container(
+                width: 40, height: 40,
+                decoration: BoxDecoration(color: _specialties[i].color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)),
+                child: Icon(_specialties[i].icon, color: _specialties[i].color, size: 20),
+              ),
+              title: Text(_specialties[i].displayName),
+              subtitle: Text(AppLocalizations.of(context)!.doctorCount(_allDoctors.where((d) => d.specialization.contains(_specialties[i].name)).length)),
+              onTap: () {
+                Navigator.pop(ctx);
+                _filterBySpecialty(i);
+              },
+            ),
+          ),
+        ),
+        actions: [TextButton(onPressed: () => Navigator.pop(ctx), child: Text(AppLocalizations.of(context)!.close))],
+      ),
+    );
+  }
+
   @override
   void dispose() {
     _searchController.dispose();
+    _searchFocusNode.dispose();
     super.dispose();
   }
 
@@ -626,158 +659,167 @@ class _ChooseDoctorScreenState extends State<ChooseDoctorScreen> {
         actions: [
           IconButton(
             icon: Icon(Icons.search_rounded, color: c.primaryText, size: 24),
-            onPressed: () {},
+            onPressed: () => _searchFocusNode.requestFocus(),
           ),
         ],
       ),
-      body: Column(
-        children: [
-          // Banner
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-            child: Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Color(0xFF7F56D9), Color(0xFF53389E)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+      body: CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF7F56D9), Color(0xFF53389E)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(24),
                 ),
-                borderRadius: BorderRadius.circular(24),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            AppLocalizations.of(context)!.bannerTitle,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w800,
+                              height: 1.3,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            AppLocalizations.of(context)!.bannerSubtitle,
+                            style: const TextStyle(
+                              color: Colors.white70,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                              height: 1.3,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    const _DoctorAvatar(
+                      initials: 'RS',
+                      imageUrl: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&w=256&q=80',
+                      size: 90,
+                    ),
+                  ],
+                ),
               ),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: TextField(
+                controller: _searchController,
+                focusNode: _searchFocusNode,
+                onChanged: _onSearch,
+                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15, color: c.primaryText),
+                decoration: InputDecoration(
+                  hintText: AppLocalizations.of(context)!.searchDoctorHint,
+                  hintStyle: TextStyle(color: c.tertiaryText, fontWeight: FontWeight.normal),
+                  prefixIcon: Icon(Icons.search_rounded, color: c.tertiaryText, size: 22),
+                  suffixIcon: const Icon(Icons.tune_rounded, color: Color(0xFF7F56D9), size: 22),
+                  filled: true,
+                  fillColor: c.cardBg,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide(color: c.divider, width: 1.5),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide(color: c.divider, width: 1.5),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: const BorderSide(color: Color(0xFF7F56D9), width: 2),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
               child: Row(
                 children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          AppLocalizations.of(context)!.bannerTitle,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.w800,
-                            height: 1.3,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          AppLocalizations.of(context)!.bannerSubtitle,
-                          style: const TextStyle(
-                            color: Colors.white70,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                            height: 1.3,
-                          ),
-                        ),
-                      ],
-                    ),
+                  Text(
+                    AppLocalizations.of(context)!.bySpecialty,
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: c.primaryText),
                   ),
-                  const SizedBox(width: 12),
-                  const _DoctorAvatar(
-                    initials: 'RS',
-                    imageUrl: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&w=256&q=80',
-                    size: 90,
+                  const Spacer(),
+                  GestureDetector(
+                    onTap: () => _showAllSpecialties(context),
+                    child: Text(
+                      AppLocalizations.of(context)!.seeAllGt,
+                      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF7F56D9)),
+                    ),
                   ),
                 ],
               ),
             ),
           ),
-          // Search
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: TextField(
-              controller: _searchController,
-              onChanged: _onSearch,
-              style: TextStyle(fontFamily: 'Outfit', fontWeight: FontWeight.w600, fontSize: 15, color: c.primaryText),
-              decoration: InputDecoration(
-                hintText: AppLocalizations.of(context)!.searchDoctorHint,
-                hintStyle: TextStyle(fontFamily: 'Outfit', color: c.tertiaryText, fontWeight: FontWeight.normal),
-                prefixIcon: Icon(Icons.search_rounded, color: c.tertiaryText, size: 22),
-                suffixIcon: const Icon(Icons.tune_rounded, color: Color(0xFF7F56D9), size: 22),
-                filled: true,
-                fillColor: c.cardBg,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16),
-                  borderSide: BorderSide(color: c.divider, width: 1.5),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16),
-                  borderSide: BorderSide(color: c.divider, width: 1.5),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16),
-                  borderSide: const BorderSide(color: Color(0xFF7F56D9), width: 2),
-                ),
+          SliverToBoxAdapter(
+            child: SizedBox(
+              height: 104,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                itemCount: _specialties.length,
+                separatorBuilder: (context, index) => const SizedBox(width: 10),
+                itemBuilder: (_, i) => _buildSpecialtyCard(i),
               ),
             ),
           ),
-          // Specialty Header
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-            child: Row(
-              children: [
-                Text(
-                  AppLocalizations.of(context)!.bySpecialty,
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: c.primaryText),
-                ),
-                const Spacer(),
-                GestureDetector(
-                  onTap: () {},
-                  child: Text(
-                    AppLocalizations.of(context)!.seeAllGt,
-                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF7F56D9)),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Row(
+                children: [
+                  Text(
+                    AppLocalizations.of(context)!.popularDoctors,
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: c.primaryText),
                   ),
-                ),
-              ],
+                  const Spacer(),
+                  Text(
+                    AppLocalizations.of(context)!.doctorCount('${_filteredDoctors.length}'),
+                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: c.secondaryText),
+                  ),
+                ],
+              ),
             ),
           ),
-          // Specialty Categories
-          SizedBox(
-            height: 104,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              itemCount: _specialties.length,
-              separatorBuilder: (context, index) => const SizedBox(width: 10),
-              itemBuilder: (_, i) => _buildSpecialtyCard(i),
-            ),
-          ),
-          const SizedBox(height: 8),
-          // Doctor List Header
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Row(
-              children: [
-                Text(
-                  AppLocalizations.of(context)!.popularDoctors,
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: c.primaryText),
-                ),
-                const Spacer(),
-                Text(
-                  AppLocalizations.of(context)!.doctorCount('${_filteredDoctors.length}'),
-                  style: TextStyle(fontFamily: 'Outfit', fontSize: 13, fontWeight: FontWeight.w600, color: c.secondaryText),
-                ),
-              ],
-            ),
-          ),
-          // Doctor List
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              itemCount: _filteredDoctors.length,
-              itemBuilder: (_, i) => _DoctorCard(
-                doctor: _filteredDoctors[i],
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => SelectDateTimeScreen(doctor: _filteredDoctors[i]),
+          SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, i) => Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: _DoctorCard(
+                  doctor: _filteredDoctors[i],
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => SelectDateTimeScreen(doctor: _filteredDoctors[i]),
+                    ),
                   ),
                 ),
               ),
+              childCount: _filteredDoctors.length,
             ),
+          ),
+          SliverToBoxAdapter(
+            child: SizedBox(height: 24),
           ),
         ],
       ),
@@ -805,14 +847,14 @@ class _ChooseDoctorScreenState extends State<ChooseDoctorScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              width: 38, height: 38,
-              decoration: BoxDecoration(
-                color: isSelected ? Colors.white.withValues(alpha: 0.2) : s.bgColor,
-                shape: BoxShape.circle,
-              ),
-              child: Icon(s.icon, color: isSelected ? Colors.white : s.color, size: 20),
-            ),
+                  Container(
+                    width: 38, height: 38,
+                    decoration: BoxDecoration(
+                      color: isSelected ? Colors.white.withValues(alpha: 0.2) : (Theme.of(context).brightness == Brightness.dark ? c.cardBg : s.bgColor),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(s.icon, color: isSelected ? Colors.white : s.color, size: 20),
+                  ),
             const SizedBox(height: 6),
             Text(
               s.displayName,
@@ -919,14 +961,24 @@ class _DoctorCardState extends State<_DoctorCard>
                         const SizedBox(width: 4),
                         Text(
                           '${widget.doctor.rating} (${widget.doctor.reviewCount})',
-                          style: TextStyle(fontFamily: 'Outfit', fontSize: 13, fontWeight: FontWeight.w800, color: c.primaryText),
+                          style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: c.primaryText),
                         ),
-                        const SizedBox(width: 12),
-                        Icon(Icons.business_center_rounded, size: 14, color: c.secondaryText),
-                        const SizedBox(width: 4),
-                        Text(
-                          widget.doctor.experience,
-                          style: TextStyle(fontFamily: 'Outfit', fontSize: 13, fontWeight: FontWeight.w500, color: c.secondaryText),
+                        const SizedBox(width: 8),
+                        Flexible(
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.business_center_rounded, size: 14, color: c.secondaryText),
+                              const SizedBox(width: 4),
+                              Flexible(
+                                child: Text(
+                                  widget.doctor.experience,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: c.secondaryText),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
@@ -935,8 +987,8 @@ class _DoctorCardState extends State<_DoctorCard>
               ),
               Container(
                 width: 32, height: 32,
-                decoration: const BoxDecoration(
-                  color: Color(0xFFF9F5FF),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).brightness == Brightness.dark ? c.scaffoldBg : const Color(0xFFF9F5FF),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(Icons.chevron_right_rounded, color: Color(0xFF7F56D9), size: 20),
@@ -1084,7 +1136,7 @@ class _SelectDateTimeScreenState extends State<SelectDateTimeScreen> {
                             Text(
                               '${d.day}',
                               style: TextStyle(
-                                fontFamily: 'Outfit', fontSize: 20, fontWeight: FontWeight.w800,
+                                fontSize: 20, fontWeight: FontWeight.w800,
                                 color: isSelected ? Colors.white : c.primaryText,
                               ),
                             ),
@@ -1142,7 +1194,7 @@ class _SelectDateTimeScreenState extends State<SelectDateTimeScreen> {
                                       child: Text(
                                         _timeSlots[row * 3 + col],
                                         style: TextStyle(
-                                          fontFamily: 'Outfit', fontSize: 14, fontWeight: FontWeight.w800,
+                                          fontSize: 14, fontWeight: FontWeight.w800,
                                           color: _selectedTime == _timeSlots[row * 3 + col] ? Colors.white : c.primaryText,
                                         ),
                                       ),
@@ -1184,8 +1236,8 @@ class _SelectDateTimeScreenState extends State<SelectDateTimeScreen> {
                           children: [
                             Container(
                               width: 32, height: 32,
-                              decoration: const BoxDecoration(
-                                color: Color(0xFFF9F5FF),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).brightness == Brightness.dark ? c.scaffoldBg : const Color(0xFFF9F5FF),
                                 shape: BoxShape.circle,
                               ),
                               child: const Icon(Icons.access_time_rounded, color: Color(0xFF7F56D9), size: 18),
@@ -1220,8 +1272,8 @@ class _SelectDateTimeScreenState extends State<SelectDateTimeScreen> {
                           children: [
                             Container(
                               width: 32, height: 32,
-                              decoration: const BoxDecoration(
-                                color: Color(0xFFF9F5FF),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).brightness == Brightness.dark ? c.scaffoldBg : const Color(0xFFF9F5FF),
                                 shape: BoxShape.circle,
                               ),
                               child: const Icon(Icons.currency_rupee_rounded, color: Color(0xFF7F56D9), size: 18),
@@ -1444,7 +1496,7 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> {
     return TextField(
       controller: controller,
       keyboardType: keyboardType,
-      style: TextStyle(fontFamily: 'Outfit', fontWeight: FontWeight.w700, fontSize: 15, color: c.primaryText),
+      style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15, color: c.primaryText),
       decoration: InputDecoration(
         prefixIcon: Icon(prefixIcon, color: c.tertiaryText, size: 20),
         filled: true,
@@ -1577,7 +1629,7 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> {
                 TextField(
                   controller: _symptomsController,
                   maxLines: 4,
-                  style: TextStyle(fontFamily: 'Outfit', fontWeight: FontWeight.w700, fontSize: 14, color: c.primaryText),
+                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: c.primaryText),
                   decoration: InputDecoration(
                     filled: true,
                     fillColor: c.cardBg,

@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:meditrack/l10n/app_localizations.dart';
 import 'package:meditrack/theme/app_theme.dart';
+import 'package:meditrack/providers/vitals_provider.dart';
+import 'package:meditrack/providers/profile_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:meditrack/services/pdf_export_service.dart';
+import 'package:intl/intl.dart';
 
 class MedicalRecordsScreen extends StatefulWidget {
   const MedicalRecordsScreen({super.key});
@@ -158,7 +164,7 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(value, style: TextStyle(fontFamily: 'Outfit', fontSize: 16, fontWeight: FontWeight.w800, color: c.primaryText)),
+                Text(value, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: c.primaryText)),
                 Text(label, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: c.secondaryText)),
               ],
             ),
@@ -355,15 +361,34 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
                 ),
                 IconButton(
                   icon: const Icon(Icons.download_rounded, color: Color(0xFF7F56D9)),
-                  onPressed: () {
+                  onPressed: () async {
                     Navigator.pop(ctx);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(AppLocalizations.of(ctx)!.reportDownloading),
-                        backgroundColor: const Color(0xFF7F56D9),
-                        behavior: SnackBarBehavior.floating,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      ),
+                    final l = AppLocalizations.of(context)!;
+                    final profile = context.read<ProfileProvider>();
+                    final vitals = context.read<VitalsProvider>().readings;
+                    final now = DateTime.now();
+                    final dateStr = DateFormat('dd/MM/yyyy').format(now);
+                    final pdfBytes = await PdfExportService.generateHealthReport(
+                      patientName: profile.name.isNotEmpty ? profile.name : l.userName,
+                      patientId: l.profileId,
+                      patientDob: l.userDob,
+                      patientGender: l.userGender,
+                      patientBloodGroup: l.userBloodGroup,
+                      patientMobile: l.userMobile,
+                      patientEmail: l.userEmail,
+                      patientAddress: l.userAddress,
+                      conditions: [l.condHypertension, l.condDiabetes, l.condArthritis],
+                      allergies: [l.allergyDust, l.allergyPenicillin],
+                      medicines: [
+                        {'name': l.medAmlodipine, 'dose': l.medAmlodipineDose, 'time': '08:00 AM', 'instruction': l.instAfterBreakfast},
+                        {'name': l.medMetformin, 'dose': l.dose1Pill, 'time': '01:00 PM', 'instruction': l.instAfterLunch},
+                      ],
+                      vitals: vitals,
+                      generatedDate: dateStr,
+                    );
+                    final file = await PdfExportService.saveToTempFile(pdfBytes, 'MediTrack_Report_$dateStr.pdf');
+                    await SharePlus.instance.share(
+                      ShareParams(files: [XFile(file.path)]),
                     );
                   },
                 ),

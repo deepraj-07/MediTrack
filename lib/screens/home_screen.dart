@@ -1,7 +1,10 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'package:meditrack/l10n/app_localizations.dart';
+import 'package:meditrack/providers/profile_provider.dart';
 import 'package:meditrack/theme/app_theme.dart';
 import 'doctor_appointment_screen.dart';
 import 'medical_records_screen.dart';
@@ -21,6 +24,10 @@ class HomeScreen extends StatelessWidget {
   final int medicineTotalCount;
   final int notificationCount;
   final VoidCallback onOpenNotifications;
+  final String latestBp;
+  final String latestSugar;
+  final String latestOxygen;
+  final String latestTemp;
 
   const HomeScreen({
     super.key,
@@ -35,6 +42,10 @@ class HomeScreen extends StatelessWidget {
     required this.medicineTotalCount,
     required this.notificationCount,
     required this.onOpenNotifications,
+    required this.latestBp,
+    required this.latestSugar,
+    required this.latestOxygen,
+    required this.latestTemp,
   });
 
   @override
@@ -79,7 +90,7 @@ class HomeScreen extends StatelessWidget {
                             AppLocalizations.of(context)!.appTitle,
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
-                              fontFamily: 'Outfit',
+
                               fontSize: 24,
                               fontWeight: FontWeight.w700,
                               letterSpacing: -0.5,
@@ -183,6 +194,9 @@ class HomeScreen extends StatelessWidget {
   // Header Greeting Section
   Widget _buildGreetingHeader(BuildContext context) {
     final c = context.appColors;
+    final profile = context.watch<ProfileProvider>();
+    final imagePath = profile.imagePath;
+    final name = profile.name.isNotEmpty ? profile.name : AppLocalizations.of(context)!.userName;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Row(
@@ -200,9 +214,11 @@ class HomeScreen extends StatelessWidget {
                 ),
               ],
             ),
-            child: const CircleAvatar(
+            child: CircleAvatar(
               radius: 30,
-              backgroundImage: AssetImage('assets/images/avatar.png'),
+              backgroundImage: imagePath != null
+                  ? FileImage(File(imagePath)) as ImageProvider
+                  : const AssetImage('assets/images/avatar.png'),
             ),
           ),
           const SizedBox(width: 14),
@@ -217,7 +233,7 @@ class HomeScreen extends StatelessWidget {
                   child: Row(
                     children: [
                       Text(
-                        AppLocalizations.of(context)!.greeting,
+                        '${AppLocalizations.of(context)!.greeting.split(' ')[0]} $name',
                         style: TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.w800,
@@ -245,39 +261,6 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
           
-          // Profile Tag Button (Matches mockup purple tag background)
-          InkWell(
-            onTap: () => onNavigate(4),
-            borderRadius: BorderRadius.circular(16),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: const Color(0xFF7F56D9),
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xFF7F56D9).withValues(alpha: 0.15),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.person_add_rounded, size: 14, color: Colors.white),
-                  const SizedBox(width: 4),
-                  Text(
-                    AppLocalizations.of(context)!.profile,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
         ],
       ),
     );
@@ -405,7 +388,7 @@ class HomeScreen extends StatelessWidget {
                 width: 36,
                 height: 36,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFFF0F2),
+                  color: c.border,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: const Center(
@@ -455,7 +438,7 @@ class HomeScreen extends StatelessWidget {
               _buildVitalCard(
                 context: context,
                 title: AppLocalizations.of(context)!.bp,
-                value: '120/80',
+                value: latestBp,
                 unit: AppLocalizations.of(context)!.unitMmhg,
                 leadingWidget: const HeartPulseIcon(
                   color: Color(0xFFF43F5E),
@@ -469,7 +452,7 @@ class HomeScreen extends StatelessWidget {
               _buildVitalCard(
                 context: context,
                 title: AppLocalizations.of(context)!.sugar,
-                value: '98',
+                value: latestSugar,
                 unit: AppLocalizations.of(context)!.unitMgdl,
                 leadingWidget: const Icon(
                   Icons.water_drop_rounded,
@@ -484,7 +467,7 @@ class HomeScreen extends StatelessWidget {
               _buildVitalCard(
                 context: context,
                 title: AppLocalizations.of(context)!.oxygen,
-                value: '98%',
+                value: latestOxygen,
                 leadingWidget: RichText(
                   text: TextSpan(
                     children: [
@@ -515,7 +498,7 @@ class HomeScreen extends StatelessWidget {
               _buildVitalCard(
                 context: context,
                 title: AppLocalizations.of(context)!.temperature,
-                value: '98.6°F',
+                value: latestTemp,
                 leadingWidget: const Icon(
                   Icons.thermostat_rounded,
                   color: Color(0xFFF97316),
@@ -543,6 +526,11 @@ class HomeScreen extends StatelessWidget {
     required VoidCallback onTap,
   }) {
     final c = context.appColors;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg = isDark ? c.cardBg : bgColor;
+    final cardBorder = isDark ? c.border : borderColor;
+    final badgeBg = isDark ? const Color(0xFF1A3A2A) : const Color(0xFFE6F7ED);
+    final badgeColor = isDark ? const Color(0xFF4ADE80) : const Color(0xFF12B76A);
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(20),
@@ -551,9 +539,9 @@ class HomeScreen extends StatelessWidget {
         height: 136,
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
         decoration: BoxDecoration(
-          color: bgColor,
+          color: cardBg,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: borderColor, width: 1.5),
+          border: Border.all(color: cardBorder, width: 1.5),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -642,7 +630,7 @@ class HomeScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: const Color(0xFFE6F7ED),
+                color: badgeBg,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: FittedBox(
@@ -653,18 +641,18 @@ class HomeScreen extends StatelessWidget {
                     Container(
                       width: 6,
                       height: 6,
-                      decoration: const BoxDecoration(
-                        color: Color(0xFF12B76A),
+                      decoration: BoxDecoration(
+                        color: badgeColor,
                         shape: BoxShape.circle,
                       ),
                     ),
                     const SizedBox(width: 4),
                     Text(
                       AppLocalizations.of(context)!.normal,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w800,
-                        color: Color(0xFF12B76A),
+                        color: badgeColor,
                       ),
                     ),
                   ],
@@ -717,7 +705,7 @@ class HomeScreen extends StatelessWidget {
                     Text(
                       nextMedicine['time'] ?? AppLocalizations.of(context)!.medicineDefaultTime,
                       style: const TextStyle(
-                        fontFamily: 'Outfit',
+                        
                         fontSize: 15,
                         fontWeight: FontWeight.w800,
                         color: Color(0xFF12B76A),
@@ -750,7 +738,7 @@ class HomeScreen extends StatelessWidget {
                           Text(
                             nextMedicine['name'] ?? AppLocalizations.of(context)!.medicineDefaultName,
                             style: TextStyle(
-                              fontFamily: 'Outfit',
+
                               fontSize: 18,
                               fontWeight: FontWeight.w800,
                               color: c.primaryText,
@@ -831,7 +819,7 @@ class HomeScreen extends StatelessWidget {
                       child: Text(
                         AppLocalizations.of(context)!.medicineProgress(medicineTakenCount.toString(), medicineTotalCount.toString()),
                         style: TextStyle(
-                          fontFamily: 'Outfit',
+                          
                           fontSize: 15,
                           fontWeight: FontWeight.w600,
                           color: c.primaryText,
@@ -847,7 +835,7 @@ class HomeScreen extends StatelessWidget {
                       child: Text(
                         '${(medicineTakenCount / medicineTotalCount * 100).round()}%',
                         style: const TextStyle(
-                          fontFamily: 'Outfit',
+                          
                           fontSize: 13,
                           fontWeight: FontWeight.w800,
                           color: Colors.white,
@@ -872,9 +860,9 @@ class HomeScreen extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         decoration: BoxDecoration(
-          color: const Color(0xFFFEF3F2),
+          color: c.cardBg,
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: const Color(0xFFFEE2E2)),
+          border: Border.all(color: c.border),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.02),
@@ -941,7 +929,7 @@ class HomeScreen extends StatelessWidget {
                     Text(
                       AppLocalizations.of(context)!.sosButton,
                       style: const TextStyle(
-                        fontFamily: 'Outfit',
+                        
                         color: Colors.white,
                         fontSize: 16,
                         fontWeight: FontWeight.w800,
@@ -1179,7 +1167,7 @@ class _QuickAccessCardState extends State<_QuickAccessCard>
                     width: 24,
                     height: 24,
                     decoration: BoxDecoration(
-                      color: widget.item.chevronBgColor,
+                      color: Theme.of(context).brightness == Brightness.dark ? c.scaffoldBg : widget.item.chevronBgColor,
                       shape: BoxShape.circle,
                     ),
                     child: Center(

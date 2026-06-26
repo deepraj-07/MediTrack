@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:meditrack/l10n/app_localizations.dart';
 import 'package:meditrack/providers/vitals_provider.dart';
 import 'package:meditrack/theme/app_theme.dart';
+import 'package:meditrack/models/vital_reading.dart';
 
 class VitalsScreen extends StatefulWidget {
   final VoidCallback onBack;
@@ -55,10 +56,125 @@ class _VitalsScreenState extends State<VitalsScreen> {
     'year': [98.5, 98.6, 98.4, 98.7, 98.6, 98.6],
   };
 
+  List<double> _getDynamicDataPoints(String type, List<VitalReading> liveReadings, List<double> staticBaseline) {
+    if (liveReadings.isEmpty) return staticBaseline;
+
+    List<double> points = List.from(staticBaseline);
+    for (final r in liveReadings) {
+      double? val;
+      if (type == 'bp') {
+        final parts = r.value.split('/');
+        if (parts.isNotEmpty) {
+          val = double.tryParse(parts[0].trim());
+        }
+      } else if (type == 'sugar') {
+        val = double.tryParse(r.value.trim());
+      } else if (type == 'oxygen') {
+        val = double.tryParse(r.value.replaceAll('%', '').trim());
+      } else if (type == 'temperature') {
+        val = double.tryParse(r.value.replaceAll('°F', '').trim());
+      }
+
+      if (val != null) {
+        points.add(val);
+      }
+    }
+
+    final int maxPoints = staticBaseline.length;
+    if (points.length > maxPoints) {
+      points = points.sublist(points.length - maxPoints);
+    }
+
+    return points;
+  }
+
+  String _calculateAverage(String type, List<VitalReading> liveReadings, List<double> staticBaseline, String unit) {
+    if (type == 'bp') {
+      List<double> sysList = [];
+      List<double> diaList = [];
+      
+      if (liveReadings.isNotEmpty) {
+        for (final r in liveReadings) {
+          final parts = r.value.split('/');
+          if (parts.length >= 2) {
+            final sys = double.tryParse(parts[0].trim());
+            final dia = double.tryParse(parts[1].trim());
+            if (sys != null && dia != null) {
+              sysList.add(sys);
+              diaList.add(dia);
+            }
+          } else if (parts.isNotEmpty) {
+            final sys = double.tryParse(parts[0].trim());
+            if (sys != null) sysList.add(sys);
+          }
+        }
+      }
+      
+      if (sysList.isEmpty) {
+        sysList = List.from(staticBaseline);
+        diaList = List.filled(staticBaseline.length, 80.0);
+      }
+      
+      final double sysAvg = sysList.reduce((a, b) => a + b) / sysList.length;
+      final double diaAvg = diaList.isNotEmpty ? (diaList.reduce((a, b) => a + b) / diaList.length) : 80.0;
+      return '${sysAvg.toStringAsFixed(0)}/${diaAvg.toStringAsFixed(0)}';
+    } else {
+      List<double> values = [];
+      if (liveReadings.isNotEmpty) {
+        for (final r in liveReadings) {
+          double? val;
+          if (type == 'sugar') {
+            val = double.tryParse(r.value.trim());
+          } else if (type == 'oxygen') {
+            val = double.tryParse(r.value.replaceAll('%', '').trim());
+          } else if (type == 'temperature') {
+            val = double.tryParse(r.value.replaceAll('°F', '').trim());
+          }
+          if (val != null) values.add(val);
+        }
+      }
+      
+      if (values.isEmpty) {
+        values = List.from(staticBaseline);
+      }
+      
+      final double avg = values.reduce((a, b) => a + b) / values.length;
+      if (type == 'temperature') {
+        return '${avg.toStringAsFixed(1)}°F';
+      } else if (type == 'oxygen') {
+        return '${avg.toStringAsFixed(1)}%';
+      } else {
+        return avg.toStringAsFixed(0);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final c = context.appColors;
     List<String> xLabels = _labelsMap[_selectedPeriod]!;
+
+    // Watch VitalsProvider for dynamic readings
+    final vitalsProvider = context.watch<VitalsProvider>();
+    final bpReadings = vitalsProvider.getReadingsByType('bp');
+    final sugarReadings = vitalsProvider.getReadingsByType('sugar');
+    final oxygenReadings = vitalsProvider.getReadingsByType('oxygen');
+    final tempReadings = vitalsProvider.getReadingsByType('temperature');
+
+    final String latestBp = bpReadings.isNotEmpty ? bpReadings.last.value : '120/80';
+    final String latestSugar = sugarReadings.isNotEmpty ? sugarReadings.last.value : '98';
+    final String latestOxygen = oxygenReadings.isNotEmpty ? oxygenReadings.last.value : '98%';
+    final String latestTemp = tempReadings.isNotEmpty ? tempReadings.last.value : '98.6°F';
+
+    final List<double> bpPoints = _getDynamicDataPoints('bp', bpReadings, _bpData[_selectedPeriod]!);
+    final List<double> sugarPoints = _getDynamicDataPoints('sugar', sugarReadings, _sugarData[_selectedPeriod]!);
+    final List<double> oxygenPoints = _getDynamicDataPoints('oxygen', oxygenReadings, _oxygenData[_selectedPeriod]!);
+    final List<double> tempPoints = _getDynamicDataPoints('temperature', tempReadings, _tempData[_selectedPeriod]!);
+
+    final String bpAvg = _calculateAverage('bp', bpReadings, _bpData[_selectedPeriod]!, AppLocalizations.of(context)!.unitMmhg);
+    final String sugarAvg = _calculateAverage('sugar', sugarReadings, _sugarData[_selectedPeriod]!, AppLocalizations.of(context)!.unitMgdl);
+    final String oxygenAvg = _calculateAverage('oxygen', oxygenReadings, _oxygenData[_selectedPeriod]!, '');
+    final String tempAvg = _calculateAverage('temperature', tempReadings, _tempData[_selectedPeriod]!, '');
 
     return Scaffold(
       backgroundColor: c.scaffoldBg,
@@ -99,12 +215,13 @@ class _VitalsScreenState extends State<VitalsScreen> {
             // Vital Graph Card 1: BP
             _buildGraphCard(
               title: AppLocalizations.of(context)!.bpFull,
-              value: '120/80',
+              value: latestBp,
+              averageValue: bpAvg,
               unit: AppLocalizations.of(context)!.unitMmhg,
               emoji: '❤️',
               emojiBg: const Color(0xFFFFF0F2),
               lineColor: const Color(0xFFF43F5E),
-              dataPoints: _bpData[_selectedPeriod]!,
+              dataPoints: bpPoints,
               xLabels: xLabels,
               yMin: 60,
               yMax: 180,
@@ -115,12 +232,13 @@ class _VitalsScreenState extends State<VitalsScreen> {
             // Vital Graph Card 2: Sugar
             _buildGraphCard(
               title: AppLocalizations.of(context)!.sugarFull,
-              value: '98',
+              value: latestSugar,
+              averageValue: sugarAvg,
               unit: AppLocalizations.of(context)!.unitMgdl,
               emoji: '🩸',
               emojiBg: const Color(0xFFEBF5FF),
               lineColor: const Color(0xFF3B82F6),
-              dataPoints: _sugarData[_selectedPeriod]!,
+              dataPoints: sugarPoints,
               xLabels: xLabels,
               yMin: 70,
               yMax: 210,
@@ -131,12 +249,13 @@ class _VitalsScreenState extends State<VitalsScreen> {
             // Vital Graph Card 3: Oxygen SpO2
             _buildGraphCard(
               title: AppLocalizations.of(context)!.oxygenFull,
-              value: '98%',
+              value: latestOxygen,
+              averageValue: oxygenAvg,
               unit: '',
               emoji: '🫁',
               emojiBg: const Color(0xFFF3E8FF),
               lineColor: const Color(0xFF8B5CF6),
-              dataPoints: _oxygenData[_selectedPeriod]!,
+              dataPoints: oxygenPoints,
               xLabels: xLabels,
               yMin: 90,
               yMax: 100,
@@ -147,12 +266,13 @@ class _VitalsScreenState extends State<VitalsScreen> {
             // Vital Graph Card 4: Temp
             _buildGraphCard(
               title: AppLocalizations.of(context)!.temperatureFull,
-              value: '98.6°F',
+              value: latestTemp,
+              averageValue: tempAvg,
               unit: '',
               emoji: '🌡️',
               emojiBg: const Color(0xFFFFF4E5),
               lineColor: const Color(0xFFF97316),
-              dataPoints: _tempData[_selectedPeriod]!,
+              dataPoints: tempPoints,
               xLabels: xLabels,
               yMin: 95,
               yMax: 105,
@@ -303,6 +423,7 @@ class _VitalsScreenState extends State<VitalsScreen> {
   Widget _buildGraphCard({
     required String title,
     required String value,
+    required String averageValue,
     required String unit,
     required String emoji,
     required Color emojiBg,
@@ -369,7 +490,7 @@ class _VitalsScreenState extends State<VitalsScreen> {
                           Text(
                             value,
                             style: TextStyle(
-                              fontFamily: 'Outfit',
+
                               fontSize: 24,
                               fontWeight: FontWeight.w800,
                               color: c.primaryText,
@@ -380,7 +501,7 @@ class _VitalsScreenState extends State<VitalsScreen> {
                             Text(
                               unit,
                               style: TextStyle(
-                                fontFamily: 'Outfit',
+  
                                 fontSize: 13,
                                 fontWeight: FontWeight.w500,
                                 color: c.secondaryText,
@@ -388,6 +509,29 @@ class _VitalsScreenState extends State<VitalsScreen> {
                             ),
                           ],
                         ],
+                      ),
+                      const SizedBox(height: 4),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: lineColor.withValues(alpha: 0.08),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.analytics_rounded, size: 12, color: lineColor),
+                            const SizedBox(width: 4),
+                            Text(
+                              AppLocalizations.of(context)!.averageLabel(averageValue),
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w700,
+                                color: lineColor,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
@@ -492,7 +636,7 @@ class LineChartPainter extends CustomPainter {
       final textSpan = TextSpan(
         text: tagVal.toStringAsFixed(0),
         style: const TextStyle(
-          fontFamily: 'Outfit',
+          
           color: Color(0xFF98A2B3),
           fontSize: 9,
           fontWeight: FontWeight.bold,

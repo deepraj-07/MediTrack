@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:meditrack/l10n/app_localizations.dart';
 import 'package:meditrack/theme/app_theme.dart';
+import 'package:meditrack/providers/vitals_provider.dart';
+import 'package:meditrack/providers/profile_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:meditrack/services/pdf_export_service.dart';
+import 'package:intl/intl.dart';
 
 class HealthReportScreen extends StatelessWidget {
   const HealthReportScreen({super.key});
@@ -9,6 +15,18 @@ class HealthReportScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     final c = context.appColors;
+    
+    final vitals = context.watch<VitalsProvider>();
+    final bpReadings = vitals.getReadingsByType('bp');
+    final sugarReadings = vitals.getReadingsByType('sugar');
+    final oxygenReadings = vitals.getReadingsByType('oxygen');
+    final tempReadings = vitals.getReadingsByType('temperature');
+    
+    final String latestBp = bpReadings.isNotEmpty ? bpReadings.last.value : '120/80';
+    final String latestSugar = sugarReadings.isNotEmpty ? sugarReadings.last.value : '98';
+    final String latestOxygen = oxygenReadings.isNotEmpty ? oxygenReadings.last.value : '98%';
+    final String latestTemp = tempReadings.isNotEmpty ? tempReadings.last.value : '98.6°F';
+
     return Scaffold(
       backgroundColor: c.scaffoldBg,
       appBar: AppBar(
@@ -26,14 +44,33 @@ class HealthReportScreen extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.share_rounded, color: Color(0xFF7F56D9)),
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(l.reportShared),
-                  backgroundColor: const Color(0xFF7F56D9),
-                  behavior: SnackBarBehavior.floating,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                ),
+            onPressed: () async {
+              final l = AppLocalizations.of(context)!;
+              final profile = context.read<ProfileProvider>();
+              final vitals = context.read<VitalsProvider>().readings;
+              final now = DateTime.now();
+              final dateStr = DateFormat('dd/MM/yyyy').format(now);
+              final pdfBytes = await PdfExportService.generateHealthReport(
+                patientName: profile.name.isNotEmpty ? profile.name : l.userName,
+                patientId: l.profileId,
+                patientDob: l.userDob,
+                patientGender: l.userGender,
+                patientBloodGroup: l.userBloodGroup,
+                patientMobile: l.userMobile,
+                patientEmail: l.userEmail,
+                patientAddress: l.userAddress,
+                conditions: [l.condHypertension, l.condDiabetes, l.condArthritis],
+                allergies: [l.allergyDust, l.allergyPenicillin],
+                medicines: [
+                  {'name': l.medAmlodipine, 'dose': l.medAmlodipineDose, 'time': '08:00 AM', 'instruction': l.instAfterBreakfast},
+                  {'name': l.medMetformin, 'dose': l.dose1Pill, 'time': '01:00 PM', 'instruction': l.instAfterLunch},
+                ],
+                vitals: vitals,
+                generatedDate: dateStr,
+              );
+              final file = await PdfExportService.saveToTempFile(pdfBytes, 'MediTrack_Health_Report_$dateStr.pdf');
+              await SharePlus.instance.share(
+                ShareParams(files: [XFile(file.path)]),
               );
             },
           ),
@@ -120,7 +157,7 @@ class HealthReportScreen extends StatelessWidget {
             const SizedBox(height: 20),
             Text(l.healthParameters, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: c.primaryText)),
             const SizedBox(height: 12),
-            _buildParamGrid(l, c),
+            _buildParamGrid(l, c, latestBp, latestSugar, latestOxygen, latestTemp),
             const SizedBox(height: 20),
             Text(l.recommendations, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: c.primaryText)),
             const SizedBox(height: 12),
@@ -153,12 +190,19 @@ class HealthReportScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildParamGrid(AppLocalizations l, AppColors c) {
+  Widget _buildParamGrid(
+    AppLocalizations l,
+    AppColors c,
+    String latestBp,
+    String latestSugar,
+    String latestOxygen,
+    String latestTemp,
+  ) {
     final params = [
-      _HealthParam(l.bp, '120/80', 'mmHg', const Color(0xFFF43F5E), Icons.favorite_rounded, true),
-      _HealthParam(l.sugar, '98', 'mg/dL', const Color(0xFF3B82F6), Icons.water_drop_rounded, true),
-      _HealthParam(l.oxygen, '98%', '', const Color(0xFF8B5CF6), Icons.circle, true),
-      _HealthParam(l.temperature, '98.6°F', '', const Color(0xFFF97316), Icons.thermostat_rounded, true),
+      _HealthParam(l.bp, latestBp, 'mmHg', const Color(0xFFF43F5E), Icons.favorite_rounded, true),
+      _HealthParam(l.sugar, latestSugar, 'mg/dL', const Color(0xFF3B82F6), Icons.water_drop_rounded, true),
+      _HealthParam(l.oxygen, latestOxygen, '', const Color(0xFF8B5CF6), Icons.circle, true),
+      _HealthParam(l.temperature, latestTemp, '', const Color(0xFFF97316), Icons.thermostat_rounded, true),
       _HealthParam(l.tipCholesterol, '180', 'mg/dL', const Color(0xFFEC4899), Icons.opacity_rounded, true),
       _HealthParam(l.recordTypeHba1c, '6.2', l.unitPercent, const Color(0xFF7F56D9), Icons.bloodtype_rounded, true),
     ];
@@ -209,7 +253,7 @@ class HealthReportScreen extends StatelessWidget {
             children: [
               Text(
                 param.value,
-                style: TextStyle(fontFamily: 'Outfit', fontSize: 18, fontWeight: FontWeight.w800, color: c.primaryText),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: c.primaryText),
               ),
               if (param.unit.isNotEmpty)
                 Text(param.unit, style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: c.secondaryText)),

@@ -261,7 +261,7 @@ class _MedicinesScreenState extends State<MedicinesScreen> {
                 Text(
                   timeStr,
                   style: TextStyle(
-                    fontFamily: 'Outfit',
+                    
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
                     color: timeColor,
@@ -271,7 +271,7 @@ class _MedicinesScreenState extends State<MedicinesScreen> {
                 Text(
                   item['name'] ?? AppLocalizations.of(context)!.medicineDefaultName,
                   style: TextStyle(
-                    fontFamily: 'Outfit',
+                    
                     fontSize: 17,
                     fontWeight: FontWeight.w700,
                     color: c.primaryText,
@@ -476,10 +476,10 @@ class _MedicinesScreenState extends State<MedicinesScreen> {
                   const SizedBox(height: 6),
                   TextField(
                     controller: nameController,
-                    style: TextStyle(fontFamily: 'Outfit', fontWeight: FontWeight.w600, color: c.primaryText),
+                    style: TextStyle(fontWeight: FontWeight.w600, color: c.primaryText),
                     decoration: InputDecoration(
                       hintText: AppLocalizations.of(context)!.medicineNameHint,
-                      hintStyle: TextStyle(fontFamily: 'Outfit', color: c.tertiaryText, fontWeight: FontWeight.normal),
+                      hintStyle: TextStyle(color: c.tertiaryText, fontWeight: FontWeight.normal),
                       filled: true,
                       fillColor: c.scaffoldBg,
                       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -533,7 +533,7 @@ class _MedicinesScreenState extends State<MedicinesScreen> {
                                     Text(
                                       selectedTime.format(context),
                                       style: TextStyle(
-                                        fontFamily: 'Outfit',
+                                        
                                         fontSize: 16,
                                         fontWeight: FontWeight.w600,
                                         color: c.primaryText,

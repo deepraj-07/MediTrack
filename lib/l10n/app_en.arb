@@ -144,6 +144,12 @@
     }
   },
   "overallStatus": "Overall status: Normal",
+  "averageLabel": "Average: {value}",
+  "@averageLabel": {
+    "placeholders": {
+      "value": {}
+    }
+  },
   "statusNormal": "Normal",
   "statusNormalFasting": "Normal (Fasting)",
   "statusNormalPostMeal": "Normal (Post-meal)",
@@ -325,6 +331,7 @@
   "sosLocationShared": "Your location (New Delhi) has been shared.",
   "sosClose": "OK (Close)",
   "sosCancelled": "Emergency alert cancelled.",
+  "sosMessage": "I need urgent medical help! This is an emergency sent from MediTrack.",
   "sosAlertTitle": "SOS Alert Sent",
   "emergencyContacts": "Emergency Contacts (Caretakers)",
 
@@ -430,6 +437,7 @@
 
   "@_Family": "Family Connect",
   "addMember": "Add Member",
+  "relation": "Relation",
   "familyMembersTitle": "Family Members",
   "members": "members",
   "self": "You",
@@ -648,5 +656,18 @@
   "profileFamilyCount": "2",
   "statHealthScore": "Health Score",
   "statMemberSince": "Member Since",
-  "statFamilyMembers": "Family Members"
+  "statFamilyMembers": "Family Members",
+
+  "@_QR": "QR Code",
+  "myQrCode": "My QR Code",
+  "scanQrCode": "Scan QR Code",
+  "scanToView": "Scan this QR to view patient details",
+  "qrValidMessage": "This QR code contains medical information for emergency use.",
+  "shareQr": "Share QR",
+  "shareComingSoon": "Share feature coming soon",
+  "patientDetails": "Patient Details",
+  "invalidQrCode": "Invalid QR code",
+  "pointCameraAtQr": "Point camera at the QR code",
+  "switchCamera": "Switch Camera",
+  "scanQrOption": "Scan QR Code"
 }

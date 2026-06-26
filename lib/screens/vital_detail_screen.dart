@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:meditrack/l10n/app_localizations.dart';
 import 'package:meditrack/theme/app_theme.dart';
+import 'package:meditrack/providers/vitals_provider.dart';
+import 'package:meditrack/models/vital_reading.dart';
 
 enum VitalType {
   bloodPressure,
@@ -21,14 +24,24 @@ class VitalDetailScreen extends StatefulWidget {
 class _VitalDetailScreenState extends State<VitalDetailScreen> {
   String _selectedDate = '';
 
-  late final String _unit;
-  late final Color _accentColor;
-  late final IconData _icon;
+  late String _unit;
+  late Color _accentColor;
+  late IconData _icon;
   late List<_Reading> _readings;
+  bool _isInitialized = false;
+
   @override
   void initState() {
     super.initState();
-    _initVitalData();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_isInitialized) {
+      _initVitalData();
+      _isInitialized = true;
+    }
   }
 
   String get _title {
@@ -90,9 +103,61 @@ class _VitalDetailScreenState extends State<VitalDetailScreen> {
     }
   }
 
+  String _monthName(int month) {
+    final l = AppLocalizations.of(context)!;
+    switch (month) {
+      case 1: return l.monthJan;
+      case 2: return l.monthFeb;
+      case 3: return l.monthMar;
+      case 4: return l.monthApr;
+      case 5: return l.monthMayLabel;
+      case 6: return l.monthJun;
+      case 7: return l.monthJul;
+      case 8: return l.monthAug;
+      case 9: return l.monthSep;
+      case 10: return l.monthOct;
+      case 11: return l.monthNov;
+      case 12: return l.monthDec;
+      default: return '';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final c = context.appColors;
+    
+    final vitalsProvider = context.watch<VitalsProvider>();
+    final String typeStr = widget.vitalType == VitalType.bloodPressure ? 'bp' : 
+                           widget.vitalType == VitalType.bloodSugar ? 'sugar' : 
+                           widget.vitalType == VitalType.oxygen ? 'oxygen' : 'temperature';
+    final providerReadings = vitalsProvider.getReadingsByType(typeStr);
+    
+    _readings = providerReadings.reversed.map((r) {
+      String statusStr = AppLocalizations.of(context)!.statusNormal;
+      if (widget.vitalType == VitalType.bloodSugar) {
+        if (r.time.contains('AM') || r.time.contains('am')) {
+          statusStr = AppLocalizations.of(context)!.statusNormalFasting;
+        } else {
+          statusStr = AppLocalizations.of(context)!.statusNormalPostMeal;
+        }
+      }
+      return _Reading(
+        r.time,
+        r.value,
+        statusStr,
+        true,
+      );
+    }).toList();
+    
+    if (_readings.isEmpty) {
+      _readings = [
+        _Reading('08:00 AM', widget.vitalType == VitalType.bloodPressure ? '120/80' : 
+                             widget.vitalType == VitalType.bloodSugar ? '98' : 
+                             widget.vitalType == VitalType.oxygen ? '98%' : '98.6°F', 
+                 AppLocalizations.of(context)!.statusNormal, true)
+      ];
+    }
+
     return Scaffold(
       backgroundColor: c.scaffoldBg,
       appBar: AppBar(
@@ -235,11 +300,40 @@ class _VitalDetailScreenState extends State<VitalDetailScreen> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 6),
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          AppLocalizations.of(context)!.today,
+                          style: const TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        '${DateTime.now().day} ${_monthName(DateTime.now().month)} ${DateTime.now().year}',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white.withValues(alpha: 0.85),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 14),
                   Text(
                     latest.value,
                     style: const TextStyle(
-                      fontFamily: 'Outfit',
+
                       fontSize: 40,
                       fontWeight: FontWeight.w800,
                       color: Colors.white,
@@ -289,6 +383,57 @@ class _VitalDetailScreenState extends State<VitalDetailScreen> {
   Widget _buildSummaryCard() {
     final c = context.appColors;
     final latest = _readings.first;
+
+    double total = 0;
+    int count = 0;
+    double sysSum = 0;
+    double diaSum = 0;
+    int bpCount = 0;
+
+    for (final r in _readings) {
+      if (widget.vitalType == VitalType.bloodPressure) {
+        final parts = r.value.split('/');
+        if (parts.length >= 2) {
+          final sys = double.tryParse(parts[0].trim());
+          final dia = double.tryParse(parts[1].trim());
+          if (sys != null && dia != null) {
+            sysSum += sys;
+            diaSum += dia;
+            bpCount++;
+          }
+        }
+      } else {
+        final cleaned = r.value.replaceAll(RegExp(r'[^0-9.]'), '');
+        final val = double.tryParse(cleaned);
+        if (val != null) {
+          total += val;
+          count++;
+        }
+      }
+    }
+
+    String avgStr = '';
+    if (widget.vitalType == VitalType.bloodPressure) {
+      if (bpCount > 0) {
+        avgStr = '${(sysSum / bpCount).toStringAsFixed(0)}/${(diaSum / bpCount).toStringAsFixed(0)}';
+      } else {
+        avgStr = '--';
+      }
+    } else {
+      if (count > 0) {
+        final double avg = total / count;
+        if (widget.vitalType == VitalType.temperature) {
+          avgStr = '${avg.toStringAsFixed(1)}°F';
+        } else if (widget.vitalType == VitalType.oxygen) {
+          avgStr = '${avg.toStringAsFixed(1)}%';
+        } else {
+          avgStr = avg.toStringAsFixed(0);
+        }
+      } else {
+        avgStr = '--';
+      }
+    }
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Container(
@@ -320,6 +465,8 @@ class _VitalDetailScreenState extends State<VitalDetailScreen> {
             _buildSummaryRow(Icons.check_circle_outline, AppLocalizations.of(context)!.checkedCount('${_readings.length}')),
             const SizedBox(height: 10),
             _buildSummaryRow(Icons.schedule_rounded, AppLocalizations.of(context)!.latestReading(latest.time)),
+            const SizedBox(height: 10),
+            _buildSummaryRow(Icons.analytics_rounded, AppLocalizations.of(context)!.averageLabel(avgStr)),
             const SizedBox(height: 10),
             _buildSummaryRow(Icons.emoji_emotions_outlined, AppLocalizations.of(context)!.overallStatus),
           ],
@@ -448,7 +595,7 @@ class _VitalDetailScreenState extends State<VitalDetailScreen> {
                               Text(
                                 reading.time,
                                 style: TextStyle(
-                                  fontFamily: 'Outfit',
+            
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,
                                   color: _accentColor.withValues(alpha: 0.7),
@@ -460,7 +607,7 @@ class _VitalDetailScreenState extends State<VitalDetailScreen> {
                           Text(
                             reading.value,
                             style: TextStyle(
-                              fontFamily: 'Outfit',
+        
                               fontSize: 20,
                               fontWeight: FontWeight.w800,
                               color: c.primaryText,
@@ -667,7 +814,7 @@ class _VitalDetailScreenState extends State<VitalDetailScreen> {
                 ),
               ),
               style: TextStyle(
-                fontFamily: 'Outfit',
+                
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
                 color: c.primaryText,
@@ -681,7 +828,7 @@ class _VitalDetailScreenState extends State<VitalDetailScreen> {
                 Text(
                   '${DateTime.now().hour.toString().padLeft(2, '0')}:${DateTime.now().minute.toString().padLeft(2, '0')} • ${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}',
                   style: TextStyle(
-                    fontFamily: 'Outfit',
+                    
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                     color: c.secondaryText,
@@ -711,20 +858,27 @@ class _VitalDetailScreenState extends State<VitalDetailScreen> {
               child: ElevatedButton(
                 onPressed: () {
                   if (valueController.text.trim().isNotEmpty) {
-                    final now = TimeOfDay.now();
-                    final hour = now.hourOfPeriod == 0 ? 12 : now.hourOfPeriod;
-                    final minute = now.minute.toString().padLeft(2, '0');
-                    final period = now.period == DayPeriod.am ? 'AM' : 'PM';
+                    final now = DateTime.now();
+                    final timeOfDay = TimeOfDay.fromDateTime(now);
+                    final hour = timeOfDay.hourOfPeriod == 0 ? 12 : timeOfDay.hourOfPeriod;
+                    final minute = timeOfDay.minute.toString().padLeft(2, '0');
+                    final period = timeOfDay.period == DayPeriod.am ? 'AM' : 'PM';
                     final timeStr = '${hour.toString().padLeft(2, '0')}:$minute $period';
-
-                    setState(() {
-                       _readings.insert(0, _Reading(
-                         timeStr,
-                         valueController.text.trim(),
-                         AppLocalizations.of(context)!.statusNormal,
-                         true,
-                       ));
-                     });
+                    final dateStr = '${now.day}/${now.month}/${now.year}';
+                    
+                    final String typeStr = widget.vitalType == VitalType.bloodPressure ? 'bp' : 
+                                           widget.vitalType == VitalType.bloodSugar ? 'sugar' : 
+                                           widget.vitalType == VitalType.oxygen ? 'oxygen' : 'temperature';
+                    
+                    final newReading = VitalReading(
+                      type: typeStr,
+                      value: valueController.text.trim(),
+                      time: timeStr,
+                      date: dateStr,
+                      timestamp: now,
+                    );
+                    
+                    context.read<VitalsProvider>().addReading(newReading);
                   }
                   Navigator.pop(ctx);
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -822,7 +976,7 @@ class _TrendLinePainter extends CustomPainter {
       color: const Color(0xFF98A2B3),
       fontSize: 11,
       fontWeight: FontWeight.w600,
-      fontFamily: 'Outfit',
+      
     );
     for (int i = 0; i <= 4; i++) {
       final y = paddingT + (chartH / 4) * i;
@@ -842,7 +996,7 @@ class _TrendLinePainter extends CustomPainter {
       color: const Color(0xFF98A2B3),
       fontSize: 11,
       fontWeight: FontWeight.w600,
-      fontFamily: 'Outfit',
+      
     );
     for (int i = 0; i < readings.length; i++) {
       final x = paddingL + (chartW / (readings.length - 1)) * i;
@@ -938,7 +1092,7 @@ class _TrendLinePainter extends CustomPainter {
           color: color,
           fontSize: 11,
           fontWeight: FontWeight.w700,
-          fontFamily: 'Outfit',
+          
         );
         final valStr = values[i].toStringAsFixed(1);
         final hlTp = TextPainter(

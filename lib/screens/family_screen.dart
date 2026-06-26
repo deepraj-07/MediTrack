@@ -10,6 +10,8 @@ class FamilyScreen extends StatefulWidget {
 }
 
 class _FamilyScreenState extends State<FamilyScreen> {
+  final List<_FamilyMember> _extraMembers = [];
+
   List<_FamilyMember> get _members {
     final l = AppLocalizations.of(context)!;
     return [
@@ -49,6 +51,7 @@ class _FamilyScreenState extends State<FamilyScreen> {
         color: const Color(0xFFF59E0B),
         medicines: l.familyMedsGrandson.split(', '),
       ),
+      ..._extraMembers,
     ];
   }
 
@@ -70,19 +73,10 @@ class _FamilyScreenState extends State<FamilyScreen> {
         ),
         centerTitle: false,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.person_add_rounded, color: Color(0xFF7F56D9)),
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(AppLocalizations.of(context)!.addMemberSnackbar),
-                  backgroundColor: const Color(0xFF7F56D9),
-                  behavior: SnackBarBehavior.floating,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                ),
-              );
-            },
-          ),
+            IconButton(
+              icon: const Icon(Icons.person_add_rounded, color: Color(0xFF7F56D9)),
+              onPressed: () => _showAddMemberDialog(context),
+            ),
           const SizedBox(width: 8),
         ],
       ),
@@ -184,6 +178,80 @@ class _FamilyScreenState extends State<FamilyScreen> {
     );
   }
 
+  void _showAddMemberDialog(BuildContext context) {
+    final nameCtrl = TextEditingController();
+    final ageCtrl = TextEditingController();
+    final relationCtrl = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(AppLocalizations.of(context)!.addMember),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(controller: nameCtrl, decoration: InputDecoration(labelText: AppLocalizations.of(context)!.fullNameLabel, border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)))),
+            const SizedBox(height: 12),
+            TextField(controller: relationCtrl, decoration: InputDecoration(labelText: 'Relation', border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)))),
+            const SizedBox(height: 12),
+            TextField(controller: ageCtrl, decoration: InputDecoration(labelText: AppLocalizations.of(context)!.age, border: OutlineInputBorder(borderRadius: BorderRadius.circular(10))), keyboardType: TextInputType.number),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(AppLocalizations.of(context)!.cancel)),
+          TextButton(
+            onPressed: () {
+              final name = nameCtrl.text.trim();
+              final relation = relationCtrl.text.trim();
+              final age = ageCtrl.text.trim();
+              if (name.isEmpty) return;
+              setState(() {
+                _extraMembers.add(_FamilyMember(
+                  name: name,
+                  relation: relation.isNotEmpty ? relation : 'Family',
+                  age: age.isNotEmpty ? age : '-',
+                  bloodGroup: 'Unknown',
+                  emoji: '👤',
+                  color: const Color(0xFF7F56D9),
+                  medicines: [],
+                ));
+              });
+              Navigator.pop(ctx);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('${nameCtrl.text} ${AppLocalizations.of(context)!.addMemberSnackbar}'), backgroundColor: const Color(0xFF7F56D9), behavior: SnackBarBehavior.floating),
+              );
+            },
+            child: Text(AppLocalizations.of(context)!.add, style: const TextStyle(color: Color(0xFF7F56D9))),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showMemberDetails(BuildContext context, _FamilyMember member) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(member.emoji, style: const TextStyle(fontSize: 48)),
+            const SizedBox(height: 12),
+            Text(member.name, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
+            Text('${member.relation} • ${member.age}', style: const TextStyle(fontSize: 14, color: Colors.grey)),
+            const Divider(height: 24),
+            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [const Text('Blood Group', style: TextStyle(fontWeight: FontWeight.w600)), Text(member.bloodGroup)]),
+            if (member.medicines.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [const Text('Medicines', style: TextStyle(fontWeight: FontWeight.w600)), Text('${member.medicines.length} ${AppLocalizations.of(context)!.medicinesTitle}')]),
+            ],
+          ],
+        ),
+        actions: [TextButton(onPressed: () => Navigator.pop(ctx), child: Text(AppLocalizations.of(context)!.close))],
+      ),
+    );
+  }
+
   Widget _buildMemberCard(_FamilyMember member, bool isSelf) {
     final c = context.appColors;
     return Container(
@@ -202,7 +270,7 @@ class _FamilyScreenState extends State<FamilyScreen> {
         ],
       ),
       child: InkWell(
-        onTap: () {},
+        onTap: () => _showMemberDetails(context, member),
         borderRadius: BorderRadius.circular(16),
         child: Row(
           children: [
