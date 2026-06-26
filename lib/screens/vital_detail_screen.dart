@@ -991,21 +991,24 @@ class _TrendLinePainter extends CustomPainter {
       tp.paint(canvas, Offset(paddingL - tp.width - 6, y - tp.height / 2));
     }
 
-    // X-axis labels
+    // X-axis labels (rotated to prevent overlap)
     final xLabelStyle = TextStyle(
       color: const Color(0xFF98A2B3),
-      fontSize: 11,
+      fontSize: 10,
       fontWeight: FontWeight.w600,
-      
     );
     for (int i = 0; i < readings.length; i++) {
       final x = paddingL + (chartW / (readings.length - 1)) * i;
+      canvas.save();
+      canvas.translate(x, size.height - paddingB + 8);
+      canvas.rotate(-0.5);
       final tp = TextPainter(
         text: TextSpan(text: readings[i].time, style: xLabelStyle),
         textDirection: TextDirection.ltr,
         textAlign: TextAlign.center,
-      )..layout(maxWidth: 56);
-      tp.paint(canvas, Offset(x - tp.width / 2, size.height - paddingB + 6));
+      )..layout();
+      tp.paint(canvas, Offset(-tp.width / 2, 0));
+      canvas.restore();
     }
 
     // Gradient fill

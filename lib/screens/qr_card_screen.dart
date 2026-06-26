@@ -71,7 +71,7 @@ class QrCardScreen extends StatelessWidget {
                         : const AssetImage('assets/images/avatar.png'),
                   ),
                   const SizedBox(height: 12),
-                  Text(profile.name, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: Colors.white)),
+                  Text(profile.name.isNotEmpty ? profile.name : l.profileNameEn, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: Colors.white)),
                   Text(l.profileNameEn, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: Colors.white70)),
                   const SizedBox(height: 4),
                   Container(

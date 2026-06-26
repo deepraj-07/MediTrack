@@ -51,7 +51,7 @@ class HealthReportScreen extends StatelessWidget {
               final now = DateTime.now();
               final dateStr = DateFormat('dd/MM/yyyy').format(now);
               final pdfBytes = await PdfExportService.generateHealthReport(
-                patientName: profile.name.isNotEmpty ? profile.name : l.userName,
+                patientName: profile.name.isNotEmpty ? profile.name : l.profileNameEn,
                 patientId: l.profileId,
                 patientDob: l.userDob,
                 patientGender: l.userGender,

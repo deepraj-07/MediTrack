@@ -71,7 +71,7 @@ class ProfileScreen extends StatelessWidget {
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: c.primaryText),
             ),
             const SizedBox(height: 16),
-            _buildOptionItem(context, Icons.person_outline_rounded, l.personalInfo, const Color(0xFF7F56D9), onTap: () => _navigateToPersonalInfo(context)),
+            _buildOptionItem(context, Icons.person_outline_rounded, l.personalInfo, const Color(0xFF7F56D9), onTap: () => _navigateTo(context, const EditProfileSubScreen())),
             _buildOptionItem(context, Icons.favorite_outline_rounded, l.healthInfo, const Color(0xFFF43F5E), onTap: () => _navigateTo(context, const HealthInfoSubScreen())),
             _buildOptionItem(context, Icons.people_outline_rounded, l.emergencyContactsLabel, const Color(0xFF2E90FA), onTap: () => _navigateTo(context, EmergencyContactsSubScreen(
               contacts: emergencyContacts,
@@ -91,10 +91,6 @@ class ProfileScreen extends StatelessWidget {
 
   void _navigateTo(BuildContext context, Widget screen) {
     Navigator.push(context, MaterialPageRoute(builder: (_) => screen));
-  }
-
-  void _navigateToPersonalInfo(BuildContext context) {
-    Navigator.push(context, MaterialPageRoute(builder: (_) => const PersonalInfoSubScreen()));
   }
 
   Widget _buildProfileHeader(BuildContext context, AppLocalizations l, ProfileProvider profile) {
@@ -117,7 +113,7 @@ class ProfileScreen extends StatelessWidget {
         children: [
           Expanded(
             child: GestureDetector(
-              onTap: () => _navigateToPersonalInfo(context),
+              onTap: () => _navigateTo(context, const EditProfileSubScreen()),
               child: Row(
                 children: [
                   Stack(
@@ -140,7 +136,7 @@ class ProfileScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(profile.name, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: Colors.white), maxLines: 1, overflow: TextOverflow.ellipsis),
+                         Text(profile.name.isNotEmpty ? profile.name : l.profileNameEn, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: Colors.white), maxLines: 1, overflow: TextOverflow.ellipsis),
                         Text(l.profileNameEn, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.white70), maxLines: 1, overflow: TextOverflow.ellipsis),
                         const SizedBox(height: 8),
                         Wrap(
@@ -261,7 +257,6 @@ class PersonalInfoSubScreen extends StatelessWidget {
                   backgroundImage: FileImage(File(imagePath)),
                 ),
               ),
-            _buildInfoTile(Icons.person_outline, l.fullNameLabel, profile.name, c),
             _buildInfoTile(Icons.calendar_today_outlined, l.dobLabel, l.userDob, c),
             _buildInfoTile(Icons.transgender_rounded, l.genderLabel, l.userGender, c),
             _buildInfoTile(Icons.phone_outlined, l.mobileLabel, profile.mobile, c),
@@ -874,6 +869,9 @@ class _EditProfileSubScreenState extends State<EditProfileSubScreen> {
   late final TextEditingController _mobileCtrl;
   late final TextEditingController _emailCtrl;
   late final TextEditingController _addressCtrl;
+  late final TextEditingController _dobCtrl;
+  late final TextEditingController _genderCtrl;
+  late final TextEditingController _bloodGroupCtrl;
   bool _initialized = false;
 
   @override
@@ -883,10 +881,13 @@ class _EditProfileSubScreenState extends State<EditProfileSubScreen> {
       _initialized = true;
       final profile = context.read<ProfileProvider>();
       final l = AppLocalizations.of(context)!;
-      _nameCtrl = TextEditingController(text: profile.name.isNotEmpty ? profile.name : l.userName);
+      _nameCtrl = TextEditingController(text: profile.name.isNotEmpty ? profile.name : l.profileNameEn);
       _mobileCtrl = TextEditingController(text: profile.mobile.isNotEmpty ? profile.mobile : l.userMobile);
       _emailCtrl = TextEditingController(text: profile.email.isNotEmpty ? profile.email : l.userEmail);
       _addressCtrl = TextEditingController(text: profile.address.isNotEmpty ? profile.address : l.userAddress);
+      _dobCtrl = TextEditingController(text: profile.dob.isNotEmpty ? profile.dob : l.userDob);
+      _genderCtrl = TextEditingController(text: profile.gender.isNotEmpty ? profile.gender : l.userGender);
+      _bloodGroupCtrl = TextEditingController(text: profile.bloodGroup.isNotEmpty ? profile.bloodGroup : l.userBloodGroup);
       _imagePath = profile.imagePath;
     }
   }
@@ -897,6 +898,9 @@ class _EditProfileSubScreenState extends State<EditProfileSubScreen> {
     _mobileCtrl.dispose();
     _emailCtrl.dispose();
     _addressCtrl.dispose();
+    _dobCtrl.dispose();
+    _genderCtrl.dispose();
+    _bloodGroupCtrl.dispose();
     super.dispose();
   }
 
@@ -915,6 +919,9 @@ class _EditProfileSubScreenState extends State<EditProfileSubScreen> {
       email: _emailCtrl.text,
       address: _addressCtrl.text,
       imagePath: _imagePath,
+      dob: _dobCtrl.text,
+      gender: _genderCtrl.text,
+      bloodGroup: _bloodGroupCtrl.text,
     );
     if (mounted) Navigator.pop(context);
   }
@@ -954,6 +961,10 @@ class _EditProfileSubScreenState extends State<EditProfileSubScreen> {
             _buildTextField(l.mobileLabel, _mobileCtrl, c),
             _buildTextField(l.emailLabel, _emailCtrl, c),
             _buildTextField(l.addressLabel, _addressCtrl, c),
+            const SizedBox(height: 20),
+            _buildTextField(l.dobLabel, _dobCtrl, c),
+            _buildTextField(l.genderLabel, _genderCtrl, c),
+            _buildTextField(l.bloodGroupLabel, _bloodGroupCtrl, c),
             const SizedBox(height: 40),
             _buildMainButton(l.saveChanges, _saveChanges),
           ],
@@ -978,6 +989,34 @@ class _EditProfileSubScreenState extends State<EditProfileSubScreen> {
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: c.border)),
               enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: c.border)),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildReadOnlyField(String label, String value, IconData icon, AppColors c) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: c.secondaryText)),
+          const SizedBox(height: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            decoration: BoxDecoration(
+              color: c.cardBg,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: c.border.withValues(alpha: 0.5)),
+            ),
+            child: Row(
+              children: [
+                Icon(icon, color: c.tertiaryText, size: 20),
+                const SizedBox(width: 12),
+                Text(value, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: c.primaryText)),
+              ],
             ),
           ),
         ],

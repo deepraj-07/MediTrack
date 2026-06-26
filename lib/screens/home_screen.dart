@@ -196,7 +196,7 @@ class HomeScreen extends StatelessWidget {
     final c = context.appColors;
     final profile = context.watch<ProfileProvider>();
     final imagePath = profile.imagePath;
-    final name = profile.name.isNotEmpty ? profile.name : AppLocalizations.of(context)!.userName;
+    final name = profile.name.isNotEmpty ? profile.name : AppLocalizations.of(context)!.profileNameEn;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Row(

@@ -241,24 +241,24 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
           ),
         ],
       ),
-      child: InkWell(
-        onTap: () => _showRecordDetail(record),
-        borderRadius: BorderRadius.circular(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  width: 44, height: 44,
-                  decoration: BoxDecoration(
-                    color: record.color.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(record.icon, color: record.color, size: 22),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 44, height: 44,
+                decoration: BoxDecoration(
+                  color: record.color.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
+                child: Icon(record.icon, color: record.color, size: 22),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: InkWell(
+                  onTap: () => _showRecordDetail(record),
+                  borderRadius: BorderRadius.circular(12),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -274,21 +274,64 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
                     ],
                   ),
                 ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: record.color.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  record.type,
+                  style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: record.color),
+                ),
+              ),
+              const SizedBox(width: 8),
+              InkWell(
+                onTap: () async {
+                  final l = AppLocalizations.of(context)!;
+                  final profile = context.read<ProfileProvider>();
+                  final vitals = context.read<VitalsProvider>().readings;
+                  final now = DateTime.now();
+                  final dateStr = DateFormat('dd-MM-yyyy').format(now);
+                  final pdfBytes = await PdfExportService.generateHealthReport(
+                    patientName: profile.name.isNotEmpty ? profile.name : l.profileNameEn,
+                    patientId: l.profileId,
+                    patientDob: l.userDob,
+                    patientGender: l.userGender,
+                    patientBloodGroup: l.userBloodGroup,
+                    patientMobile: l.userMobile,
+                    patientEmail: l.userEmail,
+                    patientAddress: l.userAddress,
+                    conditions: [l.condHypertension, l.condDiabetes, l.condArthritis],
+                    allergies: [l.allergyDust, l.allergyPenicillin],
+                    medicines: [
+                      {'name': l.medAmlodipine, 'dose': l.medAmlodipineDose, 'time': '08:00 AM', 'instruction': l.instAfterBreakfast},
+                      {'name': l.medMetformin, 'dose': l.dose1Pill, 'time': '01:00 PM', 'instruction': l.instAfterLunch},
+                    ],
+                    vitals: vitals,
+                    generatedDate: dateStr,
+                  );
+                  final file = await PdfExportService.saveToTempFile(pdfBytes, 'MediTrack_${record.title}_$dateStr.pdf');
+                  await SharePlus.instance.share(ShareParams(files: [XFile(file.path)]));
+                },
+                borderRadius: BorderRadius.circular(8),
+                child: Container(
+                  padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: record.color.withValues(alpha: 0.1),
+                    color: const Color(0xFF7F56D9).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Text(
-                    record.type,
-                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: record.color),
-                  ),
+                  child: const Icon(Icons.download_rounded, color: Color(0xFF7F56D9), size: 20),
                 ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            Container(
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          InkWell(
+            onTap: () => _showRecordDetail(record),
+            borderRadius: BorderRadius.circular(10),
+            child: Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 color: c.scaffoldBg,
@@ -308,8 +351,8 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
                 ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -369,7 +412,7 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
                     final now = DateTime.now();
                     final dateStr = DateFormat('dd/MM/yyyy').format(now);
                     final pdfBytes = await PdfExportService.generateHealthReport(
-                      patientName: profile.name.isNotEmpty ? profile.name : l.userName,
+                      patientName: profile.name.isNotEmpty ? profile.name : l.profileNameEn,
                       patientId: l.profileId,
                       patientDob: l.userDob,
                       patientGender: l.userGender,

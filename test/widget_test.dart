@@ -13,7 +13,7 @@ void main() {
     expect(find.text('MediTrack'), findsOneWidget);
 
     // Verify that greeting header is shown.
-    expect(find.text('नमस्ते रमेश जी'), findsOneWidget);
+    expect(find.text('नमस्ते Kripashankar Yadav जी'), findsOneWidget);
   });
 }
 
