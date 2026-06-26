@@ -119,6 +119,7 @@ class _MainShellState extends State<MainShell> {
   bool _isListening = false;
   bool _speechAvailable = false;
   String _voiceSavedMessage = '';
+  double _soundLevel = 0.0;
 
   void _initSpeech() {
     _speech.initialize(
@@ -265,7 +266,11 @@ class _MainShellState extends State<MainShell> {
           _voiceTranscript = result.recognizedWords;
         });
       },
-      onSoundLevelChange: (level) {},
+      onSoundLevelChange: (level) {
+        setState(() {
+          _soundLevel = level;
+        });
+      },
       listenOptions: stt.SpeechListenOptions(
         listenFor: const Duration(seconds: 30),
         pauseFor: const Duration(seconds: 2),
@@ -283,6 +288,7 @@ class _MainShellState extends State<MainShell> {
     await _speech.stop();
     setState(() {
       _isListening = false;
+      _soundLevel = 0.0;
     });
     if (_voiceTranscript.trim().isNotEmpty) {
       _processVoiceCommand(_voiceTranscript);
@@ -371,6 +377,7 @@ class _MainShellState extends State<MainShell> {
       if (mounted) {
         setState(() {
           _isVoiceAssistantActive = false;
+          _soundLevel = 0.0;
         });
       }
     });
@@ -427,6 +434,7 @@ class _MainShellState extends State<MainShell> {
   void _triggerSOSFlow() {
     setState(() {
       _isVoiceAssistantActive = false;
+      _soundLevel = 0.0;
       _isSosCountdownActive = true;
       _sosCountdownVal = 3;
       _isSosAlertSent = false;
@@ -752,6 +760,7 @@ class _MainShellState extends State<MainShell> {
                       if (_isListening) _speech.stop();
                       setState(() {
                         _isVoiceAssistantActive = false;
+                        _soundLevel = 0.0;
                       });
                     },
                   ),
@@ -763,13 +772,25 @@ class _MainShellState extends State<MainShell> {
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
+                    if (_isListening)
+                      for (int i = 0; i < 3; i++)
+                        AnimatedContainer(
+                          duration: Duration(milliseconds: 150 + i * 50),
+                          width: 64 + (_soundLevel.clamp(0, 10) * (6 + i * 4)),
+                          height: 64 + (_soundLevel.clamp(0, 10) * (6 + i * 4)),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: const Color(0xFF7F56D9)
+                                .withValues(alpha: (0.12 - i * 0.035) * (_soundLevel / 8).clamp(0.3, 1.0)),
+                          ),
+                        ),
                     AnimatedContainer(
                       duration: const Duration(milliseconds: 800),
-                      width: _isListening ? 80 : 76,
-                      height: _isListening ? 80 : 76,
+                      width: _isListening ? 96 : 76,
+                      height: _isListening ? 96 : 76,
                       decoration: BoxDecoration(
                         color: _isListening
-                            ? const Color(0xFFF43F5E).withValues(alpha: 0.15)
+                            ? const Color(0xFF7F56D9).withValues(alpha: 0.12)
                             : const Color(0xFF7F56D9).withValues(alpha: 0.1),
                         shape: BoxShape.circle,
                       ),
@@ -778,8 +799,17 @@ class _MainShellState extends State<MainShell> {
                       width: 64,
                       height: 64,
                       decoration: BoxDecoration(
-                        color: _isListening ? const Color(0xFFF43F5E) : const Color(0xFF7F56D9),
+                        color: _isListening ? const Color(0xFF7F56D9) : const Color(0xFF7F56D9),
                         shape: BoxShape.circle,
+                        boxShadow: _isListening
+                            ? [
+                                BoxShadow(
+                                  color: const Color(0xFF7F56D9).withValues(alpha: 0.4 * (_soundLevel / 8).clamp(0.2, 1.0)),
+                                  blurRadius: 20 + _soundLevel * 2,
+                                  spreadRadius: _soundLevel * 0.5,
+                                ),
+                              ]
+                            : null,
                       ),
                       child: Icon(
                         _isListening ? Icons.mic_rounded : Icons.mic_none_rounded,
