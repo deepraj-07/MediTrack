@@ -47,7 +47,8 @@ MediTrack aims to solve this by providing a single AI-powered healthcare compani
 
 <img src="assets/images/1.png" width="220"/>
 <img src="assets/images/2.png" width="220"/>
-<img src="assets/images/3.png" width="220"/>
+<img src="assets/images/15.png" width="220"/>
+
 
 <br><br>
 
@@ -71,7 +72,7 @@ MediTrack aims to solve this by providing a single AI-powered healthcare compani
 
 <img src="assets/images/13.png" width="220"/>
 <img src="assets/images/14.png" width="220"/>
-<img src="assets/images/15.png" width="220"/>
+<img src="assets/images/3.png" width="220"/>
 
 </div>
 
