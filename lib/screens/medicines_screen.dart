@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:meditrack/l10n/app_localizations.dart';
 import 'package:meditrack/theme/app_theme.dart';
+import 'package:meditrack/utils/instruction_helper.dart';
 
 class MedicinesScreen extends StatefulWidget {
   final List<Map<String, dynamic>> medicinesList;
@@ -279,7 +280,7 @@ class _MedicinesScreenState extends State<MedicinesScreen> {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  '${item['dose']} - ${item['instruction']}',
+                  '${InstructionHelper.getDoseText(AppLocalizations.of(context)!, item['dose'])} - ${InstructionHelper.getInstructionText(AppLocalizations.of(context)!, item['instruction'])}',
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
@@ -409,9 +410,10 @@ class _MedicinesScreenState extends State<MedicinesScreen> {
   // Modal Bottom Sheet Form for adding medicine
   void _showAddMedicineModal(BuildContext context) {
     final nameController = TextEditingController();
-    final doseController = TextEditingController(text: AppLocalizations.of(context)!.dose1Pill);
+    final loc = AppLocalizations.of(context)!;
+    final doseController = TextEditingController(text: loc.dose1Pill);
     TimeOfDay selectedTime = const TimeOfDay(hour: 8, minute: 0);
-    String selectedInstruction = AppLocalizations.of(context)!.instructionAfterBreakfast;
+    String selectedInstruction = InstructionHelper.afterBreakfast;
 
     showModalBottomSheet(
       context: context,
@@ -608,16 +610,10 @@ class _MedicinesScreenState extends State<MedicinesScreen> {
                           fontWeight: FontWeight.w600,
                           color: c.primaryText,
                         ),
-                        items: <String>[
-                          AppLocalizations.of(context)!.instructionAfterBreakfast,
-                          AppLocalizations.of(context)!.instructionAfterLunch,
-                          AppLocalizations.of(context)!.instructionAfterDinner,
-                          AppLocalizations.of(context)!.instructionBeforeSleep,
-                          AppLocalizations.of(context)!.instructionEmptyStomach,
-                        ].map<DropdownMenuItem<String>>((String value) {
+                        items: InstructionHelper.allInstructionCodes.map<DropdownMenuItem<String>>((String code) {
                           return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
+                            value: code,
+                            child: Text(InstructionHelper.getInstructionText(AppLocalizations.of(context)!, code)),
                           );
                         }).toList(),
                         onChanged: (String? newValue) {
@@ -641,10 +637,14 @@ class _MedicinesScreenState extends State<MedicinesScreen> {
                       onPressed: () {
                         if (nameController.text.isNotEmpty) {
                           String timeFormatted = selectedTime.format(context);
+                          String doseValue = doseController.text;
+                          if (doseValue == loc.dose1Pill) {
+                            doseValue = InstructionHelper.dose1PillCode;
+                          }
                           widget.onAddMedicine(
                             nameController.text,
                             timeFormatted,
-                            doseController.text,
+                            doseValue,
                             selectedInstruction,
                           );
                           Navigator.pop(context);

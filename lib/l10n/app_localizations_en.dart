@@ -1255,13 +1255,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get languageEnglish => 'English';
 
   @override
-  String get languageHindi => 'हिन्दी';
+  String get languageHindi => 'Hindi';
 
   @override
   String get english => 'English';
 
   @override
-  String get hindi => 'हिन्दी';
+  String get hindi => 'Hindi';
 
   @override
   String get caretakerSon => 'Amit Sharma (Son)';

@@ -2477,7 +2477,7 @@ abstract class AppLocalizations {
   /// No description provided for @languageHindi.
   ///
   /// In en, this message translates to:
-  /// **'हिन्दी'**
+  /// **'Hindi'**
   String get languageHindi;
 
   /// No description provided for @english.
@@ -2489,7 +2489,7 @@ abstract class AppLocalizations {
   /// No description provided for @hindi.
   ///
   /// In en, this message translates to:
-  /// **'हिन्दी'**
+  /// **'Hindi'**
   String get hindi;
 
   /// No description provided for @caretakerSon.

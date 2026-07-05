@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:flutter/foundation.dart';
 import 'package:meditrack/config/api_config.dart';
 
 class OpenRouterService {
@@ -44,6 +45,7 @@ Respond with ONLY the JSON, no other text.''',
     );
 
     if (response.statusCode != 200) {
+      debugPrint('OpenRouterService.parseVitalFromSpeech Error: ${response.statusCode} - ${response.body}');
       return null;
     }
 
@@ -59,7 +61,8 @@ Respond with ONLY the JSON, no other text.''',
       if (type == null || type == 'none' || value == null) return null;
 
       return {'type': type, 'value': value};
-    } catch (_) {
+    } catch (e) {
+      debugPrint('OpenRouterService.parseVitalFromSpeech JSON Parse Error: $e');
       return null;
     }
   }
@@ -115,6 +118,7 @@ Important rules:
     );
 
     if (response.statusCode != 200) {
+      debugPrint('OpenRouterService.chat Error: ${response.statusCode} - ${response.body}');
       return null;
     }
 

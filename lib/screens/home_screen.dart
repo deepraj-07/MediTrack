@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:meditrack/l10n/app_localizations.dart';
 import 'package:meditrack/providers/profile_provider.dart';
 import 'package:meditrack/theme/app_theme.dart';
+import 'package:meditrack/utils/instruction_helper.dart';
 import 'doctor_appointment_screen.dart';
 import 'medical_records_screen.dart';
 import 'family_screen.dart';
@@ -746,7 +747,7 @@ class HomeScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 2),
                           Text(
-                            nextMedicine['instruction'] ?? AppLocalizations.of(context)!.medicineDefaultInstruction,
+                            InstructionHelper.getInstructionText(AppLocalizations.of(context)!, nextMedicine['instruction'] ?? AppLocalizations.of(context)!.instructionAfterBreakfast),
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,

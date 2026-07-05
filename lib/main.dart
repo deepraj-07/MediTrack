@@ -27,6 +27,7 @@ import 'package:flutter/services.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'utils/instruction_helper.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -149,6 +150,7 @@ class _MainShellState extends State<MainShell> {
   bool _speechAvailable = false;
   String _voiceSavedMessage = '';
   double _soundLevel = 0.0;
+  int _consecutiveRestarts = 0;
 
   // Chat + TTS
   final FlutterTts _tts = FlutterTts();
@@ -173,6 +175,7 @@ class _MainShellState extends State<MainShell> {
           _voiceTranscript = '';
           _voiceSubText = _getLangCode() == 'hi' ? 'आपकी बात सुन रहा हूँ...' : 'Listening to you...';
         });
+        _consecutiveRestarts = 0;
         _initAndListen();
       }
     });
@@ -219,10 +222,10 @@ class _MainShellState extends State<MainShell> {
       address: l.userAddress,
     );
     _medicines = [
-      {'name': l.medMetformin, 'time': '08:00 AM', 'dose': l.dose1Pill, 'instruction': l.instAfterBreakfast, 'isTaken': true},
-      {'name': l.medTelmisartan, 'time': '01:00 PM', 'dose': l.dose1Pill, 'instruction': l.instAfterLunch, 'isTaken': false},
-      {'name': l.medVitaminD3, 'time': '08:00 PM', 'dose': l.dose1Pill, 'instruction': l.instAfterDinner, 'isTaken': false},
-      {'name': l.medAtorvastatin, 'time': '10:00 PM', 'dose': l.dose1Pill, 'instruction': l.instBeforeSleep, 'isTaken': false},
+      {'name': l.medMetformin, 'time': '08:00 AM', 'dose': InstructionHelper.dose1PillCode, 'instruction': InstructionHelper.afterBreakfast, 'isTaken': true},
+      {'name': l.medTelmisartan, 'time': '01:00 PM', 'dose': InstructionHelper.dose1PillCode, 'instruction': InstructionHelper.afterLunch, 'isTaken': false},
+      {'name': l.medVitaminD3, 'time': '08:00 PM', 'dose': InstructionHelper.dose1PillCode, 'instruction': InstructionHelper.afterDinner, 'isTaken': false},
+      {'name': l.medAtorvastatin, 'time': '10:00 PM', 'dose': InstructionHelper.dose1PillCode, 'instruction': InstructionHelper.beforeSleep, 'isTaken': false},
     ];
     _emergencyContacts = [
       {'name': l.contactWife, 'phone': l.contactWifePhone},
@@ -382,6 +385,7 @@ class _MainShellState extends State<MainShell> {
       _voiceTranscript = '';
       _voiceSavedMessage = '';
       _soundLevel = 0.0;
+      _consecutiveRestarts = 0;
       _chatHistory.add({'role': 'ai', 'text': greetingText});
     });
 
@@ -423,7 +427,18 @@ class _MainShellState extends State<MainShell> {
       return;
     }
 
+    if (_consecutiveRestarts >= 3) {
+      debugPrint("Max consecutive restarts reached. Stopping auto-restart.");
+      setState(() {
+        _isListening = false;
+        _soundLevel = 0.0;
+        _voiceSubText = _getLangCode() == 'hi' ? 'बोलने के लिए माइक दबाएं' : 'Tap mic to speak';
+      });
+      return;
+    }
+
     _isRestarting = true;
+    _consecutiveRestarts++;
     
     setState(() {
       _isListening = false;
@@ -497,6 +512,7 @@ class _MainShellState extends State<MainShell> {
           _voiceTranscript = result.recognizedWords;
           if (_voiceTranscript.isNotEmpty) {
             _voiceSubText = '';
+            _consecutiveRestarts = 0;
           }
         });
       },
@@ -635,7 +651,7 @@ class _MainShellState extends State<MainShell> {
 
     buffer.writeln('Current Medicines Schedule:');
     for (final med in _medicines) {
-      buffer.writeln('- ${med['name']} | Dose: ${med['dose']} at ${med['time']} | ${med['instruction']} | Already Taken: ${med['isTaken']}');
+      buffer.writeln('- ${med['name']} | Dose: ${InstructionHelper.getDoseText(l, med['dose'])} at ${med['time']} | ${InstructionHelper.getInstructionText(l, med['instruction'])} | Already Taken: ${med['isTaken']}');
     }
 
     // 2. Vitals readings (recent first)
@@ -1333,6 +1349,7 @@ class _MainShellState extends State<MainShell> {
                               : 'Listening to you...';
                           _voiceTranscript = '';
                         });
+                        _consecutiveRestarts = 0;
                         _initAndListen();
                       },
                 child: Stack(
