@@ -45,21 +45,14 @@ MediTrack aims to solve this by providing a single AI-powered healthcare compani
 
 <div align="center">
 
-<img src="assets/images/1.0.jpeg" width="220"/>
-<img src="assets/images/2.0.jpeg" width="220"/>
-<img src="assets/images/3.0.jpeg" width="220"/>
+<img src="assets/images/1.png" width="220"/>
+<img src="assets/images/2.png" width="220"/>
+<img src="assets/images/3.png" width="220"/>
 
 <br><br>
 
-<img src="assets/images/4.0.jpeg" width="220"/>
-<img src="assets/images/5.0.jpeg" width="220"/>
-<img src="assets/images/6.0.jpeg" width="220"/>
-
-<br><br>
-
-<img src="assets/images/7.0.jpeg" width="220"/>
-<img src="assets/images/8.0.jpeg" width="220"/>
-<img src="assets/images/9.0.jpeg" width="220"/>
+<img src="assets/images/4.png" width="220"/>
+<img src="assets/images/5.png" width="220"/>
 
 </div>
 
